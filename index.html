@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101219">
+<title>Biome Planet V13 | Paliers de 25</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#f5f6fa;background:#101219;font-synthesis:none}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 15%,#202638 0%,#101219 58%);padding:20px 14px 36px}button{font:inherit;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.47}.app{max-width:720px;margin:auto}header{display:flex;align-items:center;justify-content:space-between;gap:12px}h1{margin:0;font-size:1.48rem;letter-spacing:-.04em}.muted{color:#9ba6bb;font-size:.83rem}.tag{border:1px solid #3a455d;background:#222b3e;color:#e0eaff;border-radius:24px;padding:7px 11px;font-size:.75rem;white-space:nowrap}.balance{margin-top:18px;background:#202736;border:1px solid #323c4e;padding:15px;border-radius:16px;display:flex;justify-content:space-between;align-items:center;gap:8px}.balance .amount{font-size:1.8rem;font-weight:750;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.income{color:#86e5ab;font-size:.78rem}.planet-panel{margin:16px 0 19px;border:1px solid #2e394b;border-radius:20px;background:radial-gradient(circle at 50% 46%,#222e3c,#151b27 70%);padding:15px 12px 13px;text-align:center;overflow:hidden}.planet-top{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:6px}.planet-top strong{font-size:.95rem}.planet-holder{position:relative;max-width:355px;aspect-ratio:1;margin:9px auto 1px}canvas{display:block;width:100%;height:100%}.planet-hint{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:max-content;max-width:96%;color:#e8f1ff;background:#151c2be8;border:1px solid #48566a;border-radius:999px;padding:9px 12px;font-size:.75rem;font-weight:700;z-index:2;pointer-events:none;box-shadow:0 5px 18px #0008}.planet-holder canvas{cursor:pointer;touch-action:manipulation}.planet-bottom{display:flex;justify-content:space-between;align-items:center;color:#bac6d5;font-size:.78rem;padding:0 4px}.completion-track{height:7px;background:#30394b;border-radius:99px;margin-top:8px;overflow:hidden}.completion-fill{height:100%;width:0;background:linear-gradient(90deg,#48ad80,#a2e9a6);transition:width .4s}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 10px}.section-title h2{font-size:1.08rem;margin:0}.biomes{display:grid;grid-template-columns:1fr;gap:9px}.biome{background:#1a202d;border:1px solid #323b4c;border-radius:15px;padding:12px}.biome-head{display:flex;align-items:center;gap:9px}.biome-icon{height:40px;width:40px;display:grid;place-items:center;border-radius:12px;font-size:1.45rem;background:#283142}.biome-info{min-width:0;flex:1}.biome-info strong{font-size:.93rem}.biome-info small{display:block;color:#aab5c9;margin-top:3px;font-size:.76rem}.biome-level{color:#cbd6e5;font-size:.73rem;white-space:nowrap}.progress{background:#313a4b;height:8px;border-radius:20px;overflow:hidden;margin:11px 0}.progress>div{height:100%;width:0%;border-radius:20px}.biome-actions{display:flex;justify-content:space-between;align-items:center;gap:9px}.cycle{color:#9eafc2;font-size:.78rem;font-variant-numeric:tabular-nums}.btn{border:0;border-radius:10px;background:#cf3c50;color:white;padding:10px 12px;font-weight:750;font-size:.8rem;max-width:63%;min-width:140px}.btn:active:not(:disabled){transform:scale(.98)}.btn{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.locked{filter:saturate(.6)}.locked .progress{display:none}.next{width:100%;border:0;background:#48bb84;color:#082013;padding:14px;border-radius:13px;font-weight:850;margin:10px 0 0}.hidden{display:none!important}.footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:17px 3px}.linkbtn{color:#a6b6cd;border:1px solid #435069;border-radius:9px;background:transparent;padding:9px 12px;font-size:.76rem}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#e8edf6;color:#131827;border-radius:12px;padding:11px 17px;font-weight:700;z-index:10;box-shadow:0 8px 40px #0006;opacity:0;pointer-events:none;transition:opacity .25s;max-width:90%;text-align:center}.toast.show{opacity:1}@media(min-width:580px){.biomes{grid-template-columns:1fr 1fr}.planet-holder{max-width:370px}}
+
+/* Planet remains visible; only the biome panel scrolls. */
+html,body{height:100%;overflow:hidden}
+body{height:100dvh;min-height:0;padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom)}
+.app{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+header{flex-shrink:0;padding-top:10px}
+.balance{flex-shrink:0;margin-top:9px;padding:9px 12px}
+.balance .amount{font-size:1.5rem}
+.planet-panel{flex-shrink:0;margin:9px 0 10px;padding:9px 10px 10px}
+.planet-holder{width:min(100%,35dvh,355px);max-width:none;margin:5px auto 0}
+.section-title{flex-shrink:0;margin:0 2px 8px}
+.biome-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:0 3px 12px;scrollbar-width:thin;scrollbar-color:#59647a #1a202d}
+.biome-scroll::-webkit-scrollbar{width:5px}
+.biome-scroll::-webkit-scrollbar-thumb{background:#59647a;border-radius:8px}
+.footer{margin:16px 0 8px}
+@media(max-height:650px){
+ header{padding-top:4px} h1{font-size:1.15rem}
+ .balance{margin-top:5px;padding:6px 10px}.balance .amount{font-size:1.24rem}
+ .planet-panel{margin:5px 0 7px;padding:6px 9px}
+ .planet-holder{width:min(100%,28dvh,270px);margin:2px auto 0}
+ .planet-bottom{font-size:.7rem}.completion-track{margin-top:4px}
+ .section-title{margin-bottom:5px}.section-title h2{font-size:.95rem}
+ .planet-hint{font-size:.65rem;padding:5px 8px}
+}
+@media(min-width:580px){.planet-holder{max-width:none}}
+
+/* Interface inspirée de la capture : niveaux bleus et cycle circulaire indépendant. */
+:root{font-family:ui-monospace,SFMono-Regular,Consolas,'Liberation Mono',monospace}
+body{background-color:#0c0d10;background-image:linear-gradient(#ffffff06 1px,transparent 1px),linear-gradient(90deg,#ffffff06 1px,transparent 1px);background-size:44px 44px}
+.balance{background:#0e151b;border-color:#33888e;border-radius:3px}
+.balance .amount{letter-spacing:.035em}
+.income{color:#52d3df}
+.planet-panel{background:radial-gradient(circle at 50% 48%,#1b2330,#0c0f16 75%);border-color:#397c85;border-radius:4px}
+.biome-scroll{padding-bottom:8px}
+.biomes{gap:8px;grid-template-columns:1fr}
+.biome{background:#0c1016;border:1.5px solid #4bbfc7;border-radius:2px;padding:10px 10px 9px;box-shadow:inset 0 0 0 1px #10303a}
+.biome-head{gap:8px}
+.biome-icon{width:33px;height:33px;border-radius:3px;background:#142a30;font-size:1.24rem}
+.biome-info strong{font-size:.90rem;letter-spacing:.005em}
+.biome-info small{margin-top:4px;font-size:.7rem;color:#d0dbe1}
+.biome-level{font-size:.8rem;color:#f5f8ff;font-weight:750}
+.biome-main{display:flex;align-items:center;gap:12px;margin-top:9px}
+.biome-left{flex:1;min-width:0}
+.progress{height:8px;background:#26343a;border-radius:0;margin:6px 0 0}
+.progress>div{border-radius:0!important;background:#31e1f0!important;transition:width .16s}
+.cycle-info{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.cycle{font-size:.71rem;color:#b7c6ce;font-variant-numeric:tabular-nums}
+.cycle-wheel{width:24px;height:24px;flex:none;transform:rotate(-90deg)}
+.cycle-wheel circle{fill:none;stroke-width:4}
+.cycle-wheel .cycle-bg{stroke:#253b41}
+.cycle-wheel .cycle-fg{stroke:#27dce7;stroke-linecap:butt;transition:none}
+.btn{border-radius:2px;min-width:126px;max-width:47%;padding:12px 7px;min-height:55px;background:#11141b;border:2px solid #607078;color:#f2f6fa;font-size:.8rem;letter-spacing:.01em}
+.btn:disabled{opacity:.5}
+.btn:not(:disabled){border-color:#56c3cb;box-shadow:inset 3px 3px 0 -1px #39e9ee}
+.btn:active:not(:disabled){background:#13343c}
+.locked .progress{display:block}
+.locked .cycle-wheel{opacity:.22}
+.next{border-radius:3px;background:#35c9d7;color:#031417}
+@media(max-width:370px){.biome{padding:9px 7px}.btn{min-width:112px;font-size:.72rem}.biome-info small{font-size:.65rem}}
+
+/* Empêche le surlignage bleu Android et la sélection accidentelle pendant les appuis. */
+html,body,.app,.biome,.biome *,.planet-panel,.planet-panel *,button,canvas{
+  -webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+}
+button:focus:not(:focus-visible){outline:none;}
+button:focus-visible{outline:2px solid #42dce8;outline-offset:3px;}
+/* La barre représente chaque tranche de 25 améliorations, pas le niveau total. */
+.milestone-group{display:flex;align-items:center;gap:7px;margin-top:6px}
+.milestone-box{flex:none;min-width:42px;height:25px;display:flex;align-items:center;justify-content:center;background:#101c22;border:1px solid #35cad8;color:#6aebf4;font-size:.78rem;font-weight:850;letter-spacing:.02em}
+.milestone-bar{flex:1;min-width:0}
+.milestone-caption{display:flex;justify-content:space-between;color:#9eb7c1;font-size:.66rem;margin-bottom:3px}
+.milestone-caption span:last-child{color:#6fe8f1}
+.milestone-group .progress{margin:0}
+</style>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
+<meta name="theme-color" content="#101219">
+</head>
+<body><main class="app"><header><div><div class="muted">MINI-JEU IDLE</div><h1>🌍 Biome Planet</h1></div><span class="tag" id="planet-tag">Planète 1</span></header><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><span class="muted" id="land-label">0 % terraformée</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas></div><div class="planet-bottom"><span>Pixels révélés</span><span id="completion">0 / 100 %</span></div><div class="completion-track"><div class="completion-fill" id="completion-fill"></div></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><span class="muted">Revenus automatiques</span></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><span class="muted" id="save-label">Sauvegarde locale automatique</span><button class="linkbtn" id="reset">Recommencer</button></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
+<script>
+(()=>{'use strict';
+const PLANET_SETS=[
+ [
+  ['Forêt','🌲','#3eac68'],['Prairie','🌿','#9bc65e'],['Désert','🏜️','#d9af64'],['Océan','🌊','#408ac5']
+ ],[
+  ['Jungle','🌴','#12a879'],['Marais','🐸','#729a55'],['Lagon','🪸','#26b6be'],['Savane','🦒','#d8b35d'],['Mangrove','🌱','#37866f'],['Récif','🐠','#477fd1'],['Fleurs tropicales','🌺','#f38bba']
+ ],[
+  ['Glacier','🧊','#90d7ef'],['Taïga','🌲','#367c9a'],['Banquise','🐧','#e1ecf7'],['Montagnes','⛰️','#8d9eaf'],['Lac gelé','💧','#4c99d7']
+ ],[
+  ['Canyons','🏜️','#dc784b'],['Roche rouge','🪨','#a94b43'],['Oasis','🌴','#4ebbaa'],['Dunes','☀️','#e7bd69'],['Badlands','⛰️','#9e6d58'],['Lave','🌋','#f06438'],['Salines','🧂','#e6d8bc'],['Obsidienne','🖤','#584f63']
+ ],[
+  ['Forêt rose','🌸','#ed8fc2'],['Prairie violette','🪻','#9374d5'],['Lac azur','💧','#4aabd9'],['Bosquet doré','🌳','#e1bb5d'],['Brume','☁️','#98a7ca'],['Cristaux roses','💎','#da67aa']
+ ],[
+  ['Champignons','🍄','#ab69bf'],['Mousse','🌱','#64b870'],['Marécage','🐸','#668d8b'],['Cavernes','🪨','#8c77a0'],['Rivière','💦','#5995be'],['Cristaux verts','💎','#4bcbb0'],['Spores','✨','#e7ae69'],['Racines','🌳','#9f7151'],['Geysers','♨️','#ee888f']
+ ]
+];
+const BIOME_STATS=[
+ {time:3,base:4,cost:18,max:125},
+ {time:8,base:35,cost:480,max:100},
+ {time:18,base:170,cost:3200,max:75},
+ {time:40,base:950,cost:19000,max:60},
+ {time:70,base:4100,cost:90000,max:50},
+ {time:110,base:17000,cost:360000,max:40}
+];
+let BIOMES=[];
+function statsFor(i){
+ if(i<BIOME_STATS.length)return BIOME_STATS[i];
+ const prev=BIOME_STATS[BIOME_STATS.length-1],extra=i-BIOME_STATS.length+1;
+ return {time:Math.round(prev.time*Math.pow(1.5,extra)),base:Math.round(prev.base*Math.pow(3.3,extra)),cost:Math.round(prev.cost*Math.pow(3.7,extra)),max:Math.max(20,prev.max-8*extra)};
+}
+function makeBiomes(planet){
+ const set=PLANET_SETS[(planet-1)%PLANET_SETS.length];
+ return set.map(([name,emoji,color],i)=>({...statsFor(i),name,emoji,color}));
+}
+function paletteFor(hex){
+ const rgb=[1,3,5].map(pos=>parseInt(hex.slice(pos,pos+2),16));
+ const adjust=(f)=>'#'+rgb.map(c=>Math.max(0,Math.min(255,Math.round(c*f))).toString(16).padStart(2,'0')).join('');
+ return [adjust(.76),adjust(.92),adjust(1.07),adjust(.66)];
+}
+const KEY='biome-planet-save-v10';let state;
+function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],last:Date.now()}}
+try{state={...initial(),...JSON.parse(localStorage.getItem(KEY)||'null')}}catch(e){state=initial()}
+if(!Array.isArray(state.levels)||state.levels.length!==6)state=initial();if(!Array.isArray(state.timers)||state.timers.length!==6)state.timers=[0,0,0,0,0,0];
+BIOMES=makeBiomes(state.planet);
+function normalizeProgress(){
+ const n=BIOMES.length;
+ state.levels=Array.from({length:n},(_,i)=>Math.max(0,Math.min(BIOMES[i].max,Number(state.levels[i])||0)));
+ state.timers=Array.from({length:n},(_,i)=>Math.max(0,Number(state.timers[i])||0));
+}
+normalizeProgress();
+const $=id=>document.getElementById(id),canvas=$('planet'),ctx=canvas.getContext('2d');
+ctx.imageSmoothingEnabled=false;
+const moneyFormat=n=>{if(n<1e3)return Math.floor(n).toLocaleString('fr-CA')+' $';let i=Math.floor(Math.log10(Math.max(1,n))/3);i=Math.min(i,5);return (n/Math.pow(1000,i)).toLocaleString('fr-CA',{maximumFractionDigits:2})+' '+['','k','M','G','T','P'][i]+'$'};
+const multiplier=()=>Math.pow(1.16,state.planet-1),upgradeCost=i=>Math.floor(BIOMES[i].cost*Math.pow(1.075,state.levels[i])*Math.pow(1.20,state.planet-1)),unlockCost=i=>i===0?0:Math.floor(BIOMES[i].cost*Math.pow(1.20,state.planet-1));
+// Les paliers de 25 niveaux doublent le revenu de chaque cycle :
+ // 1-24: x1, 25-49: x2, 50-74: x4, 75-99: x8, etc.
+function bonusPalier(level){return Math.pow(2,Math.floor(level/25))}
+function revenue(i){return BIOMES[i].base*state.levels[i]*bonusPalier(state.levels[i])*multiplier()}
+function cover(){return Math.min(100,100*pixelShown()/pixelTotal)}
+function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2200)}
+const cards=[];
+function refreshBiomeCards(){
+ stopHold();
+ const container=$('biomes');container.replaceChildren();cards.length=0;
+ BIOMES.forEach((b,i)=>{
+  const el=document.createElement('div');el.className='biome';
+  el.innerHTML=`<div class="biome-head"><div class="biome-icon">${b.emoji}</div><div class="biome-info"><strong>${b.name}</strong><small class="info"></small></div><span class="biome-level"></span></div><div class="biome-main"><div class="biome-left"><div class="cycle-info"><span class="cycle"></span><svg class="cycle-wheel" viewBox="0 0 40 40" aria-label="Cycle de revenus"><circle class="cycle-bg" cx="20" cy="20" r="16"></circle><circle class="cycle-fg" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"></circle></svg></div><div class="milestone-group"><div class="milestone-box" title="Nombre de paliers de 25 atteints">×0</div><div class="milestone-bar"><div class="milestone-caption"><span>Palier de 25</span><span class="milestone-count">0/25</span></div><div class="progress"><div></div></div></div></div></div><button type="button" class="btn"></button></div>`;
+  setupUpgradeButton(el.querySelector('button'),i);container.appendChild(el);cards.push(el);
+ });
+ $('planet-hint').textContent='👆 Touche la planète pour ajouter '+BIOMES[0].name.toLowerCase();
+}
+
+let holdTimer=null,holdDelay=null,activePointer=null,activeButton=null,lastPointerAction=0;
+function stopHold(){clearTimeout(holdDelay);clearInterval(holdTimer);holdDelay=null;holdTimer=null;activePointer=null;activeButton=null}
+function setupUpgradeButton(btn,i){
+  btn.addEventListener('pointerdown',e=>{
+    if(e.button!==0||btn.disabled)return;
+    stopHold();activePointer=e.pointerId;activeButton=btn;lastPointerAction=Date.now();
+    e.preventDefault();
+    try{btn.setPointerCapture(e.pointerId)}catch(err){}
+    buy(i);
+    holdDelay=setTimeout(()=>{
+      holdDelay=null;
+      holdTimer=setInterval(()=>{
+        if(activeButton!==btn||state.levels[i]>=BIOMES[i].max){stopHold();return}
+        const cost=state.levels[i]===0?unlockCost(i):upgradeCost(i);
+        if(state.money>=cost)buy(i);
+      },95);
+    },360);
+  });
+  btn.addEventListener('click',e=>{
+    // Pointer presses have already purchased on pointerdown; retain keyboard accessibility.
+    if(e.detail===0||Date.now()-lastPointerAction>850)buy(i);
+  });
+  btn.addEventListener('pointerup',stopHold);
+  btn.addEventListener('pointercancel',stopHold);
+  btn.addEventListener('lostpointercapture',stopHold);
+}
+window.addEventListener('pointerup',stopHold);
+window.addEventListener('pointercancel',stopHold);
+window.addEventListener('blur',stopHold);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopHold()});
+
+function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0;toast(BIOMES[i].emoji+' '+BIOMES[i].name+' débloqué!')}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++}save();renderUI();drawPlanet()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function renderUI(){
+ $('planet-hint').classList.toggle('hidden',state.levels[0]>0);
+ $('money').textContent=moneyFormat(state.money);
+ $('planet-tag').textContent='Planète '+state.planet+' · '+BIOMES.length+' biomes';
+ $('planet-name').textContent=['Planète Aube','Planète Boréale','Planète Nova','Planète Émeraude','Planète Horizon'][(state.planet-1)%5];
+ const percent=Math.round(cover());
+ $('land-label').textContent=percent+' % terraformée';
+ $('completion').textContent=percent+' / 100 %';
+ $('completion-fill').style.width=percent+'%';
+ $('next').classList.toggle('hidden',cover()<99.999);
+ let minIncome=0;
+ BIOMES.forEach((b,i)=>{
+   const l=state.levels[i],el=cards[i],btn=el.querySelector('button');
+   const info=el.querySelector('.info'),level=el.querySelector('.biome-level');
+   const cycle=el.querySelector('.cycle'),levelBar=el.querySelector('.progress > div');
+   const milestoneBox=el.querySelector('.milestone-box'),milestoneCount=el.querySelector('.milestone-count');
+   const ring=el.querySelector('.cycle-fg');
+   el.classList.toggle('locked',l===0);
+   level.textContent='Niv. '+l+'/'+b.max;
+   const completedPaliers=Math.floor(l/25);
+   const towardsNext=l%25;
+   const remaining=Math.min(25,Math.max(0,b.max-completedPaliers*25));
+   milestoneBox.textContent='×'+completedPaliers;
+   milestoneBox.title=completedPaliers+' palier(s) de 25 atteint(s)';
+   milestoneCount.textContent=l>=b.max?'MAX':towardsNext+'/'+remaining;
+   levelBar.style.width=(l>=b.max&&towardsNext===0?0:100*towardsNext/25).toFixed(2)+'%';
+   if(l){
+     const cash=revenue(i),phase=Math.min(1,state.timers[i]/(b.time*1000));
+     minIncome+=60/b.time*cash;
+     const nextMilestone=(Math.floor(l/25)+1)*25;
+     info.textContent='+'+moneyFormat(cash)+' / cycle · Bonus x'+bonusPalier(l)+(nextMilestone<=b.max?' · x'+bonusPalier(nextMilestone)+' au niv. '+nextMilestone:' · dernier palier');
+     cycle.textContent='↻ '+b.time+' s · automatique';
+     ring.style.strokeDashoffset=(100.53*(1-phase)).toFixed(2);
+     const cost=upgradeCost(i);
+     btn.textContent=l>=b.max?'✓ MAX':'↑ '+moneyFormat(cost);
+     btn.disabled=l>=b.max||(state.money<cost&&activeButton!==btn);
+   }else{
+     info.textContent='Biome à débloquer';
+     cycle.textContent=i===0?'Premier biome gratuit':state.levels[i-1]===0?'Biome précédent requis':'Prêt à débloquer';
+     ring.style.strokeDashoffset='100.53';
+     const cost=unlockCost(i);
+     btn.textContent=i===0?'+ Ajouter':'Débloquer · '+moneyFormat(cost);
+     btn.disabled=(i>0&&state.levels[i-1]===0)||state.money<cost;
+   }
+ });
+ $('rates').textContent='≈ +'+moneyFormat(minIncome)+' / min';
+}
+function hash(x){let a=Math.sin(x*127.1+state.planet*45.17)*43758.5453;return a-Math.floor(a)}
+function noise2(x,y,s=1){
+  return hash(x*12.9898*s+y*78.233*s+state.planet*19.37);
+}
+// A fixed pixel-art map for each planet. Every pixel has exactly one biome owner.
+// Improvements reveal more of that biome's PREDETERMINED pattern, never repaint it randomly.
+const SIZE=68, STEP=444/SIZE, MID=260, R=222;
+let pixelGroups=[],pixelTotal=0;
+function buildPixelMap(){
+  pixelGroups=BIOMES.map(()=>[]);pixelTotal=0;
+  const profiles=BIOMES.map((b,i)=>{
+    const angle=i*2.3999632297+state.planet*.68;
+    const radius=.45+.12*Math.sin(i*2.7+state.planet);
+    const cx=Math.cos(angle)*radius,cy=Math.sin(angle)*radius;
+    const spread=BIOMES.length<=4?.34:BIOMES.length>=8?.20:.26;
+    return {
+      lobes:[[cx,cy,spread],[cx+.18*Math.cos(angle+1.35),cy+.18*Math.sin(angle+1.35),spread*.78],[cx+.15*Math.cos(angle-1.2),cy+.15*Math.sin(angle-1.2),spread*.72]],
+      twist:1.2+i*.93+state.planet*.41,ridge:.12+.035*Math.sin(i*2),arc:.06+.025*Math.cos(i*3),bias:.018*Math.sin(i*4)
+    };
+  });
+  for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){
+    const nx=(x+.5-SIZE/2)/(SIZE/2),ny=(y+.5-SIZE/2)/(SIZE/2);
+    const rr=nx*nx+ny*ny;
+    if(rr>1)continue;
+    const ang=Math.atan2(ny,nx);
+    const planetShift=(state.planet-1)*.37;
+    const warpX=nx*Math.cos(planetShift)-ny*Math.sin(planetShift) + .06*Math.sin(ny*8+state.planet*.7) + .025*Math.sin(nx*17+ny*13);
+    const warpY=nx*Math.sin(planetShift)+ny*Math.cos(planetShift) + .06*Math.cos(nx*9-state.planet*.45) + .025*Math.cos(ny*19-nx*11);
+    let bestBiome=0,bestScore=-1e9,bestCore=0;
+    profiles.forEach((p,i)=>{
+      let field=0, core=0;
+      p.lobes.forEach(([lx,ly,scale])=>{
+        const dx=warpX-lx,dy=warpY-ly;
+        const d=dx*dx+dy*dy;
+        const influence=Math.exp(-d/(scale*scale));
+        field+=influence;
+        core=Math.max(core,influence);
+      });
+      const ribbon=Math.sin(ang*2.4+p.twist + warpX*7.5 - warpY*5.2)*p.ridge;
+      const coast=Math.cos(ang*1.8-p.twist*.7 + Math.sqrt(rr)*6.5)*p.arc;
+      const grain=(noise2(x*.8+i*17,y*.8+i*11,1.3)-.5)*.22 + (noise2(x*2.2+i*7,y*2.1+i*3,2.1)-.5)*.08;
+      const edgeBias=(1-Math.sqrt(rr))*(i===0?.07:i===3?.02:.04) + Math.sqrt(rr)*(i===3?.05:0);
+      const score=field + ribbon + coast + grain + p.bias + edgeBias;
+      if(score>bestScore){bestScore=score;bestBiome=i;bestCore=core}
+    });
+    // Reveal pixels as scattered, persistent specks rather than as a filling circle.
+    // Per-pixel randomness creates visible holes; occasional nearby pixels share
+    // a small influence, producing little 2-3 pixel islands without smooth blobs.
+    const single=noise2(x+bestBiome*173.17,y+bestBiome*239.31,4.13);
+    const patch=noise2(Math.floor(x/3)+bestBiome*41.17,Math.floor(y/3)+bestBiome*63.29,5.17);
+    const reveal=single*.86+patch*.14;
+    const tint=noise2(x*1.7+bestBiome*4,y*1.7+bestBiome*9,2.7);
+    pixelGroups[bestBiome].push({x,y,reveal,tint});pixelTotal++;
+  }
+  pixelGroups.forEach(g=>g.sort((a,b)=>a.reveal-b.reveal));
+}
+function pixelCount(i){
+  const level=state.levels[i];
+  if(!level)return 0;
+  // Each biome has its own fixed maximum. Reveal its predetermined pixels little by little.
+  const fraction=Math.min(1,level/BIOMES[i].max);
+  return Math.max(1,Math.round(pixelGroups[i].length*fraction));
+}
+function pixelShown(){return pixelGroups.reduce((n,g,i)=>n+pixelCount(i),0)}
+function drawPlanet(){
+  const w=520,c=260,r=222;
+  ctx.clearRect(0,0,w,w);
+  for(let j=0;j<70;j++){
+    let x=hash(j+300)*w,y=hash(j+700)*w,s=hash(j+1100)*1.7+.3;
+    ctx.fillStyle='rgba(228,236,255,.4)';ctx.beginPath();ctx.arc(x,y,s,0,Math.PI*2);ctx.fill();
+  }
+  ctx.save();ctx.shadowColor='#4a86ba66';ctx.shadowBlur=33;ctx.beginPath();ctx.arc(c,c,r,0,Math.PI*2);ctx.fillStyle='#374052';ctx.fill();ctx.restore();
+  ctx.save();ctx.beginPath();ctx.arc(c,c,r,0,Math.PI*2);ctx.clip();
+  ctx.fillStyle='#2a3444';ctx.fillRect(0,0,w,w);
+  const palette=BIOMES.map(b=>paletteFor(b.color));
+  for(let i=0;i<BIOMES.length;i++){
+    const group=pixelGroups[i],n=pixelCount(i);if(!n)continue;
+    for(let j=0;j<n;j++){
+      const tile=group[j];
+      ctx.fillStyle=palette[i][Math.min(3,Math.floor(tile.tint*4))];
+      ctx.fillRect(c-r+tile.x*STEP,c-r+tile.y*STEP,STEP+.15,STEP+.15);
+    }
+  }
+  // Keep the crisp edges of the terrain pixels; only shade the globe gently.
+  const shade=ctx.createLinearGradient(65,65,475,475);
+  shade.addColorStop(0,'#ffffff10');shade.addColorStop(.55,'#00000000');shade.addColorStop(1,'#00000048');
+  ctx.fillStyle=shade;ctx.fillRect(c-r,c-r,2*r,2*r);
+  ctx.restore();ctx.beginPath();ctx.arc(c,c,r,0,Math.PI*2);ctx.lineWidth=3;ctx.strokeStyle='#879eab66';ctx.stroke();
+}
+refreshBiomeCards();buildPixelMap();
+let lastTick=performance.now(),lastSave=Date.now();function frame(now){const elapsed=Math.min(1000,Math.max(0,now-lastTick));lastTick=now;for(let i=0;i<BIOMES.length;i++){if(state.levels[i]<=0)continue;const period=BIOMES[i].time*1000;state.timers[i]+=elapsed;if(state.timers[i]>=period){let n=Math.floor(state.timers[i]/period);state.timers[i]%=period;state.money+=revenue(i)*n}}renderUI();if(Date.now()-lastSave>3000){save();lastSave=Date.now()}requestAnimationFrame(frame)}
+canvas.addEventListener('click',()=>{const nextIndex=state.levels.findIndex(l=>l===0);if(nextIndex<0){toast('Tous les biomes sont déjà débloqués!');return}if(nextIndex>0&&state.money<unlockCost(nextIndex)){toast('Il te faut '+moneyFormat(unlockCost(nextIndex))+' pour ajouter '+BIOMES[nextIndex].name);return}buy(nextIndex)});
+$('next').addEventListener('click',()=>{if(cover()<99.999)return;state.planet++;BIOMES=makeBiomes(state.planet);state.levels=BIOMES.map(()=>0);state.timers=BIOMES.map(()=>0);refreshBiomeCards();state.money+=30*state.planet;toast('Nouvelle planète découverte!');buildPixelMap();drawPlanet();renderUI();save();scrollTo({top:0,behavior:'smooth'})});
+$('reset').addEventListener('click',()=>{if(!confirm('Effacer toute ta progression et recommencer?'))return;state=initial();BIOMES=makeBiomes(state.planet);normalizeProgress();refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
+// Offline earnings capped at 4 hours; preserve partial production progress.
+const offline=Math.min(40*60*1000,Math.max(0,Date.now()-(Number(state.last)||Date.now())));if(offline>5000){let earned=0;BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+offline,cycles=Math.floor(total/(b.time*1000));state.timers[i]=total%(b.time*1000);earned+=cycles*revenue(i)});state.money+=earned;if(earned>0)setTimeout(()=>toast('Pendant ton absence : +'+moneyFormat(earned)),500)}
+window.addEventListener('pagehide',()=>{state.last=Date.now();save()});document.addEventListener('visibilitychange',()=>{if(document.hidden){state.last=Date.now();save()}else{let dt=Math.min(40*60*1000,Math.max(0,Date.now()-(state.last||Date.now())));BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+dt,n=Math.floor(total/(b.time*1000));state.timers[i]=total%(b.time*1000);state.money+=n*revenue(i)});lastTick=performance.now();state.last=Date.now();save()}});
+state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
+})();
+</script><script>
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(console.warn));
+}
+</script></body></html>
