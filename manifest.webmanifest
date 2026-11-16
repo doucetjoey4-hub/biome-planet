@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "Biome Planet",
+  "short_name": "Biome Planet",
+  "description": "Jeu idle de terraformation en pixels",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#101219",
+  "theme_color": "#101219",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icons/planet.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
