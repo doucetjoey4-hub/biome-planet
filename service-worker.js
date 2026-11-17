@@ -1,5 +1,5 @@
 /* Biome Planet V15: priorité au réseau pour empêcher les versions périmées. */
-const CACHE = 'biome-planet-v17-20261117';
+const CACHE = 'biome-planet-v18-planetes';
 const CORE = ['./index.html','./manifest.webmanifest','./icons/planet.svg'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
