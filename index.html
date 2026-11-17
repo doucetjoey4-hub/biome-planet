@@ -89,12 +89,217 @@ button:focus-visible{outline:2px solid #42dce8;outline-offset:3px;}
 .bonus-choices.open{display:grid}
 .bonus-choice{background:#14252b;border:1px solid #397680;border-radius:3px;color:#d9f9ff;font-weight:700;font-size:.68rem;line-height:1.45;padding:9px 3px;min-height:58px}
 .bonus-choice:active{background:#1d4850}
+
+
+/* ===== V15 interface mobile plus fluide ===== */
+:root{
+  --bg:#080b12;
+  --panel:#0d1320cc;
+  --panel-2:#111a2ae8;
+  --line:#28465f;
+  --line-soft:#1c3346;
+  --accent:#4de8f4;
+  --accent-2:#28b6ff;
+  --accent-soft:#6ff6ff;
+  --text:#f4fbff;
+  --muted:#90a8ba;
+  --good:#67f3b0;
+  --danger:#ff607f;
+  --shadow:0 10px 30px rgba(0,0,0,.32);
+}
+body{
+  background:
+    radial-gradient(circle at 50% -10%, rgba(55,100,255,.12), transparent 35%),
+    radial-gradient(circle at 10% 20%, rgba(62,255,211,.06), transparent 28%),
+    linear-gradient(#ffffff05 1px,transparent 1px),
+    linear-gradient(90deg,#ffffff05 1px,transparent 1px),
+    linear-gradient(180deg,#07090f 0%, #0b1119 100%);
+  background-size:auto,auto,36px 36px,36px 36px,auto;
+  color:var(--text);
+}
+.app{max-width:760px; gap:0;}
+header{
+  position:relative;
+  padding:12px 14px;
+  border:1px solid rgba(78,134,167,.35);
+  background:linear-gradient(180deg, rgba(20,28,42,.92), rgba(11,18,30,.75));
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  backdrop-filter: blur(12px);
+}
+h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
+.muted{color:var(--muted)}
+.tag{
+  border-color:#37657e;
+  background:linear-gradient(180deg,#10202e,#0c1522);
+  color:#d9f9ff;
+  border-radius:999px;
+  font-weight:800;
+  box-shadow: inset 0 0 0 1px rgba(97,226,255,.1);
+}
+.balance{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(180deg, rgba(13,22,34,.94), rgba(7,13,24,.9));
+  border:1px solid rgba(76,182,207,.38);
+  border-radius:20px;
+  padding:12px 14px;
+  box-shadow:var(--shadow);
+  backdrop-filter: blur(12px);
+}
+.balance:before,.planet-panel:before,.biome:before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(135deg, rgba(255,255,255,.08), transparent 28%, transparent 70%, rgba(115,240,255,.05));
+}
+.balance .amount{
+  font-size:1.55rem;
+  font-weight:900;
+  color:#f9fdff;
+  text-shadow:0 0 18px rgba(77,232,244,.08);
+}
+.income{color:var(--good); font-weight:800}
+.planet-panel{
+  position:relative;
+  background:linear-gradient(180deg, rgba(15,24,39,.96), rgba(10,14,23,.96));
+  border:1px solid rgba(77,192,221,.35);
+  border-radius:24px;
+  box-shadow:var(--shadow);
+  backdrop-filter: blur(10px);
+}
+.planet-top strong{font-size:1rem; font-weight:900}
+.planet-holder{
+  width:min(100%,38dvh,365px);
+  filter:drop-shadow(0 16px 22px rgba(0,0,0,.35));
+  animation:planetFloat 4.8s ease-in-out infinite;
+}
+@keyframes planetFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.planet-hint{
+  background:rgba(9,18,29,.86);
+  border:1px solid rgba(105,221,241,.34);
+  border-radius:999px;
+  box-shadow:0 10px 20px rgba(0,0,0,.26);
+}
+.planet-bottom{font-size:.8rem; color:#c4d7e2}
+.completion-track{
+  height:10px; border-radius:999px; background:#11202d;
+  box-shadow:inset 0 1px 6px rgba(0,0,0,.45);
+}
+.completion-fill{
+  background:linear-gradient(90deg,#3de0f6,#59ffa8);
+  box-shadow:0 0 16px rgba(66,236,255,.35);
+  transition:width .28s cubic-bezier(.2,.8,.2,1);
+}
+.section-title h2{font-size:1.02rem; font-weight:900}
+.biome-scroll{padding:2px 4px 14px; mask-image:linear-gradient(180deg,transparent 0,#000 8px,#000 calc(100% - 14px),transparent 100%);}
+.biomes{gap:12px}
+.biome{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(180deg, rgba(13,19,31,.98), rgba(10,15,24,.98));
+  border:1px solid rgba(72,138,164,.4);
+  border-radius:22px;
+  padding:12px;
+  box-shadow:var(--shadow), inset 0 0 0 1px rgba(53,105,139,.12);
+  transition:transform .18s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease;
+  scroll-snap-align:start;
+}
+.biome:active{transform:scale(.992)}
+.biome.can-buy{border-color:rgba(87,255,237,.5); box-shadow:var(--shadow), 0 0 0 1px rgba(80,255,237,.18), 0 0 22px rgba(55,230,255,.08)}
+.biome.has-bonus{border-color:rgba(104,255,182,.5)}
+.biome-icon{
+  width:40px; height:40px; border-radius:14px;
+  background:linear-gradient(180deg,#153144,#0d1e30);
+  box-shadow:inset 0 0 0 1px rgba(96,231,255,.14);
+}
+.biome-info strong{font-size:.96rem; font-weight:900}
+.biome-info small{font-size:.72rem; color:#c2d8e7}
+.biome-level{font-size:.76rem; padding:5px 9px; background:#0d1825; border-radius:999px; border:1px solid rgba(92,163,184,.34)}
+.biome-main{align-items:flex-end; gap:10px; margin-top:10px}
+.cycle-info{margin-bottom:6px}
+.cycle{font-size:.72rem; color:#bdd0dd}
+.cycle-wheel{width:28px; height:28px; filter:drop-shadow(0 0 6px rgba(39,220,231,.18))}
+.cycle-wheel .cycle-bg{stroke:#1c3340}
+.cycle-wheel .cycle-fg{stroke:var(--accent); stroke-linecap:round; transition:stroke-dashoffset .08s linear}
+.progress{height:10px; margin:0; background:#13212f; border-radius:999px; overflow:hidden; box-shadow:inset 0 1px 5px rgba(0,0,0,.45)}
+.progress>div{background:linear-gradient(90deg, var(--accent-2), var(--accent-soft)) !important; box-shadow:0 0 12px rgba(80,226,255,.35); transition:width .22s cubic-bezier(.2,.8,.2,1)}
+.milestone-group{gap:10px; margin-top:8px}
+.milestone-box{
+  min-width:50px; height:30px; border-radius:10px;
+  background:linear-gradient(180deg,#0f1f2d,#0a1723);
+  border:1px solid rgba(86,208,223,.55); color:#89f3ff;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.milestone-caption{font-size:.66rem; color:#96b1c2; margin-bottom:5px}
+.milestone-caption span:last-child{color:#88f0ff; font-weight:800}
+.btn{
+  position:relative; overflow:hidden;
+  min-width:132px; max-width:48%; min-height:52px;
+  border-radius:16px; border:1px solid rgba(82,213,234,.4);
+  background:linear-gradient(180deg,#173044,#102232);
+  color:var(--text); font-weight:900; letter-spacing:.01em;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05), 0 10px 18px rgba(0,0,0,.22);
+  transition:transform .12s ease, background .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.btn:not(:disabled){box-shadow:inset 0 0 0 1px rgba(255,255,255,.05), 0 12px 18px rgba(0,0,0,.26), 0 0 18px rgba(46,226,255,.08)}
+.btn:before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,.14), transparent 42%);
+}
+.btn:active:not(:disabled){transform:translateY(1px) scale(.985); background:linear-gradient(180deg,#1b3b53,#123044)}
+.btn:disabled{opacity:.42}
+.biome.can-buy .btn:not(:disabled){animation:pulseBuy 1.7s ease-in-out infinite}
+@keyframes pulseBuy{0%,100%{box-shadow:inset 0 0 0 1px rgba(255,255,255,.05), 0 10px 18px rgba(0,0,0,.26), 0 0 0 rgba(77,232,244,0)}50%{box-shadow:inset 0 0 0 1px rgba(255,255,255,.05), 0 10px 18px rgba(0,0,0,.26), 0 0 0 5px rgba(77,232,244,.06),0 0 18px rgba(77,232,244,.18)}}
+.bonus-strip{margin-top:10px; padding-top:10px; border-top:1px solid rgba(57,95,124,.4)}
+.bonus-status{font-size:.7rem; color:#b3cad7}
+.bonus-claim{
+  border-radius:999px; padding:8px 12px;
+  border:1px solid rgba(93,255,195,.48);
+  background:linear-gradient(180deg,#13312d,#0f2522); color:#bfffe3;
+  box-shadow:0 0 16px rgba(88,247,186,.08);
+}
+.bonus-claim:not(.hidden){animation:pulseBonus 2s ease-in-out infinite}
+@keyframes pulseBonus{0%,100%{box-shadow:0 0 0 rgba(88,247,186,0)}50%{box-shadow:0 0 0 6px rgba(88,247,186,.06),0 0 14px rgba(88,247,186,.18)}}
+.bonus-choices{grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:10px}
+.bonus-choice{
+  min-height:68px; padding:10px 5px; border-radius:16px;
+  background:linear-gradient(180deg,#122130,#0d1824);
+  border:1px solid rgba(74,147,178,.45);
+  color:#e6fbff; font-size:.72rem; box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+  transition:transform .12s ease, border-color .2s ease, background .2s ease;
+}
+.bonus-choice:active{transform:scale(.98); background:linear-gradient(180deg,#173247,#0f2233); border-color:#66dff2}
+.next{
+  border-radius:18px; border:1px solid rgba(88,255,183,.35);
+  background:linear-gradient(90deg,#39d8ef,#57f4b5);
+  color:#031417; font-weight:900; box-shadow:0 12px 24px rgba(0,0,0,.22);
+}
+.footer{margin:16px 2px 8px}
+.linkbtn{
+  border-radius:14px; border:1px solid rgba(70,117,147,.45); background:#101826; color:#b5cad6;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+}
+.toast{
+  border-radius:18px; padding:13px 18px;
+  background:rgba(245,250,255,.97); box-shadow:0 16px 40px rgba(0,0,0,.28)
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+@media(max-width:420px){
+  body{padding-inline:10px}
+  .planet-holder{width:min(100%,35dvh,320px)}
+  .balance .amount{font-size:1.34rem}
+  .biome{padding:11px}
+  .btn{min-width:118px; min-height:50px; font-size:.76rem}
+  .bonus-choice{font-size:.68rem; min-height:62px}
+}
+
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
 <meta name="theme-color" content="#101219">
 </head>
-<body><main class="app"><header><div><div class="muted">MINI-JEU IDLE</div><h1>🌍 Biome Planet</h1></div><span class="tag" id="planet-tag">Planète 1</span></header><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><span class="muted" id="land-label">0 % terraformée</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas></div><div class="planet-bottom"><span>Pixels révélés</span><span id="completion">0 / 100 %</span></div><div class="completion-track"><div class="completion-fill" id="completion-fill"></div></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><span class="muted">Revenus automatiques</span></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><span class="muted" id="save-label">Sauvegarde locale automatique</span><button class="linkbtn" id="reset">Recommencer</button></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
+<body><main class="app"><header><div><div class="muted">IDLE PLANÉTAIRE</div><h1>🌍 Biome Planet</h1></div><span class="tag" id="planet-tag">Planète 1</span></header><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><span class="muted" id="land-label">0 % terraformée</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas></div><div class="planet-bottom"><span>Pixels révélés</span><span id="completion">0 / 100 %</span></div><div class="completion-track"><div class="completion-fill" id="completion-fill"></div></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><span class="muted">Revenus automatiques</span></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><span class="muted" id="save-label">Sauvegarde locale automatique</span><button class="linkbtn" id="reset">Recommencer</button></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
 <script>
 (()=>{'use strict';
 const PLANET_SETS=[
@@ -239,10 +444,13 @@ function renderUI(){
    const ring=el.querySelector('.cycle-fg');
    const claim=el.querySelector('.bonus-claim'),status=el.querySelector('.bonus-status');
    el.classList.toggle('locked',l===0);
+   const canAfford=l?state.money>=upgradeCost(i):((i===0||state.levels[i-1]>0)&&state.money>=unlockCost(i));
+   el.classList.toggle('can-buy',canAfford);
    level.textContent='Niv. '+l+'/'+b.max;
    const completedPaliers=Math.floor(l/25);
    const towardsNext=l%25;
    const available=Math.max(0,completedPaliers-state.bonuses[i].length);
+   el.classList.toggle('has-bonus',available>0);
    claim.classList.toggle('hidden',available===0);
    claim.textContent=available>0?'🎁 Choisir un bonus'+(available>1?' ('+available+')':''):'';
    status.textContent=available>0?'Bonus de palier disponible !':(l>=b.max?'Bonus obtenus : '+state.bonuses[i].length+' / '+completedPaliers:'Prochain bonus au niv. '+Math.min(b.max,(completedPaliers+1)*25));
