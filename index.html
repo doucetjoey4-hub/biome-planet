@@ -2,7 +2,7 @@
 <html lang="fr-CA">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101219">
-<title>Biome Planet V13 | Paliers de 25</title>
+<title>Biome Planet V14 | Bonus de paliers</title>
 <style>
 :root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#f5f6fa;background:#101219;font-synthesis:none}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 15%,#202638 0%,#101219 58%);padding:20px 14px 36px}button{font:inherit;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.47}.app{max-width:720px;margin:auto}header{display:flex;align-items:center;justify-content:space-between;gap:12px}h1{margin:0;font-size:1.48rem;letter-spacing:-.04em}.muted{color:#9ba6bb;font-size:.83rem}.tag{border:1px solid #3a455d;background:#222b3e;color:#e0eaff;border-radius:24px;padding:7px 11px;font-size:.75rem;white-space:nowrap}.balance{margin-top:18px;background:#202736;border:1px solid #323c4e;padding:15px;border-radius:16px;display:flex;justify-content:space-between;align-items:center;gap:8px}.balance .amount{font-size:1.8rem;font-weight:750;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.income{color:#86e5ab;font-size:.78rem}.planet-panel{margin:16px 0 19px;border:1px solid #2e394b;border-radius:20px;background:radial-gradient(circle at 50% 46%,#222e3c,#151b27 70%);padding:15px 12px 13px;text-align:center;overflow:hidden}.planet-top{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:6px}.planet-top strong{font-size:.95rem}.planet-holder{position:relative;max-width:355px;aspect-ratio:1;margin:9px auto 1px}canvas{display:block;width:100%;height:100%}.planet-hint{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:max-content;max-width:96%;color:#e8f1ff;background:#151c2be8;border:1px solid #48566a;border-radius:999px;padding:9px 12px;font-size:.75rem;font-weight:700;z-index:2;pointer-events:none;box-shadow:0 5px 18px #0008}.planet-holder canvas{cursor:pointer;touch-action:manipulation}.planet-bottom{display:flex;justify-content:space-between;align-items:center;color:#bac6d5;font-size:.78rem;padding:0 4px}.completion-track{height:7px;background:#30394b;border-radius:99px;margin-top:8px;overflow:hidden}.completion-fill{height:100%;width:0;background:linear-gradient(90deg,#48ad80,#a2e9a6);transition:width .4s}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 10px}.section-title h2{font-size:1.08rem;margin:0}.biomes{display:grid;grid-template-columns:1fr;gap:9px}.biome{background:#1a202d;border:1px solid #323b4c;border-radius:15px;padding:12px}.biome-head{display:flex;align-items:center;gap:9px}.biome-icon{height:40px;width:40px;display:grid;place-items:center;border-radius:12px;font-size:1.45rem;background:#283142}.biome-info{min-width:0;flex:1}.biome-info strong{font-size:.93rem}.biome-info small{display:block;color:#aab5c9;margin-top:3px;font-size:.76rem}.biome-level{color:#cbd6e5;font-size:.73rem;white-space:nowrap}.progress{background:#313a4b;height:8px;border-radius:20px;overflow:hidden;margin:11px 0}.progress>div{height:100%;width:0%;border-radius:20px}.biome-actions{display:flex;justify-content:space-between;align-items:center;gap:9px}.cycle{color:#9eafc2;font-size:.78rem;font-variant-numeric:tabular-nums}.btn{border:0;border-radius:10px;background:#cf3c50;color:white;padding:10px 12px;font-weight:750;font-size:.8rem;max-width:63%;min-width:140px}.btn:active:not(:disabled){transform:scale(.98)}.btn{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.locked{filter:saturate(.6)}.locked .progress{display:none}.next{width:100%;border:0;background:#48bb84;color:#082013;padding:14px;border-radius:13px;font-weight:850;margin:10px 0 0}.hidden{display:none!important}.footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:17px 3px}.linkbtn{color:#a6b6cd;border:1px solid #435069;border-radius:9px;background:transparent;padding:9px 12px;font-size:.76rem}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#e8edf6;color:#131827;border-radius:12px;padding:11px 17px;font-weight:700;z-index:10;box-shadow:0 8px 40px #0006;opacity:0;pointer-events:none;transition:opacity .25s;max-width:90%;text-align:center}.toast.show{opacity:1}@media(min-width:580px){.biomes{grid-template-columns:1fr 1fr}.planet-holder{max-width:370px}}
 
@@ -81,6 +81,14 @@ button:focus-visible{outline:2px solid #42dce8;outline-offset:3px;}
 .milestone-caption{display:flex;justify-content:space-between;color:#9eb7c1;font-size:.66rem;margin-bottom:3px}
 .milestone-caption span:last-child{color:#6fe8f1}
 .milestone-group .progress{margin:0}
+/* Bonus de palier, sans fenêtres intrusives. */
+.bonus-strip{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px;padding-top:8px;border-top:1px solid #1c4c55}
+.bonus-status{font-size:.68rem;color:#9ebcc5;line-height:1.4}
+.bonus-claim{background:#16393a;border:1px solid #55d4b6;border-radius:3px;color:#b6ffe8;font-weight:800;font-size:.74rem;padding:7px 10px;white-space:nowrap}
+.bonus-choices{display:none;gap:5px;margin-top:8px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.bonus-choices.open{display:grid}
+.bonus-choice{background:#14252b;border:1px solid #397680;border-radius:3px;color:#d9f9ff;font-weight:700;font-size:.68rem;line-height:1.45;padding:9px 3px;min-height:58px}
+.bonus-choice:active{background:#1d4850}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
@@ -128,7 +136,7 @@ function paletteFor(hex){
  return [adjust(.76),adjust(.92),adjust(1.07),adjust(.66)];
 }
 const KEY='biome-planet-save-v10';let state;
-function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],last:Date.now()}}
+function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],bonuses:[],last:Date.now()}}
 try{state={...initial(),...JSON.parse(localStorage.getItem(KEY)||'null')}}catch(e){state=initial()}
 if(!Array.isArray(state.levels)||state.levels.length!==6)state=initial();if(!Array.isArray(state.timers)||state.timers.length!==6)state.timers=[0,0,0,0,0,0];
 BIOMES=makeBiomes(state.planet);
@@ -136,16 +144,24 @@ function normalizeProgress(){
  const n=BIOMES.length;
  state.levels=Array.from({length:n},(_,i)=>Math.max(0,Math.min(BIOMES[i].max,Number(state.levels[i])||0)));
  state.timers=Array.from({length:n},(_,i)=>Math.max(0,Number(state.timers[i])||0));
+ state.bonuses=Array.from({length:n},(_,i)=>{
+   const old=Array.isArray(state.bonuses)&&Array.isArray(state.bonuses[i])?state.bonuses[i]:[];
+   return old.filter(v=>['cash','speed','discount'].includes(v)).slice(0,Math.floor(state.levels[i]/25));
+ });
 }
 normalizeProgress();
 const $=id=>document.getElementById(id),canvas=$('planet'),ctx=canvas.getContext('2d');
 ctx.imageSmoothingEnabled=false;
 const moneyFormat=n=>{if(n<1e3)return Math.floor(n).toLocaleString('fr-CA')+' $';let i=Math.floor(Math.log10(Math.max(1,n))/3);i=Math.min(i,5);return (n/Math.pow(1000,i)).toLocaleString('fr-CA',{maximumFractionDigits:2})+' '+['','k','M','G','T','P'][i]+'$'};
-const multiplier=()=>Math.pow(1.16,state.planet-1),upgradeCost=i=>Math.floor(BIOMES[i].cost*Math.pow(1.075,state.levels[i])*Math.pow(1.20,state.planet-1)),unlockCost=i=>i===0?0:Math.floor(BIOMES[i].cost*Math.pow(1.20,state.planet-1));
+const multiplier=()=>Math.pow(1.16,state.planet-1);
+const bonusCount=(i,type)=>(state.bonuses[i]||[]).filter(v=>v===type).length;
+const cycleTime=i=>BIOMES[i].time*Math.pow(.95,bonusCount(i,'speed'));
+const upgradeCost=i=>Math.max(1,Math.floor(BIOMES[i].cost*Math.pow(1.075,state.levels[i])*Math.pow(1.20,state.planet-1)*Math.pow(.96,bonusCount(i,'discount'))));
+const unlockCost=i=>i===0?0:Math.floor(BIOMES[i].cost*Math.pow(1.20,state.planet-1));
 // Les paliers de 25 niveaux doublent le revenu de chaque cycle :
  // 1-24: x1, 25-49: x2, 50-74: x4, 75-99: x8, etc.
 function bonusPalier(level){return Math.pow(2,Math.floor(level/25))}
-function revenue(i){return BIOMES[i].base*state.levels[i]*bonusPalier(state.levels[i])*multiplier()}
+function revenue(i){return BIOMES[i].base*state.levels[i]*bonusPalier(state.levels[i])*multiplier()*Math.pow(1.10,bonusCount(i,'cash'))}
 function cover(){return Math.min(100,100*pixelShown()/pixelTotal)}
 function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2200)}
 const cards=[];
@@ -154,8 +170,11 @@ function refreshBiomeCards(){
  const container=$('biomes');container.replaceChildren();cards.length=0;
  BIOMES.forEach((b,i)=>{
   const el=document.createElement('div');el.className='biome';
-  el.innerHTML=`<div class="biome-head"><div class="biome-icon">${b.emoji}</div><div class="biome-info"><strong>${b.name}</strong><small class="info"></small></div><span class="biome-level"></span></div><div class="biome-main"><div class="biome-left"><div class="cycle-info"><span class="cycle"></span><svg class="cycle-wheel" viewBox="0 0 40 40" aria-label="Cycle de revenus"><circle class="cycle-bg" cx="20" cy="20" r="16"></circle><circle class="cycle-fg" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"></circle></svg></div><div class="milestone-group"><div class="milestone-box" title="Nombre de paliers de 25 atteints">×0</div><div class="milestone-bar"><div class="milestone-caption"><span>Palier de 25</span><span class="milestone-count">0/25</span></div><div class="progress"><div></div></div></div></div></div><button type="button" class="btn"></button></div>`;
-  setupUpgradeButton(el.querySelector('button'),i);container.appendChild(el);cards.push(el);
+  el.innerHTML=`<div class="biome-head"><div class="biome-icon">${b.emoji}</div><div class="biome-info"><strong>${b.name}</strong><small class="info"></small></div><span class="biome-level"></span></div><div class="biome-main"><div class="biome-left"><div class="cycle-info"><span class="cycle"></span><svg class="cycle-wheel" viewBox="0 0 40 40" aria-label="Cycle de revenus"><circle class="cycle-bg" cx="20" cy="20" r="16"></circle><circle class="cycle-fg" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"></circle></svg></div><div class="milestone-group"><div class="milestone-box" title="Nombre de paliers de 25 atteints">×0</div><div class="milestone-bar"><div class="milestone-caption"><span>Palier de 25</span><span class="milestone-count">0/25</span></div><div class="progress"><div></div></div></div></div></div><button type="button" class="btn"></button></div><div class="bonus-strip"><span class="bonus-status">🎁 Prochain bonus au niv. 25</span><button type="button" class="bonus-claim hidden">Débloquer bonus</button></div><div class="bonus-choices"><button type="button" class="bonus-choice" data-bonus="cash">💰<br>+10 %<br>Revenus</button><button type="button" class="bonus-choice" data-bonus="speed">⚡<br>-5 %<br>Temps</button><button type="button" class="bonus-choice" data-bonus="discount">🏷️<br>-4 %<br>Coûts</button></div>`;
+  setupUpgradeButton(el.querySelector('.btn'),i);
+  el.querySelector('.bonus-claim').addEventListener('click',()=>el.querySelector('.bonus-choices').classList.toggle('open'));
+  el.querySelectorAll('.bonus-choice').forEach(btn=>btn.addEventListener('click',()=>claimBonus(i,btn.dataset.bonus)));
+  container.appendChild(el);cards.push(el);
  });
  $('planet-hint').textContent='👆 Touche la planète pour ajouter '+BIOMES[0].name.toLowerCase();
 }
@@ -191,6 +210,14 @@ window.addEventListener('pointercancel',stopHold);
 window.addEventListener('blur',stopHold);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stopHold()});
 
+function claimBonus(i,type){
+ if(!['cash','speed','discount'].includes(type))return;
+ const earned=Math.floor(state.levels[i]/25),claimed=(state.bonuses[i]||[]).length;
+ if(claimed>=earned)return;
+ state.bonuses[i].push(type);
+ cards[i].querySelector('.bonus-choices').classList.remove('open');
+ save();renderUI();
+}
 function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0;toast(BIOMES[i].emoji+' '+BIOMES[i].name+' débloqué!')}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++}save();renderUI();drawPlanet()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
 function renderUI(){
@@ -210,21 +237,27 @@ function renderUI(){
    const cycle=el.querySelector('.cycle'),levelBar=el.querySelector('.progress > div');
    const milestoneBox=el.querySelector('.milestone-box'),milestoneCount=el.querySelector('.milestone-count');
    const ring=el.querySelector('.cycle-fg');
+   const claim=el.querySelector('.bonus-claim'),status=el.querySelector('.bonus-status');
    el.classList.toggle('locked',l===0);
    level.textContent='Niv. '+l+'/'+b.max;
    const completedPaliers=Math.floor(l/25);
    const towardsNext=l%25;
+   const available=Math.max(0,completedPaliers-state.bonuses[i].length);
+   claim.classList.toggle('hidden',available===0);
+   claim.textContent=available>0?'🎁 Choisir un bonus'+(available>1?' ('+available+')':''):'';
+   status.textContent=available>0?'Bonus de palier disponible !':(l>=b.max?'Bonus obtenus : '+state.bonuses[i].length+' / '+completedPaliers:'Prochain bonus au niv. '+Math.min(b.max,(completedPaliers+1)*25));
+   if(!available)el.querySelector('.bonus-choices').classList.remove('open');
    const remaining=Math.min(25,Math.max(0,b.max-completedPaliers*25));
    milestoneBox.textContent='×'+completedPaliers;
    milestoneBox.title=completedPaliers+' palier(s) de 25 atteint(s)';
    milestoneCount.textContent=l>=b.max?'MAX':towardsNext+'/'+remaining;
    levelBar.style.width=(l>=b.max&&towardsNext===0?0:100*towardsNext/25).toFixed(2)+'%';
    if(l){
-     const cash=revenue(i),phase=Math.min(1,state.timers[i]/(b.time*1000));
-     minIncome+=60/b.time*cash;
+     const cash=revenue(i),phase=Math.min(1,state.timers[i]/(cycleTime(i)*1000));
+     minIncome+=60/cycleTime(i)*cash;
      const nextMilestone=(Math.floor(l/25)+1)*25;
      info.textContent='+'+moneyFormat(cash)+' / cycle · Bonus x'+bonusPalier(l)+(nextMilestone<=b.max?' · x'+bonusPalier(nextMilestone)+' au niv. '+nextMilestone:' · dernier palier');
-     cycle.textContent='↻ '+b.time+' s · automatique';
+     cycle.textContent='↻ '+cycleTime(i).toLocaleString('fr-CA',{maximumFractionDigits:1})+' s · automatique';
      ring.style.strokeDashoffset=(100.53*(1-phase)).toFixed(2);
      const cost=upgradeCost(i);
      btn.textContent=l>=b.max?'✓ MAX':'↑ '+moneyFormat(cost);
@@ -330,17 +363,13 @@ function drawPlanet(){
   ctx.restore();ctx.beginPath();ctx.arc(c,c,r,0,Math.PI*2);ctx.lineWidth=3;ctx.strokeStyle='#879eab66';ctx.stroke();
 }
 refreshBiomeCards();buildPixelMap();
-let lastTick=performance.now(),lastSave=Date.now();function frame(now){const elapsed=Math.min(1000,Math.max(0,now-lastTick));lastTick=now;for(let i=0;i<BIOMES.length;i++){if(state.levels[i]<=0)continue;const period=BIOMES[i].time*1000;state.timers[i]+=elapsed;if(state.timers[i]>=period){let n=Math.floor(state.timers[i]/period);state.timers[i]%=period;state.money+=revenue(i)*n}}renderUI();if(Date.now()-lastSave>3000){save();lastSave=Date.now()}requestAnimationFrame(frame)}
+let lastTick=performance.now(),lastSave=Date.now();function frame(now){const elapsed=Math.min(1000,Math.max(0,now-lastTick));lastTick=now;for(let i=0;i<BIOMES.length;i++){if(state.levels[i]<=0)continue;const period=cycleTime(i)*1000;state.timers[i]+=elapsed;if(state.timers[i]>=period){let n=Math.floor(state.timers[i]/period);state.timers[i]%=period;state.money+=revenue(i)*n}}renderUI();if(Date.now()-lastSave>3000){save();lastSave=Date.now()}requestAnimationFrame(frame)}
 canvas.addEventListener('click',()=>{const nextIndex=state.levels.findIndex(l=>l===0);if(nextIndex<0){toast('Tous les biomes sont déjà débloqués!');return}if(nextIndex>0&&state.money<unlockCost(nextIndex)){toast('Il te faut '+moneyFormat(unlockCost(nextIndex))+' pour ajouter '+BIOMES[nextIndex].name);return}buy(nextIndex)});
-$('next').addEventListener('click',()=>{if(cover()<99.999)return;state.planet++;BIOMES=makeBiomes(state.planet);state.levels=BIOMES.map(()=>0);state.timers=BIOMES.map(()=>0);refreshBiomeCards();state.money+=30*state.planet;toast('Nouvelle planète découverte!');buildPixelMap();drawPlanet();renderUI();save();scrollTo({top:0,behavior:'smooth'})});
+$('next').addEventListener('click',()=>{if(cover()<99.999)return;state.planet++;BIOMES=makeBiomes(state.planet);state.levels=BIOMES.map(()=>0);state.timers=BIOMES.map(()=>0);state.bonuses=BIOMES.map(()=>[]);refreshBiomeCards();state.money+=30*state.planet;toast('Nouvelle planète découverte!');buildPixelMap();drawPlanet();renderUI();save();scrollTo({top:0,behavior:'smooth'})});
 $('reset').addEventListener('click',()=>{if(!confirm('Effacer toute ta progression et recommencer?'))return;state=initial();BIOMES=makeBiomes(state.planet);normalizeProgress();refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
 // Offline earnings capped at 4 hours; preserve partial production progress.
-const offline=Math.min(40*60*1000,Math.max(0,Date.now()-(Number(state.last)||Date.now())));if(offline>5000){let earned=0;BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+offline,cycles=Math.floor(total/(b.time*1000));state.timers[i]=total%(b.time*1000);earned+=cycles*revenue(i)});state.money+=earned;if(earned>0)setTimeout(()=>toast('Pendant ton absence : +'+moneyFormat(earned)),500)}
-window.addEventListener('pagehide',()=>{state.last=Date.now();save()});document.addEventListener('visibilitychange',()=>{if(document.hidden){state.last=Date.now();save()}else{let dt=Math.min(40*60*1000,Math.max(0,Date.now()-(state.last||Date.now())));BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+dt,n=Math.floor(total/(b.time*1000));state.timers[i]=total%(b.time*1000);state.money+=n*revenue(i)});lastTick=performance.now();state.last=Date.now();save()}});
+const offline=Math.min(40*60*1000,Math.max(0,Date.now()-(Number(state.last)||Date.now())));if(offline>5000){let earned=0;BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+offline,cycles=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);earned+=cycles*revenue(i)});state.money+=earned;if(earned>0)setTimeout(()=>toast('Pendant ton absence : +'+moneyFormat(earned)),500)}
+window.addEventListener('pagehide',()=>{state.last=Date.now();save()});document.addEventListener('visibilitychange',()=>{if(document.hidden){state.last=Date.now();save()}else{let dt=Math.min(40*60*1000,Math.max(0,Date.now()-(state.last||Date.now())));BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+dt,n=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);state.money+=n*revenue(i)});lastTick=performance.now();state.last=Date.now();save()}});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>
-if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(console.warn));
-}
-</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.warn));}</script></body></html>
