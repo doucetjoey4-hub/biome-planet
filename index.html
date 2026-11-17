@@ -295,7 +295,7 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
 }
 
 </style>
-<link rel="manifest" href="./manifest.webmanifest">
+<link rel="manifest" href="./manifest.webmanifest?v=15-20261117b">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
 <meta name="theme-color" content="#101219">
 </head>
@@ -580,4 +580,4 @@ const offline=Math.min(40*60*1000,Math.max(0,Date.now()-(Number(state.last)||Dat
 window.addEventListener('pagehide',()=>{state.last=Date.now();save()});document.addEventListener('visibilitychange',()=>{if(document.hidden){state.last=Date.now();save()}else{let dt=Math.min(40*60*1000,Math.max(0,Date.now()-(state.last||Date.now())));BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+dt,n=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);state.money+=n*revenue(i)});lastTick=performance.now();state.last=Date.now();save()}});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=15-20261117b',{updateViaCache:'none'}).catch(console.warn));}</script></body></html>
