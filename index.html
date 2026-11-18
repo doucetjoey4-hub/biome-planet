@@ -443,7 +443,7 @@ function playUpgradeClick(){
    tone.frequency.setValueAtTime(930,t);
    tone.frequency.exponentialRampToValueAtTime(570,t+.075);
    volume.gain.setValueAtTime(.0001,t);
-   volume.gain.exponentialRampToValueAtTime(.022,t+.008);
+   volume.gain.exponentialRampToValueAtTime(.026,t+.008);
    volume.gain.exponentialRampToValueAtTime(.0001,t+.09);
    tone.connect(volume);volume.connect(audioCtx.destination);
    tone.start(t);tone.stop(t+.095);
