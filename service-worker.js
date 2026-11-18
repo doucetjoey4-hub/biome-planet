@@ -1,5 +1,5 @@
 /* Biome Planet V20: priorité au réseau pour empêcher les versions périmées. */
-const CACHE = 'biome-planet-v22-textures';
+const CACHE = 'biome-planet-v23-geographie';
 const CORE = ['./index.html','./manifest.webmanifest','./icons/planet.svg'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
