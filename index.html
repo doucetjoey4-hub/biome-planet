@@ -579,7 +579,9 @@ function drawWorldPreview(canvas,p,biomes,levels){
    for(let j=0;j<count;j++){
      const tile=group[j];
      c.fillStyle=palette[Math.min(3,Math.floor(tile.tint*4))];
-     c.fillRect(mid-r+tile.x*step,mid-r+tile.y*step,step+.2,step+.2);
+     const x0=mid-r+Math.floor(tile.x*step),y0=mid-r+Math.floor(tile.y*step);
+     const x1=mid-r+Math.ceil((tile.x+1)*step),y1=mid-r+Math.ceil((tile.y+1)*step);
+     c.fillRect(x0,y0,x1-x0,y1-y0);
    }
  });
  const shade=c.createLinearGradient(32,32,208,208);
@@ -851,7 +853,9 @@ function drawPlanet(){
     for(let j=0;j<n;j++){
       const tile=group[j];
       ctx.fillStyle=palette[i][Math.min(3,Math.floor(tile.tint*4))];
-      ctx.fillRect(c-r+tile.x*STEP,c-r+tile.y*STEP,STEP+.15,STEP+.15);
+      const x0=c-r+Math.floor(tile.x*STEP),y0=c-r+Math.floor(tile.y*STEP);
+      const x1=c-r+Math.ceil((tile.x+1)*STEP),y1=c-r+Math.ceil((tile.y+1)*STEP);
+      ctx.fillRect(x0,y0,x1-x0,y1-y0);
     }
   }
   // Keep the crisp edges of the terrain pixels; only shade the globe gently.
