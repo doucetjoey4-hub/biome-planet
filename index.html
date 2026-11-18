@@ -366,7 +366,7 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
 <div class="world-overlay hidden" id="world-overlay">
  <section class="world-dialog" role="dialog" aria-modal="true" aria-labelledby="world-title">
   <div class="world-dialog-head"><h2 id="world-title">🪐 Choisir une planète</h2><button type="button" id="close-planets" aria-label="Fermer">✕</button></div>
-  <p>Change de planète quand tu veux. Ta progression et ton argent restent sauvegardés séparément sur chaque monde.</p>
+  <p>Change de planète quand tu veux. Ta progression et ton argent restent sauvegardés séparément sur chaque monde. Version V24 : géographie différenciée.</p>
   <div class="world-carousel-head"><span id="world-carousel-count">1 / 18</span><span>Glisse vers la gauche ou la droite</span></div>
   <div class="world-carousel-control"><button type="button" class="world-arrow" id="world-prev" aria-label="Planète précédente">‹</button><div class="world-carousel" id="world-grid" aria-label="Planètes à explorer"></div><button type="button" class="world-arrow" id="world-next" aria-label="Planète suivante">›</button></div>
   <form class="world-jump" id="world-jump"><label for="world-number">Accéder directement à une planète</label>
@@ -846,6 +846,17 @@ function buildPixelMap(planet=state.planet,biomes=BIOMES,preview=false){
    const depth=sea-height,shore=Math.max(0,1-Math.abs(depth)*7),alt=Math.max(0,height-sea);
    const mountain=Math.max(0,1-ridge),polar=Math.max(0,Math.abs(ny)-.54);
    const vd=Math.hypot(wx-vX,wy-vY)+.022*Math.sin(Math.atan2(wy-vY,wx-vX)*6+planet*.4);
+   // Silhouettes dédiées aux deux premières familles de planètes.
+   // Aube : un continent à l'ouest, une côte sinueuse à l'est et un fleuve.
+   const coast=wx-(.20+.20*Math.sin(wy*3.6+planet*.28)+.065*Math.sin(wy*9.3));
+   const river=Math.abs(wx-(-.21+.13*Math.sin(wy*5.1+planet*.31)));
+   // Tropicale : archipel de terres reliées par leur climat, océan entre les îles.
+   const isle1=Math.hypot((wx+.38)/.39,(wy+.24)/.34);
+   const isle2=Math.hypot((wx-.31)/.36,(wy-.17)/.39);
+   const isle3=Math.hypot((wx+.11)/.25,(wy-.53)/.22);
+   const island=Math.max(1-isle1,1-isle2,1-isle3)
+              +.12*(field(wx*2.7+3.2,wy*2.7-2.1,223)-.5);
+   const archipelagoSea=island<.01;
    const scores=biomes.map((b,i)=>{
      const n=names[i],type=types[i];
      // Chaque biome possède son propre grand motif naturel, indépendant des autres.
@@ -875,6 +886,31 @@ function buildPixelMap(planet=state.planet,biomes=BIOMES,preview=false){
      else score+=.68+.24*humidity+.18*temp-.15*alt;
      if(water&&depth>.06)score+=type==='water'?1.6:-1.25;
      if(world===2&&ice&&polar>.05)score+=type==='ice'?2.2+polar*4:-1.65;
+     // Les biomes d'une même planète ne sont pas de simples régions colorées :
+     // ils épousent des formes différentes, lisibles à l'échelle des gros pixels.
+     if(world===0){
+       if(n==='océan'){
+         score+=coast>.015?2.65:coast>-.11?.85:-1.9;
+         if(river<.045&&wy<.44)score+=2.15;
+       }else if(n==='forêt'){
+         score+=wx<-.26&&wy<.39?1.55:wx>.36?-1.20:0;
+         score+=.44*(field(wx*3+1,wy*3+1,190)-.45);
+       }else if(n==='prairie'){
+         score+=coast<-.015&&wy<.43?.90:0;
+       }else if(n==='désert'){
+         score+=wy>.34&&coast<.12?2.15:wy<-.26?-.8:0;
+       }
+     }
+     if(world===1){
+       // Lagons et récifs épousent les eaux; la jungle occupe les grandes îles.
+       if(n==='lagon')score+=archipelagoSea?1.90: -.75;
+       if(n==='récif')score+=island>-.12&&island<.11?2.55:island<-.12?.75:-.95;
+       if(n==='jungle')score+=island>.15?2.00:island<0?-1.4:0;
+       if(n==='mangrove')score+=island>-.08&&island<.20?1.75:island<-.22?-1:0;
+       if(n==='marais')score+=island>.07&&humidity>.46?1.20:0;
+       if(n==='savane')score+=island>.10&&humidity<.59?1.2:island<-.12?-.75:0;
+       if(n==='fleurs tropicales')score+=island>.19&&temp>.55?.95:0;
+     }
      // Lac de caldeira entouré de lave, puis anneau de roches volcaniques.
      if(volcano){
        if(vd<.17)score+=i===lakeIndex?6:-4;
