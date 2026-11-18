@@ -564,6 +564,7 @@ function drawWorldPreview(canvas,p,biomes,levels){
  const c=canvas.getContext('2d');
  if(!c)return;
  const side=240,mid=120,r=107,step=2*r/SIZE;
+ let revealed=0,totalPixels=0;
  c.imageSmoothingEnabled=false;
  c.clearRect(0,0,side,side);
  c.save();c.shadowColor='#4eb6ef66';c.shadowBlur=18;
@@ -573,6 +574,7 @@ function drawWorldPreview(canvas,p,biomes,levels){
  groups.forEach((group,i)=>{
    const level=Math.max(0,Number(levels[i])||0);
    const count=level?Math.max(1,Math.round(group.length*Math.min(1,level/biomes[i].max))):0;
+   revealed+=count;totalPixels+=group.length;
    const palette=paletteFor(biomes[i].color);
    for(let j=0;j<count;j++){
      const tile=group[j];
@@ -584,6 +586,7 @@ function drawWorldPreview(canvas,p,biomes,levels){
  shade.addColorStop(0,'#ffffff10');shade.addColorStop(.55,'#00000000');shade.addColorStop(1,'#00000048');
  c.fillStyle=shade;c.fillRect(0,0,side,side);
  c.restore();c.strokeStyle='#8aa6bd66';c.lineWidth=2;c.beginPath();c.arc(mid,mid,r,0,Math.PI*2);c.stroke();
+ return totalPixels?Math.round(100*revealed/totalPixels):0;
 }
 function showWorldIndex(index,smooth=true){
  worldCarouselIndex=Math.max(0,Math.min(worldCarouselIds.length-1,index));
@@ -608,7 +611,9 @@ function renderWorldList(){
      if(!entry.isIntersecting)continue;
      const canvas=entry.target,p=Number(canvas.dataset.planet);
      const biomes=makeBiomes(p),w=p===state.planet?state:state.worlds[p];
-     drawWorldPreview(canvas,p,biomes,w?.levels||[]);
+     const percent=drawWorldPreview(canvas,p,biomes,w?.levels||[]);
+     const card=canvas.closest('.world-card');
+     if(card){card.querySelector('.world-percent').textContent=percent+' % développée';card.querySelector('.world-progress>span').style.width=percent+'%';}
      worldPreviewObserver.unobserve(canvas);
    }
  },{root:grid,rootMargin:'100px'}):null;
