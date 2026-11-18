@@ -3,7 +3,7 @@
   "name": "Biome Planet",
   "short_name": "Biome Planet",
   "description": "Jeu idle de terraformation en pixels",
-  "start_url": "./?app=v25-planete1",
+  "start_url": "./?app=v26-progression",
   "scope": "./",
   "display": "standalone",
   "background_color": "#101219",
