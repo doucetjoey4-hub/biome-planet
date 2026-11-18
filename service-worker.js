@@ -1,5 +1,5 @@
-/* Biome Planet V15: priorité au réseau pour empêcher les versions périmées. */
-const CACHE = 'biome-planet-v19-son';
+/* Biome Planet V20: priorité au réseau pour empêcher les versions périmées. */
+const CACHE = 'biome-planet-v20-carrousel';
 const CORE = ['./index.html','./manifest.webmanifest','./icons/planet.svg'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
