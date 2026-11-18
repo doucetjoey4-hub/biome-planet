@@ -2,7 +2,7 @@
 <html lang="fr-CA">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101219">
-<title>Biome Planet | Clic d’amélioration</title>
+<title>Biome Planet | Carrousel de planètes</title>
 <style>
 :root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#f5f6fa;background:#101219;font-synthesis:none}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 15%,#202638 0%,#101219 58%);padding:20px 14px 36px}button{font:inherit;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.47}.app{max-width:720px;margin:auto}header{display:flex;align-items:center;justify-content:space-between;gap:12px}h1{margin:0;font-size:1.48rem;letter-spacing:-.04em}.muted{color:#9ba6bb;font-size:.83rem}.tag{border:1px solid #3a455d;background:#222b3e;color:#e0eaff;border-radius:24px;padding:7px 11px;font-size:.75rem;white-space:nowrap}.balance{margin-top:18px;background:#202736;border:1px solid #323c4e;padding:15px;border-radius:16px;display:flex;justify-content:space-between;align-items:center;gap:8px}.balance .amount{font-size:1.8rem;font-weight:750;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.income{color:#86e5ab;font-size:.78rem}.planet-panel{margin:16px 0 19px;border:1px solid #2e394b;border-radius:20px;background:radial-gradient(circle at 50% 46%,#222e3c,#151b27 70%);padding:15px 12px 13px;text-align:center;overflow:hidden}.planet-top{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:6px}.planet-top strong{font-size:.95rem}.planet-holder{position:relative;max-width:355px;aspect-ratio:1;margin:9px auto 1px}canvas{display:block;width:100%;height:100%}.planet-hint{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:max-content;max-width:96%;color:#e8f1ff;background:#151c2be8;border:1px solid #48566a;border-radius:999px;padding:9px 12px;font-size:.75rem;font-weight:700;z-index:2;pointer-events:none;box-shadow:0 5px 18px #0008}.planet-holder canvas{cursor:pointer;touch-action:manipulation}.planet-bottom{display:flex;justify-content:space-between;align-items:center;color:#bac6d5;font-size:.78rem;padding:0 4px}.completion-track{height:7px;background:#30394b;border-radius:99px;margin-top:8px;overflow:hidden}.completion-fill{height:100%;width:0;background:linear-gradient(90deg,#48ad80,#a2e9a6);transition:width .4s}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 10px}.section-title h2{font-size:1.08rem;margin:0}.biomes{display:grid;grid-template-columns:1fr;gap:9px}.biome{background:#1a202d;border:1px solid #323b4c;border-radius:15px;padding:12px}.biome-head{display:flex;align-items:center;gap:9px}.biome-icon{height:40px;width:40px;display:grid;place-items:center;border-radius:12px;font-size:1.45rem;background:#283142}.biome-info{min-width:0;flex:1}.biome-info strong{font-size:.93rem}.biome-info small{display:block;color:#aab5c9;margin-top:3px;font-size:.76rem}.biome-level{color:#cbd6e5;font-size:.73rem;white-space:nowrap}.progress{background:#313a4b;height:8px;border-radius:20px;overflow:hidden;margin:11px 0}.progress>div{height:100%;width:0%;border-radius:20px}.biome-actions{display:flex;justify-content:space-between;align-items:center;gap:9px}.cycle{color:#9eafc2;font-size:.78rem;font-variant-numeric:tabular-nums}.btn{border:0;border-radius:10px;background:#cf3c50;color:white;padding:10px 12px;font-weight:750;font-size:.8rem;max-width:63%;min-width:140px}.btn:active:not(:disabled){transform:scale(.98)}.btn{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.locked{filter:saturate(.6)}.locked .progress{display:none}.next{width:100%;border:0;background:#48bb84;color:#082013;padding:14px;border-radius:13px;font-weight:850;margin:10px 0 0}.hidden{display:none!important}.footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:17px 3px}.linkbtn{color:#a6b6cd;border:1px solid #435069;border-radius:9px;background:transparent;padding:9px 12px;font-size:.76rem}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#e8edf6;color:#131827;border-radius:12px;padding:11px 17px;font-weight:700;z-index:10;box-shadow:0 8px 40px #0006;opacity:0;pointer-events:none;transition:opacity .25s;max-width:90%;text-align:center}.toast.show{opacity:1}@media(min-width:580px){.biomes{grid-template-columns:1fr 1fr}.planet-holder{max-width:370px}}
 
@@ -331,6 +331,32 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
 .footer-actions{display:flex;align-items:center;gap:7px}
 .sound-toggle{white-space:nowrap;min-width:74px}
 @media(max-width:380px){.footer{gap:7px}.footer .muted{font-size:.63rem}.footer-actions{gap:5px}.footer .linkbtn{padding:8px 9px;font-size:.68rem}}
+
+/* V20 : carrousel horizontal et véritables aperçus des planètes sauvegardées. */
+.world-dialog{width:min(100%,530px);max-height:91dvh;padding:17px 10px calc(14px + env(safe-area-inset-bottom));overflow-x:hidden}
+.world-dialog-head,.world-dialog>p,.world-jump{margin-left:7px;margin-right:7px}
+.world-dialog>p{margin-bottom:9px}
+.world-carousel-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 13px 8px;font-size:.68rem;color:#8fb2c7}
+#world-carousel-count{color:#a4faff;font-weight:800}
+.world-carousel-control{display:flex;align-items:center;gap:3px;width:100%;min-width:0}
+.world-arrow{flex:none;width:27px;height:56px;border:1px solid #356074;border-radius:11px;background:linear-gradient(180deg,#152e40,#0d2030);color:#a4eafa;font-size:1.45rem;line-height:1;opacity:.9}
+.world-arrow:disabled{opacity:.2}
+.world-carousel{min-width:0;flex:1;display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:calc((100% - min(100%,295px))/2);overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:8px max(0px,calc((100% - 295px)/2)) 14px}
+.world-carousel::-webkit-scrollbar{display:none}
+.world-card{flex:0 0 min(100%,295px);height:auto;min-height:360px;position:relative;scroll-snap-align:center;display:flex;flex-direction:column;align-items:stretch;gap:9px;overflow:hidden;border:1px solid #31546b;border-radius:22px;background:radial-gradient(circle at 50% 22%,#263e59 0%,#132235 43%,#0a1420 100%);padding:13px;box-shadow:inset 0 1px 0 #ffffff12}
+.world-card.current{border-color:#62d8ea;background:radial-gradient(circle at 50% 22%,#284c60,#142b39 48%,#0a1824 100%)}
+.world-card .world-card-head{display:flex;justify-content:space-between;align-items:start;gap:5px}
+.world-card strong{font-size:1.06rem;line-height:1.25;color:#f0fcff}
+.world-card .world-status{font-size:.66rem;border:1px solid #42647c;background:#102235;border-radius:99px;padding:4px 7px;color:#a7d5ed;white-space:nowrap}
+.world-card.current .world-status{background:#18453d;border-color:#479c88;color:#9ffbd2}
+.world-card canvas{display:block!important;width:100%!important;max-width:205px;height:auto!important;aspect-ratio:1;margin:0 auto;image-rendering:pixelated;filter:drop-shadow(0 9px 15px #0007)}
+.world-card .world-summary{text-align:center;color:#b8d5e5;font-size:.76rem}
+.world-card .world-percent{text-align:center;font-size:.97rem;font-weight:850;color:#8ff5dd}
+.world-card .world-progress{width:100%;height:7px;margin:0;border-radius:99px;background:#20384c}
+.world-card .world-play{min-height:40px;width:100%;margin-top:auto;border:1px solid #5ac9e1;border-radius:12px;background:linear-gradient(180deg,#38c6d8,#27aabb);color:#071c24;font:inherit;font-size:.8rem;font-weight:900}
+.world-card.current .world-play{background:#193548;color:#b3e9f4;border-color:#3e809a}
+.world-card .world-play:active{transform:scale(.985)}
+@media(max-width:410px){.world-arrow{width:23px}.world-carousel{gap:8px;padding-left:max(0px,calc((100% - 258px)/2));padding-right:max(0px,calc((100% - 258px)/2))}.world-card{flex-basis:min(100%,258px);min-height:337px}.world-card canvas{max-width:187px}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
@@ -341,7 +367,8 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
  <section class="world-dialog" role="dialog" aria-modal="true" aria-labelledby="world-title">
   <div class="world-dialog-head"><h2 id="world-title">🪐 Choisir une planète</h2><button type="button" id="close-planets" aria-label="Fermer">✕</button></div>
   <p>Change de planète quand tu veux. Ta progression et ton argent restent sauvegardés séparément sur chaque monde.</p>
-  <div class="world-grid" id="world-grid"></div>
+  <div class="world-carousel-head"><span id="world-carousel-count">1 / 18</span><span>Glisse vers la gauche ou la droite</span></div>
+  <div class="world-carousel-control"><button type="button" class="world-arrow" id="world-prev" aria-label="Planète précédente">‹</button><div class="world-carousel" id="world-grid" aria-label="Planètes à explorer"></div><button type="button" class="world-arrow" id="world-next" aria-label="Planète suivante">›</button></div>
   <form class="world-jump" id="world-jump"><label for="world-number">Accéder directement à une planète</label>
    <div><input type="number" min="1" max="999" id="world-number" inputmode="numeric" placeholder="Numéro 1 à 999" required><button type="submit">Aller</button></div>
   </form>
@@ -524,22 +551,105 @@ function snapshotWorld(){
 function save(){try{snapshotWorld();localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
 function worldName(p){return ['Aube','Tropicale','Glaciale','Aride','Fantaisie','Mystique'][(p-1)%6]}
 function closeWorlds(){$('world-overlay').classList.add('hidden')}
+let worldCarouselIds=[],worldCarouselIndex=0,worldPreviewObserver=null;
+function worldPercent(p,w){
+ const b=makeBiomes(p);
+ if(!w||!Array.isArray(w.levels))return 0;
+ // Proportion calculée à partir des pixels réellement affichés, chaque biome
+ // pouvant représenter une surface différente sur la planète.
+ return Math.round(100*b.reduce((sum,x,i)=>sum+Math.min(x.max,Math.max(0,Number(w.levels[i])||0))/x.max,0)/b.length);
+}
+function drawWorldPreview(canvas,p,biomes,levels){
+ const groups=buildPixelMap(p,biomes,true);
+ const c=canvas.getContext('2d');
+ if(!c)return;
+ const side=240,mid=120,r=107,step=2*r/SIZE;
+ c.imageSmoothingEnabled=false;
+ c.clearRect(0,0,side,side);
+ c.save();c.shadowColor='#4eb6ef66';c.shadowBlur=18;
+ c.fillStyle='#354357';c.beginPath();c.arc(mid,mid,r,0,Math.PI*2);c.fill();c.restore();
+ c.save();c.beginPath();c.arc(mid,mid,r,0,Math.PI*2);c.clip();
+ c.fillStyle='#273448';c.fillRect(0,0,side,side);
+ groups.forEach((group,i)=>{
+   const level=Math.max(0,Number(levels[i])||0);
+   const count=level?Math.max(1,Math.round(group.length*Math.min(1,level/biomes[i].max))):0;
+   const palette=paletteFor(biomes[i].color);
+   for(let j=0;j<count;j++){
+     const tile=group[j];
+     c.fillStyle=palette[Math.min(3,Math.floor(tile.tint*4))];
+     c.fillRect(mid-r+tile.x*step,mid-r+tile.y*step,step+.2,step+.2);
+   }
+ });
+ const shade=c.createLinearGradient(32,32,208,208);
+ shade.addColorStop(0,'#ffffff10');shade.addColorStop(.55,'#00000000');shade.addColorStop(1,'#00000048');
+ c.fillStyle=shade;c.fillRect(0,0,side,side);
+ c.restore();c.strokeStyle='#8aa6bd66';c.lineWidth=2;c.beginPath();c.arc(mid,mid,r,0,Math.PI*2);c.stroke();
+}
+function showWorldIndex(index,smooth=true){
+ worldCarouselIndex=Math.max(0,Math.min(worldCarouselIds.length-1,index));
+ const carousel=$('world-grid'),card=carousel.children[worldCarouselIndex];
+ if(card){carousel.scrollTo({left:card.offsetLeft-carousel.offsetLeft-(carousel.clientWidth-card.clientWidth)/2,behavior:smooth?'smooth':'instant'});}
+ updateWorldArrows();
+}
+function updateWorldArrows(){
+ $('world-prev').disabled=worldCarouselIndex<=0;
+ $('world-next').disabled=worldCarouselIndex>=worldCarouselIds.length-1;
+ $('world-carousel-count').textContent=worldCarouselIds[worldCarouselIndex]+' / '+worldCarouselIds[worldCarouselIds.length-1];
+}
 function renderWorldList(){
  const grid=$('world-grid');grid.replaceChildren();
+ if(worldPreviewObserver)worldPreviewObserver.disconnect();
  const ids=new Set(Array.from({length:18},(_,i)=>i+1));
  for(let p=Math.max(1,state.planet-1);p<=Math.min(999,state.planet+2);p++)ids.add(p);
- Object.keys(state.worlds).forEach(k=>{const n=Number(k);if(n>=1&&n<=999)ids.add(n)});
- [...ids].sort((a,b)=>a-b).forEach(p=>{
-  const b=makeBiomes(p),w= p===state.planet?state:state.worlds[p];
-  const percent=w&&Array.isArray(w.levels)?Math.round(b.reduce((sum,x,i)=>sum+Math.min(x.max,Number(w.levels[i])||0)/x.max,0)/b.length*100):0;
-  const el=document.createElement('button');el.type='button';el.className='world-card'+(p===state.planet?' current':'');
-  const title=document.createElement('strong');title.textContent='🪐 '+p+' · '+worldName(p);
-  const sub=document.createElement('small');sub.textContent=b.length+' biomes · '+percent+' % complétée';
+ Object.keys(state.worlds).forEach(k=>{const n=Number(k);if(Number.isInteger(n)&&n>=1&&n<=999)ids.add(n)});
+ worldCarouselIds=[...ids].sort((a,b)=>a-b);
+ worldPreviewObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{
+   for(const entry of entries){
+     if(!entry.isIntersecting)continue;
+     const canvas=entry.target,p=Number(canvas.dataset.planet);
+     const biomes=makeBiomes(p),w=p===state.planet?state:state.worlds[p];
+     drawWorldPreview(canvas,p,biomes,w?.levels||[]);
+     worldPreviewObserver.unobserve(canvas);
+   }
+ },{root:grid,rootMargin:'100px'}):null;
+ worldCarouselIds.forEach(p=>{
+  const b=makeBiomes(p),w=p===state.planet?state:state.worlds[p];
+  const percent=worldPercent(p,w);
+  const el=document.createElement('article');el.className='world-card'+(p===state.planet?' current':'');
+  const head=document.createElement('div');head.className='world-card-head';
+  const title=document.createElement('strong');title.textContent='Planète '+p+' · '+worldName(p);
+  const status=document.createElement('span');status.className='world-status';status.textContent=p===state.planet?'En cours':w?'Sauvegardée':'À découvrir';
+  head.append(title,status);
+  const preview=document.createElement('canvas');preview.width=240;preview.height=240;preview.dataset.planet=String(p);
+  preview.setAttribute('role','img');preview.setAttribute('aria-label','Aperçu de la planète '+p);
+  const summary=document.createElement('div');summary.className='world-summary';
+  const developed=w?.levels?.filter(n=>Number(n)>0).length||0;
+  summary.textContent=developed+' / '+b.length+' biomes développés';
+  const percentage=document.createElement('div');percentage.className='world-percent';percentage.textContent=percent+' % développée';
   const bar=document.createElement('div');bar.className='world-progress';
   const fill=document.createElement('span');fill.style.width=percent+'%';bar.appendChild(fill);
-  el.append(title,sub,bar);el.addEventListener('click',()=>switchWorld(p));grid.appendChild(el);
+  const play=document.createElement('button');play.type='button';play.className='world-play';
+  play.textContent=p===state.planet?'Retourner au jeu':'Explorer cette planète';
+  play.addEventListener('click',()=>switchWorld(p));
+  el.append(head,preview,summary,percentage,bar,play);grid.appendChild(el);
+  if(worldPreviewObserver)worldPreviewObserver.observe(preview);else if(Math.abs(p-state.planet)<2)drawWorldPreview(preview,p,b,w?.levels||[]);
  });
+ worldCarouselIndex=Math.max(0,worldCarouselIds.indexOf(state.planet));
+ // Le carrousel est rendu dans une fenêtre masquée lors de sa création.
+ // Le centrage est fait après l'ouverture effective.
+ updateWorldArrows();
 }
+$('world-prev').addEventListener('click',()=>showWorldIndex(worldCarouselIndex-1));
+$('world-next').addEventListener('click',()=>showWorldIndex(worldCarouselIndex+1));
+$('world-grid').addEventListener('scroll',()=>{
+ const grid=$('world-grid'),center=grid.scrollLeft+grid.clientWidth/2;
+ let closest=worldCarouselIndex,dist=Infinity;
+ [...grid.children].forEach((card,i)=>{
+   const d=Math.abs(card.offsetLeft-grid.offsetLeft+card.clientWidth/2-center);
+   if(d<dist){dist=d;closest=i}
+ });
+ if(closest!==worldCarouselIndex){worldCarouselIndex=closest;updateWorldArrows()}
+},{passive:true});
 function switchWorld(num,award=false){
  const p=Math.floor(Number(num));
  if(!Number.isFinite(p)||p<1||p>999)return;
@@ -556,7 +666,7 @@ function switchWorld(num,award=false){
  refreshBiomeCards();buildPixelMap();drawPlanet();renderUI();save();
  $('biome-scroll').scrollTop=0;closeWorlds();
 }
-$('open-planets').addEventListener('click',()=>{renderWorldList();$('world-overlay').classList.remove('hidden')});
+$('open-planets').addEventListener('click',()=>{renderWorldList();$('world-overlay').classList.remove('hidden');requestAnimationFrame(()=>showWorldIndex(worldCarouselIndex,false))});
 $('close-planets').addEventListener('click',closeWorlds);
 $('world-overlay').addEventListener('click',e=>{if(e.target===$('world-overlay'))closeWorlds()});
 $('world-jump').addEventListener('submit',e=>{e.preventDefault();switchWorld($('world-number').value)});
@@ -630,47 +740,49 @@ function noise2(x,y,s=1){
 // Improvements reveal more of that biome's PREDETERMINED pattern, never repaint it randomly.
 const SIZE=68, STEP=444/SIZE, MID=260, R=222;
 let pixelGroups=[],pixelTotal=0;
-function buildPixelMap(){
-  pixelGroups=BIOMES.map(()=>[]);pixelTotal=0;
-  const macroASeed=state.planet*13.17, macroBSeed=state.planet*7.31;
-  const profiles=BIOMES.map((b,i)=>{
-    const seed=state.planet*97+i*53.1;
-    const mainAngle=hash(seed+1)*Math.PI*2;
-    const mainRadius=.12+.35*hash(seed+2);
-    const spread=(BIOMES.length<=4?.27:BIOMES.length>=8?.18:.22) * (.92+.32*hash(seed+3));
+function buildPixelMap(planet=state.planet,biomes=BIOMES,preview=false){
+  const mapHash=x=>{const a=Math.sin(x*127.1+planet*45.17)*43758.5453;return a-Math.floor(a)};
+  const mapNoise2=(x,y,k=1)=>mapHash(x*12.9898*k+y*78.233*k+planet*19.37);
+  let groups=biomes.map(()=>[]),total=0;
+  const macroASeed=planet*13.17, macroBSeed=planet*7.31;
+  const profiles=biomes.map((b,i)=>{
+    const seed=planet*97+i*53.1;
+    const mainAngle=mapHash(seed+1)*Math.PI*2;
+    const mainRadius=.12+.35*mapHash(seed+2);
+    const spread=(biomes.length<=4?.27:biomes.length>=8?.18:.22) * (.92+.32*mapHash(seed+3));
     const baseX=Math.cos(mainAngle)*mainRadius, baseY=Math.sin(mainAngle)*mainRadius;
     const lobes=[];
-    const lobeCount=3+Math.floor(hash(seed+4)*3);
+    const lobeCount=3+Math.floor(mapHash(seed+4)*3);
     lobes.push([baseX,baseY,spread*1.22,.95]);
     for(let k=1;k<lobeCount;k++){
-      const ang=mainAngle+(hash(seed+12+k)-.5)*2.8;
-      const dist=.12+.18*hash(seed+20+k);
+      const ang=mainAngle+(mapHash(seed+12+k)-.5)*2.8;
+      const dist=.12+.18*mapHash(seed+20+k);
       const x=baseX+Math.cos(ang)*dist;
       const y=baseY+Math.sin(ang)*dist;
-      const sc=spread*(.66+.34*hash(seed+30+k));
-      lobes.push([x,y,sc,.68+.28*hash(seed+40+k)]);
+      const sc=spread*(.66+.34*mapHash(seed+30+k));
+      lobes.push([x,y,sc,.68+.28*mapHash(seed+40+k)]);
     }
-    const islandCount=1+Math.floor(hash(seed+50)*3);
+    const islandCount=1+Math.floor(mapHash(seed+50)*3);
     for(let k=0;k<islandCount;k++){
-      const ang=hash(seed+60+k)*Math.PI*2;
-      const dist=.22+.42*hash(seed+70+k);
+      const ang=mapHash(seed+60+k)*Math.PI*2;
+      const dist=.22+.42*mapHash(seed+70+k);
       const x=baseX*.45+Math.cos(ang)*dist;
       const y=baseY*.45+Math.sin(ang)*dist;
-      const sc=spread*(.34+.12*hash(seed+80+k));
-      lobes.push([x,y,sc,.33+.18*hash(seed+90+k)]);
+      const sc=spread*(.34+.12*mapHash(seed+80+k));
+      lobes.push([x,y,sc,.33+.18*mapHash(seed+90+k)]);
     }
     return {
       lobes,
-      dirX:Math.cos(hash(seed+101)*Math.PI*2),
-      dirY:Math.sin(hash(seed+101)*Math.PI*2),
-      bandFreq:1.4+hash(seed+102)*2.4,
-      bandPhase:hash(seed+103)*Math.PI*2,
-      macroWeight:.13+.08*hash(seed+104),
-      grainWeight:.13+.04*hash(seed+105),
-      edgePref:(hash(seed+106)-.5)*.12,
-      centerPref:(hash(seed+107)-.5)*.10,
-      polarPref:(hash(seed+108)-.5)*.14,
-      bridge:.06+.05*hash(seed+109)
+      dirX:Math.cos(mapHash(seed+101)*Math.PI*2),
+      dirY:Math.sin(mapHash(seed+101)*Math.PI*2),
+      bandFreq:1.4+mapHash(seed+102)*2.4,
+      bandPhase:mapHash(seed+103)*Math.PI*2,
+      macroWeight:.13+.08*mapHash(seed+104),
+      grainWeight:.13+.04*mapHash(seed+105),
+      edgePref:(mapHash(seed+106)-.5)*.12,
+      centerPref:(mapHash(seed+107)-.5)*.10,
+      polarPref:(mapHash(seed+108)-.5)*.14,
+      bridge:.06+.05*mapHash(seed+109)
     };
   });
   for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){
@@ -678,12 +790,12 @@ function buildPixelMap(){
     const rr=nx*nx+ny*ny;
     if(rr>1)continue;
     const ang=Math.atan2(ny,nx);
-    const planetShift=(state.planet-1)*.37;
-    const warpX=nx*Math.cos(planetShift)-ny*Math.sin(planetShift) + .05*Math.sin(ny*7.5+state.planet*.7) + .03*Math.sin(nx*14+ny*9.5);
-    const warpY=nx*Math.sin(planetShift)+ny*Math.cos(planetShift) + .05*Math.cos(nx*8.5-state.planet*.45) + .03*Math.cos(ny*16-nx*10.2);
+    const planetShift=(planet-1)*.37;
+    const warpX=nx*Math.cos(planetShift)-ny*Math.sin(planetShift) + .05*Math.sin(ny*7.5+planet*.7) + .03*Math.sin(nx*14+ny*9.5);
+    const warpY=nx*Math.sin(planetShift)+ny*Math.cos(planetShift) + .05*Math.cos(nx*8.5-planet*.45) + .03*Math.cos(ny*16-nx*10.2);
     const macroA=Math.sin((warpX+warpY)*2.35+macroASeed)+Math.cos((warpX-warpY)*2.0-macroASeed*.7);
     const macroB=Math.cos(warpX*3.8-macroBSeed)+Math.sin(warpY*3.25+macroBSeed*.9);
-    const macroC=Math.sin((warpX*.75+warpY*1.2)*5.4+state.planet*.31);
+    const macroC=Math.sin((warpX*.75+warpY*1.2)*5.4+planet*.31);
     let bestBiome=0,bestScore=-1e9,bestCore=0;
     profiles.forEach((p,i)=>{
       let field=0, core=0;
@@ -698,21 +810,23 @@ function buildPixelMap(){
       const bands = Math.sin(dir*p.bandFreq*3.2 + p.bandPhase)*.11 + Math.cos((dir+ang*.22)*p.bandFreq*2.1 - p.bandPhase)*.05;
       const macro = macroA*p.macroWeight + macroB*(p.macroWeight*.72) + macroC*.06;
       const bridge = Math.sin((warpX*p.dirY - warpY*p.dirX)*7.3 + p.bandPhase)*p.bridge;
-      const grain=(noise2(x*.55+i*17,y*.55+i*11,1.2)-.5)*p.grainWeight + (noise2(x*1.65+i*7,y*1.55+i*3,2.4)-.5)*.06;
+      const grain=(mapNoise2(x*.55+i*17,y*.55+i*11,1.2)-.5)*p.grainWeight + (mapNoise2(x*1.65+i*7,y*1.55+i*3,2.4)-.5)*.06;
       const radial=(Math.sqrt(rr)-.55)*p.edgePref + (1-Math.sqrt(rr))*p.centerPref;
       const polar=(1-Math.abs(warpY)*1.18)*p.polarPref;
       const score=field + bands + macro + bridge + grain + radial + polar;
       if(score>bestScore){bestScore=score;bestBiome=i;bestCore=core}
     });
     // Révélation éparse: des petits trous se remplissent progressivement à travers chaque territoire.
-    const single=noise2(x+bestBiome*173.17,y+bestBiome*239.31,4.13);
-    const patch=noise2(Math.floor(x/3)+bestBiome*41.17,Math.floor(y/3)+bestBiome*63.29,5.17);
+    const single=mapNoise2(x+bestBiome*173.17,y+bestBiome*239.31,4.13);
+    const patch=mapNoise2(Math.floor(x/3)+bestBiome*41.17,Math.floor(y/3)+bestBiome*63.29,5.17);
     const reveal=single*.82+patch*.18;
-    const tint=noise2(x*1.7+bestBiome*4,y*1.7+bestBiome*9,2.7);
-    pixelGroups[bestBiome].push({x,y,reveal,tint,core:bestCore});pixelTotal++;
+    const tint=mapNoise2(x*1.7+bestBiome*4,y*1.7+bestBiome*9,2.7);
+    groups[bestBiome].push({x,y,reveal,tint,core:bestCore});total++;
   }
   // Trie d'abord selon le motif de révélation, avec une légère préférence pour les noyaux centraux.
-  pixelGroups.forEach(g=>g.sort((a,b)=>(a.reveal-a.core*.08)-(b.reveal-b.core*.08)));
+  groups.forEach(g=>g.sort((a,b)=>(a.reveal-a.core*.08)-(b.reveal-b.core*.08)));
+  if(!preview){pixelGroups=groups;pixelTotal=total;}
+  return groups;
 }
 
 function pixelCount(i){
