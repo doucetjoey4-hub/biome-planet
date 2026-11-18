@@ -412,7 +412,62 @@ function makeBiomes(planet){
 function paletteFor(hex){
  const rgb=[1,3,5].map(pos=>parseInt(hex.slice(pos,pos+2),16));
  const adjust=(f)=>'#'+rgb.map(c=>Math.max(0,Math.min(255,Math.round(c*f))).toString(16).padStart(2,'0')).join('');
- return [adjust(.76),adjust(.92),adjust(1.07),adjust(.66)];
+ // Six couleurs volontairement distinctes, mais sans contours de cases.
+ return [.55,.70,.84,.97,1.10,1.21].map(adjust);
+}
+// Les biomes ne partagent plus une même texture teintée différemment.
+// Les motifs sont de larges formes pixelisées et non des objets dessinés.
+function biomeShade(name,tile,planet){
+ const n=name.toLowerCase(),x=tile.x,y=tile.y;
+ const seed=planet*.81;
+ const wave=(a,b,k)=>Math.sin(x*a+y*b+seed*k);
+ const broad=wave(.36,.23,1)+.60*wave(-.21,.31,2)+.28*wave(.63,-.11,3);
+ const patch=wave(.57,.44,4)+.43*wave(-.41,.39,5);
+ const d=tile.tint;
+ const clamp=v=>Math.max(0,Math.min(5,Math.floor(v)));
+ if(/forêt|jungle|taïga|mangrove|bosquet/.test(n)){
+   // Massifs de canopée sombre, clairières discrètes, aucun arbre individuel.
+   return clamp(broad>.69?1:broad>-.10?2:broad>-.65?3:4);
+ }
+ if(/prairie|savane|mousse|fleurs|toundra/.test(n)){
+   // Prairie lisse et claire, avec quelques ondulations longues.
+   const streak=wave(.17,.61,6)+.25*wave(.40,.31,7);
+   return clamp(streak>.72?5:streak<-.75?3:4);
+ }
+ if(/océan|lagon|récif|lac |lac$|rivière|banquise/.test(n)){
+   // Eau en grandes bandes de profondeur. Rivière plus claire.
+   const current=wave(.19,.49,8)+.4*wave(.42,.15,9);
+   if(/rivière|lagon|récif/.test(n))return clamp(current>.5?5:current<-.45?3:4);
+   return clamp(current>.6?4:current<-.6?1:2+Math.round(d*1.5));
+ }
+ if(/désert|dunes|salines/.test(n)){
+   // Longues bandes de dunes plutôt que petites taches.
+   const dune=wave(.12,.72,10)+.26*wave(.26,.41,11);
+   return clamp(dune>.65?5:dune<-.62?2:4);
+ }
+ if(/canyons|badlands|roche rouge|roche|obsidienne|cavernes|montagnes/.test(n)){
+   // Crêtes et strates anguleuses.
+   const ridges=Math.abs(wave(.58,.28,12))+.23*wave(.16,.48,13);
+   return clamp(ridges>.77?1:ridges>.43?2:ridges>.19?3:4);
+ }
+ if(/lave|geyser|volcan/.test(n)){
+   // Veines chaudes séparées par du basalte sombre.
+   const vein=Math.abs(wave(.64,.24,14)+.28*wave(.25,-.57,15));
+   return clamp(vein<.17?5:vein<.35?4:vein<.6?2:1);
+ }
+ if(/glacier|glace|neige|brume/.test(n)){
+   // Grandes plaques claires, fissures bleutées très espacées.
+   const crack=Math.abs(wave(.31,.46,16)+.25*wave(.19,-.23,17));
+   return clamp(crack<.12?1:crack<.28?3:4+Math.round(d));
+ }
+ if(/marais|marécage/.test(n)){
+   const puddle=wave(.39,.33,18)+.32*wave(-.23,.49,19);
+   return clamp(puddle>.45?2:puddle<-.4?4:3);
+ }
+ if(/cristaux|spores|exotique/.test(n)){
+   return clamp(2+Math.round(2*d)+Math.round(wave(.43,.38,20)*.7));
+ }
+ return clamp(3+Math.round(d*1.2)+Math.round(patch*.35));
 }
 const KEY='biome-planet-save-v10';let state;
 function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],bonuses:[],worlds:{},last:Date.now()}}
@@ -578,7 +633,7 @@ function drawWorldPreview(canvas,p,biomes,levels){
    const palette=paletteFor(biomes[i].color);
    for(let j=0;j<count;j++){
      const tile=group[j];
-     c.fillStyle=palette[Math.min(3,Math.floor(tile.tint*4))];
+     c.fillStyle=palette[biomeShade(biomes[i].name,tile,p)];
      const x0=mid-r+Math.floor(tile.x*step),y0=mid-r+Math.floor(tile.y*step);
      const x1=mid-r+Math.ceil((tile.x+1)*step),y1=mid-r+Math.ceil((tile.y+1)*step);
      c.fillRect(x0,y0,x1-x0,y1-y0);
@@ -852,7 +907,7 @@ function drawPlanet(){
     const group=pixelGroups[i],n=pixelCount(i);if(!n)continue;
     for(let j=0;j<n;j++){
       const tile=group[j];
-      ctx.fillStyle=palette[i][Math.min(3,Math.floor(tile.tint*4))];
+      ctx.fillStyle=palette[i][biomeShade(BIOMES[i].name,tile,state.planet)];
       const x0=c-r+Math.floor(tile.x*STEP),y0=c-r+Math.floor(tile.y*STEP);
       const x1=c-r+Math.ceil((tile.x+1)*STEP),y1=c-r+Math.ceil((tile.y+1)*STEP);
       ctx.fillRect(x0,y0,x1-x0,y1-y0);
