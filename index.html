@@ -2,7 +2,7 @@
 <html lang="fr-CA">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101219">
-<title>Biome Planet V18.1 | Cercle de revenus corrigé</title>
+<title>Biome Planet | Clic d’amélioration</title>
 <style>
 :root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#f5f6fa;background:#101219;font-synthesis:none}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 15%,#202638 0%,#101219 58%);padding:20px 14px 36px}button{font:inherit;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.47}.app{max-width:720px;margin:auto}header{display:flex;align-items:center;justify-content:space-between;gap:12px}h1{margin:0;font-size:1.48rem;letter-spacing:-.04em}.muted{color:#9ba6bb;font-size:.83rem}.tag{border:1px solid #3a455d;background:#222b3e;color:#e0eaff;border-radius:24px;padding:7px 11px;font-size:.75rem;white-space:nowrap}.balance{margin-top:18px;background:#202736;border:1px solid #323c4e;padding:15px;border-radius:16px;display:flex;justify-content:space-between;align-items:center;gap:8px}.balance .amount{font-size:1.8rem;font-weight:750;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.income{color:#86e5ab;font-size:.78rem}.planet-panel{margin:16px 0 19px;border:1px solid #2e394b;border-radius:20px;background:radial-gradient(circle at 50% 46%,#222e3c,#151b27 70%);padding:15px 12px 13px;text-align:center;overflow:hidden}.planet-top{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:6px}.planet-top strong{font-size:.95rem}.planet-holder{position:relative;max-width:355px;aspect-ratio:1;margin:9px auto 1px}canvas{display:block;width:100%;height:100%}.planet-hint{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:max-content;max-width:96%;color:#e8f1ff;background:#151c2be8;border:1px solid #48566a;border-radius:999px;padding:9px 12px;font-size:.75rem;font-weight:700;z-index:2;pointer-events:none;box-shadow:0 5px 18px #0008}.planet-holder canvas{cursor:pointer;touch-action:manipulation}.planet-bottom{display:flex;justify-content:space-between;align-items:center;color:#bac6d5;font-size:.78rem;padding:0 4px}.completion-track{height:7px;background:#30394b;border-radius:99px;margin-top:8px;overflow:hidden}.completion-fill{height:100%;width:0;background:linear-gradient(90deg,#48ad80,#a2e9a6);transition:width .4s}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 10px}.section-title h2{font-size:1.08rem;margin:0}.biomes{display:grid;grid-template-columns:1fr;gap:9px}.biome{background:#1a202d;border:1px solid #323b4c;border-radius:15px;padding:12px}.biome-head{display:flex;align-items:center;gap:9px}.biome-icon{height:40px;width:40px;display:grid;place-items:center;border-radius:12px;font-size:1.45rem;background:#283142}.biome-info{min-width:0;flex:1}.biome-info strong{font-size:.93rem}.biome-info small{display:block;color:#aab5c9;margin-top:3px;font-size:.76rem}.biome-level{color:#cbd6e5;font-size:.73rem;white-space:nowrap}.progress{background:#313a4b;height:8px;border-radius:20px;overflow:hidden;margin:11px 0}.progress>div{height:100%;width:0%;border-radius:20px}.biome-actions{display:flex;justify-content:space-between;align-items:center;gap:9px}.cycle{color:#9eafc2;font-size:.78rem;font-variant-numeric:tabular-nums}.btn{border:0;border-radius:10px;background:#cf3c50;color:white;padding:10px 12px;font-weight:750;font-size:.8rem;max-width:63%;min-width:140px}.btn:active:not(:disabled){transform:scale(.98)}.btn{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.locked{filter:saturate(.6)}.locked .progress{display:none}.next{width:100%;border:0;background:#48bb84;color:#082013;padding:14px;border-radius:13px;font-weight:850;margin:10px 0 0}.hidden{display:none!important}.footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:17px 3px}.linkbtn{color:#a6b6cd;border:1px solid #435069;border-radius:9px;background:transparent;padding:9px 12px;font-size:.76rem}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#e8edf6;color:#131827;border-radius:12px;padding:11px 17px;font-weight:700;z-index:10;box-shadow:0 8px 40px #0006;opacity:0;pointer-events:none;transition:opacity .25s;max-width:90%;text-align:center}.toast.show{opacity:1}@media(min-width:580px){.biomes{grid-template-columns:1fr 1fr}.planet-holder{max-width:370px}}
 
@@ -328,12 +328,15 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
 @media(min-width:600px){.world-overlay{align-items:center}.world-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 /* Le cercle d'argent repart immédiatement de zéro après chaque revenu. */
 .cycle-wheel .cycle-fg { transition:none!important; animation:none!important; }
+.footer-actions{display:flex;align-items:center;gap:7px}
+.sound-toggle{white-space:nowrap;min-width:74px}
+@media(max-width:380px){.footer{gap:7px}.footer .muted{font-size:.63rem}.footer-actions{gap:5px}.footer .linkbtn{padding:8px 9px;font-size:.68rem}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
 <meta name="theme-color" content="#101219">
 </head>
-<body><main class="app"><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><span class="muted">Revenus automatiques</span></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><span class="muted" id="save-label">Sauvegarde locale automatique</span><button class="linkbtn" id="reset">Recommencer</button></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
+<body><main class="app"><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><span class="muted">Revenus automatiques</span></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><span class="muted" id="save-label">Sauvegarde locale automatique</span><div class="footer-actions"><button type="button" class="linkbtn sound-toggle" id="sound-toggle" aria-label="Désactiver le son" aria-pressed="true">🔊 Son</button><button class="linkbtn" id="reset">Recommencer</button></div></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
 <div class="world-overlay hidden" id="world-overlay">
  <section class="world-dialog" role="dialog" aria-modal="true" aria-labelledby="world-title">
   <div class="world-dialog-head"><h2 id="world-title">🪐 Choisir une planète</h2><button type="button" id="close-planets" aria-label="Fermer">✕</button></div>
@@ -419,6 +422,46 @@ const unlockCost=i=>i===0?0:Math.floor(BIOMES[i].cost*Math.pow(1.20,state.planet
 function bonusPalier(level){return Math.pow(2,Math.floor(level/25))}
 function revenue(i){return BIOMES[i].base*state.levels[i]*bonusPalier(state.levels[i])*multiplier()*Math.pow(1.10,bonusCount(i,'cash'))*1.04}
 function cover(){return Math.min(100,100*pixelShown()/pixelTotal)}
+// Petit clic synthétique, très bref et discret. Aucun fichier audio externe.
+const SOUND_KEY='biome-planet-sound-enabled';
+let soundEnabled=true;
+try{soundEnabled=localStorage.getItem(SOUND_KEY)!=='false'}catch(e){}
+let audioCtx=null, lastSound=0;
+function playUpgradeClick(){
+ if(!soundEnabled)return;
+ const now=performance.now();
+ if(now-lastSound<145)return; // Évite une rafale fatigante pendant un appui prolongé.
+ lastSound=now;
+ try{
+   const Context=window.AudioContext||window.webkitAudioContext;
+   if(!Context)return;
+   if(!audioCtx)audioCtx=new Context();
+   if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});
+   const t=audioCtx.currentTime;
+   const tone=audioCtx.createOscillator(),volume=audioCtx.createGain();
+   tone.type='sine';
+   tone.frequency.setValueAtTime(930,t);
+   tone.frequency.exponentialRampToValueAtTime(570,t+.075);
+   volume.gain.setValueAtTime(.0001,t);
+   volume.gain.exponentialRampToValueAtTime(.022,t+.008);
+   volume.gain.exponentialRampToValueAtTime(.0001,t+.09);
+   tone.connect(volume);volume.connect(audioCtx.destination);
+   tone.start(t);tone.stop(t+.095);
+ }catch(e){} // Sur appareil sans AudioContext, le jeu continue normalement.
+}
+function updateSoundButton(){
+ const btn=$('sound-toggle');
+ btn.textContent=soundEnabled?'🔊 Son':'🔇 Muet';
+ btn.setAttribute('aria-label',soundEnabled?'Désactiver le son':'Activer le son');
+ btn.setAttribute('aria-pressed',String(soundEnabled));
+}
+$('sound-toggle').addEventListener('click',()=>{
+ soundEnabled=!soundEnabled;
+ try{localStorage.setItem(SOUND_KEY,String(soundEnabled))}catch(e){}
+ updateSoundButton();
+ if(soundEnabled)playUpgradeClick();
+});
+updateSoundButton();
 function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2200)}
 const cards=[];
 function refreshBiomeCards(){
@@ -474,7 +517,7 @@ function claimBonus(i,type){
  cards[i].querySelector('.bonus-choices').classList.remove('open');
  save();renderUI();
 }
-function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++}save();renderUI();drawPlanet()}
+function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++;playUpgradeClick()}save();renderUI();drawPlanet()}
 function snapshotWorld(){
  state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money};
 }
