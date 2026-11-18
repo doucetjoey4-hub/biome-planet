@@ -941,6 +941,32 @@ function buildPixelMap(planet=state.planet,biomes=BIOMES,preview=false){
      else if(counts[i]>target*2.7)offsets[i]-=.012*Math.log(counts[i]/(target*2.7));
    }
  }
+ // Planète 1 : silhouette stable et explicitement continentale.
+ // Le nouveau relief ne dépend ni de l'état de la sauvegarde ni de la planète
+ // sélectionnée précédemment. Les autres planètes gardent leur génération.
+ if(planet===1&&names.join('|')==='forêt|prairie|désert|océan'){
+   for(const p of pixels){
+     const {wx,wy}=p;
+     // Continent à gauche, océan à droite; rivage découpé en grandes courbes.
+     const coastline=.23+.21*Math.sin(wy*3.05+.4)+.085*Math.sin(wy*7.5-.2)
+       +.085*(field(wx*2.0+6,wy*2.0-2,501)-.5);
+     const riverX=-.18+.19*Math.sin(wy*3.7+.6);
+     const streamWidth=.025+.020*Math.max(0,(wy+.8)/1.7);
+     const southRidge=.30+.12*Math.sin(wx*3.7-.5)
+       +.09*(field(wx*2.2,wy*2.2,503)-.5);
+     const forestEdge=-.14+.14*Math.sin(wy*3.1+1.2)
+       +.10*(field(wx*2.7+2,wy*2.7,505)-.5);
+     if(wx>coastline || (wy<.48&&Math.abs(wx-riverX)<streamWidth)){
+       p.owner=3; // Eau : océan et cours d'eau qui le rejoint.
+     }else if(wy>southRidge&&wx<coastline-.08){
+       p.owner=2; // Désert méridional.
+     }else if(wx<forestEdge&&wy<.42){
+       p.owner=0; // Grand massif forestier.
+     }else{
+       p.owner=1; // Prairie centrale.
+     }
+   }
+ }
  for(const p of pixels){
    const best=p.owner,{x,y,wx,wy,vd}=p;
    const single=h(x*29.17+y*3.71+best*147.71+planet*8.29);
