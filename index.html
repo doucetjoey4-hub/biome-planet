@@ -502,7 +502,7 @@ const unlockCost=i=>i===0?0:Math.floor(BIOMES[i].cost*Math.pow(1.20,state.planet
 // Les paliers de 25 niveaux doublent le revenu de chaque cycle :
  // 1-24: x1, 25-49: x2, 50-74: x4, 75-99: x8, etc.
 function bonusPalier(level){return Math.pow(2,Math.floor(level/25))}
-function revenue(i){return BIOMES[i].base*state.levels[i]*bonusPalier(state.levels[i])*multiplier()*Math.pow(1.10,bonusCount(i,'cash'))*1.04}
+function revenue(i){return BIOMES[i].base*state.levels[i]*bonusPalier(state.levels[i])*multiplier()*Math.pow(1.10,bonusCount(i,'cash'))*1.12}
 function cover(){return Math.min(100,100*pixelShown()/pixelTotal)}
 // Petit clic synthétique, très bref et discret. Aucun fichier audio externe.
 const SOUND_KEY='biome-planet-sound-enabled';
