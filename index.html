@@ -737,7 +737,7 @@ function renderUI(){
  $('planet-hint').classList.toggle('hidden',state.levels[0]>0);
  $('money').textContent=moneyFormat(state.money);
  $('planet-tag').textContent='Planète '+state.planet+' · '+BIOMES.length+' biomes';
- $('planet-name').textContent=['Planète Aube','Planète Boréale','Planète Nova','Planète Émeraude','Planète Horizon'][(state.planet-1)%5];
+ $('planet-name').textContent='Planète '+worldName(state.planet);
  const percent=Math.round(cover());
  $('land-label').textContent='Progression : '+percent+' %';
  $('next').classList.toggle('hidden',cover()<99.999);
