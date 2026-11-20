@@ -439,12 +439,39 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
 .atlas-record strong{font-size:.77rem;color:#e8f8ff}
 .atlas-record span{display:block;font-size:.65rem;color:#9cb6c8;margin-top:4px}
 @media(max-height:670px){.cosmic-event{padding:6px 9px}.event-body{margin-top:2px}}
+
+/* V34: réglages sonores indépendants, petits boutons et mixage discret. */
+.footer-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.footer-actions .linkbtn{padding:8px 9px}
+.music-toggle[aria-pressed="true"]{border-color:#6fa6ba;color:#c6f4ff;background:#173344}
+.audio-settings-btn{min-width:34px;padding:8px!important}
+.audio-overlay{position:fixed;inset:0;z-index:125;background:#020712da;backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:14px}
+.audio-dialog{width:min(100%,390px);border:1px solid #467d8e;border-radius:18px;background:linear-gradient(165deg,#1a2c3c,#0b1522);padding:18px;box-shadow:0 20px 75px #000c}
+.audio-dialog-header{display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:18px}
+.audio-dialog-header span{font-size:.65rem;letter-spacing:.1em;color:#91d2db;font-weight:850}
+.audio-dialog-header h2{margin:6px 0 0;font-size:1.14rem}
+.audio-dialog-header button{border:1px solid #426a7b;background:#1b2d3b;color:#fff;border-radius:9px;width:34px;height:34px}
+.audio-dialog label{display:flex;justify-content:space-between;gap:8px;color:#e2f1f6;font-size:.78rem;font-weight:800;margin-top:15px}
+.audio-dialog output{color:#a3eadb}
+.audio-dialog input[type="range"]{display:block;width:100%;accent-color:#56d4dd;margin:13px 0 19px}
+.audio-dialog p{font-size:.71rem;line-height:1.6;color:#9ebbc7;margin:12px 0 0}
+@media(max-width:390px){.footer-actions{gap:4px}.footer-actions .linkbtn{font-size:.67rem;padding:7px!important}.footer{gap:7px}.atlas-open{padding:7px!important}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
 <meta name="theme-color" content="#101219">
 </head>
-<body><main class="app"><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><div class="planet-extra"><span class="planet-extra-text" id="planet-extra-text"></span><button type="button" class="planet-log-btn" id="planet-log-btn">◈ Journal <span id="planet-log-count"></span></button></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Activer</button></div></div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><button type="button" class="objectives-open" id="objectives-open" aria-haspopup="dialog" aria-controls="objectives-overlay">✧ Objectifs <span id="objectives-badge">0/5</span></button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><button type="button" class="linkbtn atlas-open" id="atlas-open">🗺 Atlas</button><div class="footer-actions"><button type="button" class="linkbtn sound-toggle" id="sound-toggle" aria-label="Désactiver le son" aria-pressed="true">🔊 Son</button><button class="linkbtn" id="reset">Recommencer</button></div></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
+<body><main class="app"><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><div class="planet-extra"><span class="planet-extra-text" id="planet-extra-text"></span><button type="button" class="planet-log-btn" id="planet-log-btn">◈ Journal <span id="planet-log-count"></span></button></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Activer</button></div></div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><button type="button" class="objectives-open" id="objectives-open" aria-haspopup="dialog" aria-controls="objectives-overlay">✧ Objectifs <span id="objectives-badge">0/5</span></button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><button type="button" class="linkbtn atlas-open" id="atlas-open">🗺 Atlas</button><div class="footer-actions"><button type="button" class="linkbtn sound-toggle" id="sound-toggle" aria-label="Désactiver les effets sonores" aria-pressed="true">🔊 Sons</button><button type="button" class="linkbtn music-toggle" id="music-toggle" aria-label="Activer la musique" aria-pressed="false">♫ Musique</button><button type="button" class="linkbtn audio-settings-btn" id="audio-settings-open" aria-label="Réglages audio">⚙</button><button class="linkbtn" id="reset">Recommencer</button></div></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
+<div class="audio-overlay hidden" id="audio-overlay">
+ <section class="audio-dialog" role="dialog" aria-modal="true" aria-labelledby="audio-title">
+  <div class="audio-dialog-header"><div><span>♫ AMBIANCE COSMIQUE</span><h2 id="audio-title">Réglages audio</h2></div><button type="button" id="audio-settings-close" aria-label="Fermer">✕</button></div>
+  <label for="music-volume">Musique de fond <output id="music-volume-value">22 %</output></label>
+  <input type="range" id="music-volume" min="0" max="100" step="1" value="22">
+  <label for="sfx-volume">Effets sonores <output id="sfx-volume-value">55 %</output></label>
+  <input type="range" id="sfx-volume" min="0" max="100" step="1" value="55">
+  <p>Une musique originale et discrète, créée directement dans le jeu. Elle démarre après une interaction avec la page.</p>
+ </section>
+</div>
 <div class="atlas-overlay hidden" id="atlas-overlay">
 <section class="atlas-dialog" role="dialog" aria-modal="true" aria-labelledby="atlas-title">
  <div class="atlas-head"><div><span>◈ ARCHIVES D'EXPLORATION</span><h2 id="atlas-title">Atlas planétaire</h2></div><button type="button" id="atlas-close" aria-label="Fermer l'atlas">✕</button></div>
@@ -617,44 +644,150 @@ function revenue(i){return BIOMES[i].base*state.levels[i]*bonusPalier(state.leve
 function cover(){return Math.min(100,100*pixelShown()/pixelTotal)}
 // Petit clic synthétique, très bref et discret. Aucun fichier audio externe.
 const SOUND_KEY='biome-planet-sound-enabled';
-let soundEnabled=true;
-try{soundEnabled=localStorage.getItem(SOUND_KEY)!=='false'}catch(e){}
-let audioCtx=null, lastSound=0;
-function playUpgradeClick(){
- if(!soundEnabled)return;
- const now=performance.now();
- if(now-lastSound<145)return; // Évite une rafale fatigante pendant un appui prolongé.
- lastSound=now;
+const MUSIC_KEY='biome-planet-music-enabled';
+const MUSIC_VOLUME_KEY='biome-planet-music-volume';
+const SFX_VOLUME_KEY='biome-planet-sfx-volume';
+const readAudioNumber=(key,fallback)=>{try{const n=Number(localStorage.getItem(key));return Number.isFinite(n)&&n>=0&&n<=1?n:fallback}catch(e){return fallback}};
+let soundEnabled=true,musicEnabled=false;
+let musicVolume=readAudioNumber(MUSIC_VOLUME_KEY,.22);
+let sfxVolume=readAudioNumber(SFX_VOLUME_KEY,.55);
+try{
+ soundEnabled=localStorage.getItem(SOUND_KEY)!=='false';
+ musicEnabled=localStorage.getItem(MUSIC_KEY)==='true'; // Musique opt-in, pas de lecture imposée.
+}catch(e){}
+let audioCtx=null,masterAudio=null,sfxBus=null,musicBus=null,musicTimer=null,musicNext=0,musicStep=0,lastSound=0;
+function ensureAudio(){
  try{
-   const Context=window.AudioContext||window.webkitAudioContext;
-   if(!Context)return;
-   if(!audioCtx)audioCtx=new Context();
-   if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});
-   const t=audioCtx.currentTime;
-   const tone=audioCtx.createOscillator(),volume=audioCtx.createGain();
-   tone.type='sine';
-   tone.frequency.setValueAtTime(930,t);
-   tone.frequency.exponentialRampToValueAtTime(570,t+.075);
-   volume.gain.setValueAtTime(.0001,t);
-   volume.gain.exponentialRampToValueAtTime(.026,t+.008);
-   volume.gain.exponentialRampToValueAtTime(.0001,t+.09);
-   tone.connect(volume);volume.connect(audioCtx.destination);
-   tone.start(t);tone.stop(t+.095);
- }catch(e){} // Sur appareil sans AudioContext, le jeu continue normalement.
+  const Context=window.AudioContext||window.webkitAudioContext;
+  if(!Context)return false;
+  if(!audioCtx){
+   audioCtx=new Context();
+   masterAudio=audioCtx.createGain();masterAudio.gain.value=.78;masterAudio.connect(audioCtx.destination);
+   sfxBus=audioCtx.createGain();sfxBus.connect(masterAudio);
+   musicBus=audioCtx.createGain();musicBus.connect(masterAudio);
+  }
+  sfxBus.gain.setTargetAtTime(soundEnabled?sfxVolume:0,audioCtx.currentTime,.05);
+  musicBus.gain.setTargetAtTime(musicEnabled?musicVolume:0,audioCtx.currentTime,.12);
+  if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});
+  return true;
+ }catch(e){return false}
+}
+function tone(freq,start,duration,level=.1,type='sine',destination=sfxBus,endFreq=null){
+ if(!audioCtx||!destination)return;
+ const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+ o.type=type;o.frequency.setValueAtTime(Math.max(1,freq),start);
+ if(endFreq)o.frequency.exponentialRampToValueAtTime(Math.max(1,endFreq),start+duration*.86);
+ const a=Math.max(.005,Math.min(.15,duration*.12)),finish=start+duration;
+ g.gain.setValueAtTime(.00001,start);
+ g.gain.exponentialRampToValueAtTime(Math.max(.0001,level),start+a);
+ g.gain.exponentialRampToValueAtTime(.00001,finish);
+ o.connect(g);g.connect(destination);
+ o.start(start);o.stop(finish+.025);
+ o.onended=()=>{try{o.disconnect();g.disconnect()}catch(e){}};
+}
+function playSound(kind='tap'){
+ if(!soundEnabled||!ensureAudio())return;
+ const now=performance.now(),cooldown=kind==='upgrade'?110:60;
+ if(now-lastSound<cooldown&&kind==='upgrade')return;
+ if(kind==='upgrade')lastSound=now;
+ const t=audioCtx.currentTime+.009;
+ try{
+  if(kind==='upgrade')tone(920,t,.09,.045,'sine',sfxBus,580);
+  else if(kind==='unlock'){tone(390,t,.19,.06,'sine');tone(586,t+.085,.27,.055,'sine');}
+  else if(kind==='navigate'){tone(450,t,.13,.045,'triangle',sfxBus,530);}
+  else if(kind==='claim'){tone(520,t,.2,.075);tone(660,t+.11,.23,.065);tone(780,t+.21,.34,.055);}
+  else if(kind==='discovery'){tone(349,t,.47,.07);tone(523,t+.11,.55,.085);tone(698,t+.26,.75,.06);}
+  else if(kind==='event'){tone(220,t,.7,.08,'sine',sfxBus,340);tone(440,t+.1,.66,.06);tone(659,t+.3,.62,.07);}
+  else if(kind==='open'){tone(580,t,.10,.04,'sine',sfxBus,700);}
+  else tone(520,t,.075,.03,'sine',sfxBus,460);
+ }catch(e){}
+}
+function playUpgradeClick(){playSound('upgrade')}
+// Partition originale en arpèges doux, aucune ressource réseau ni morceau protégé.
+const COSMIC_CHORDS=[[130.81,164.81,196,261.63],[110,164.81,220,329.63],[146.83,174.61,220,293.66],[98,146.83,196,293.66]];
+function scheduleCosmicMusic(){
+ if(!musicEnabled||document.hidden||!audioCtx||audioCtx.state!=='running')return;
+ const now=audioCtx.currentTime;
+ if(musicNext<now-.8)musicNext=now+.1;
+ while(musicNext<now+1.5){
+  const chord=COSMIC_CHORDS[Math.floor(musicStep/8)%COSMIC_CHORDS.length];
+  const phase=musicStep%8;
+  if(phase===0){tone(chord[0],musicNext,5.4,.095,'sine',musicBus);tone(chord[2]/2,musicNext+.3,4.4,.033,'triangle',musicBus);}
+  if(phase===2||phase===4||phase===6){
+   const pick=phase===2?1:phase===4?2:3;
+   tone(chord[pick]*2,musicNext,2.2,.037,'sine',musicBus);
+  }
+  musicNext+=.79;
+  musicStep++;
+ }
+}
+function startMusic(){
+ if(!musicEnabled||document.hidden||!ensureAudio())return;
+ if(musicTimer!==null)return;
+ musicNext=audioCtx.currentTime+.15;
+ scheduleCosmicMusic();
+ musicTimer=setInterval(scheduleCosmicMusic,700);
+}
+function stopMusic(){
+ if(musicTimer!==null){clearInterval(musicTimer);musicTimer=null}
+ if(musicBus&&audioCtx)musicBus.gain.setTargetAtTime(0,audioCtx.currentTime,.07);
+}
+function setMusicEnabled(enabled){
+ musicEnabled=!!enabled;
+ try{localStorage.setItem(MUSIC_KEY,String(musicEnabled))}catch(e){}
+ if(musicEnabled)startMusic();else stopMusic();
+ updateSoundButton();
 }
 function updateSoundButton(){
- const btn=$('sound-toggle');
- btn.textContent=soundEnabled?'🔊 Son':'🔇 Muet';
- btn.setAttribute('aria-label',soundEnabled?'Désactiver le son':'Activer le son');
+ const btn=$('sound-toggle'),music=$('music-toggle');
+ btn.textContent=soundEnabled?'🔊 Sons':'🔇 Sons';
+ btn.setAttribute('aria-label',soundEnabled?'Désactiver les effets sonores':'Activer les effets sonores');
  btn.setAttribute('aria-pressed',String(soundEnabled));
+ music.textContent=musicEnabled?'♫ Musique ✓':'♫ Musique';
+ music.setAttribute('aria-label',musicEnabled?'Désactiver la musique':'Activer la musique');
+ music.setAttribute('aria-pressed',String(musicEnabled));
 }
 $('sound-toggle').addEventListener('click',()=>{
  soundEnabled=!soundEnabled;
  try{localStorage.setItem(SOUND_KEY,String(soundEnabled))}catch(e){}
+ if(soundEnabled)playSound('open');
+ else if(audioCtx&&sfxBus)sfxBus.gain.setTargetAtTime(0,audioCtx.currentTime,.04);
  updateSoundButton();
- if(soundEnabled)playUpgradeClick();
 });
-updateSoundButton();
+$('music-toggle').addEventListener('click',()=>{setMusicEnabled(!musicEnabled)});
+$('audio-settings-open').addEventListener('click',()=>{
+ playSound('open');$('audio-overlay').classList.remove('hidden');$('audio-settings-close').focus();
+});
+function closeAudioSettings(){$('audio-overlay').classList.add('hidden')}
+$('audio-settings-close').addEventListener('click',closeAudioSettings);
+$('audio-overlay').addEventListener('click',e=>{if(e.target===$('audio-overlay'))closeAudioSettings()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAudioSettings()});
+$('music-volume').value=String(Math.round(musicVolume*100));
+$('sfx-volume').value=String(Math.round(sfxVolume*100));
+function updateAudioLabels(){
+ $('music-volume-value').textContent=Math.round(musicVolume*100)+' %';
+ $('sfx-volume-value').textContent=Math.round(sfxVolume*100)+' %';
+}
+$('music-volume').addEventListener('input',e=>{
+ musicVolume=Number(e.target.value)/100;
+ try{localStorage.setItem(MUSIC_VOLUME_KEY,String(musicVolume))}catch(err){}
+ if(audioCtx&&musicBus)musicBus.gain.setTargetAtTime(musicEnabled?musicVolume:0,audioCtx.currentTime,.04);
+ updateAudioLabels();
+});
+$('sfx-volume').addEventListener('input',e=>{
+ sfxVolume=Number(e.target.value)/100;
+ try{localStorage.setItem(SFX_VOLUME_KEY,String(sfxVolume))}catch(err){}
+ if(audioCtx&&sfxBus)sfxBus.gain.setTargetAtTime(soundEnabled?sfxVolume:0,audioCtx.currentTime,.04);
+ updateAudioLabels();
+});
+updateAudioLabels();updateSoundButton();
+// Les navigateurs mobiles exigent une interaction avant de permettre le son.
+document.addEventListener('pointerdown',()=>{if(musicEnabled&&!musicTimer)startMusic()},{passive:true});
+document.addEventListener('keydown',()=>{if(musicEnabled&&!musicTimer)startMusic()});
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden)stopMusic();
+ else if(musicEnabled&&audioCtx&&audioCtx.state==='running')startMusic();
+});
 function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2200)}
 // Les archives se découvrent uniquement en développant le monde.
 const COSMIC_ARCHIVES=[
@@ -854,7 +987,7 @@ function claimBonus(i,type){
 }
 function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++;playUpgradeClick()}save();renderUI();drawPlanet()}
 function snapshotWorld(){
- state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money,discoveries:[...state.discoveries],missions:[...state.missions]};
+ state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money,discoveries:[...state.discoveries],missions:[...state.missions],events:[...state.events],eventActive:state.eventActive?{...state.eventActive}:null};
 }
 function save(){try{snapshotWorld();localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
 function worldName(p){return ['Aube','Tropicale','Glaciale','Aride','Fantaisie','Mystique'][(p-1)%6]}
