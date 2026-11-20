@@ -456,15 +456,61 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
 .audio-dialog input[type="range"]{display:block;width:100%;accent-color:#56d4dd;margin:13px 0 19px}
 .audio-dialog p{font-size:.71rem;line-height:1.6;color:#9ebbc7;margin:12px 0 0}
 @media(max-width:390px){.footer-actions{gap:4px}.footer-actions .linkbtn{font-size:.67rem;padding:7px!important}.footer{gap:7px}.atlas-open{padding:7px!important}}
+
+/* V35 - coherent in-game toasts and condensed mobile navigation. */
+.toast{
+ position:fixed;bottom:calc(17px + env(safe-area-inset-bottom));left:50%;
+ transform:translate(-50%,12px) scale(.98);
+ display:flex;align-items:center;gap:10px;
+ width:max-content;max-width:min(89vw,370px);padding:11px 14px;
+ background:linear-gradient(165deg,#173145,#0a1826);
+ color:#e5f7ff;border:1px solid #4b8297;border-radius:13px;
+ box-shadow:0 12px 32px #000b, inset 0 1px #ffffff14;
+ font-size:.74rem;font-weight:800;line-height:1.4;text-align:left;
+ opacity:0;pointer-events:none;z-index:260;
+ transition:opacity .2s ease,transform .2s ease;
+}
+.toast::before{
+ content:'✦';flex:none;display:grid;place-items:center;
+ width:24px;height:24px;border-radius:8px;
+ color:#a3effb;background:#245069;font-size:.91rem;
+}
+.toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.toast[data-kind="success"]{border-color:#4bbf9e;background:linear-gradient(165deg,#183e36,#0a211d)}
+.toast[data-kind="success"]::before{content:'✓';color:#b3ffdf;background:#245e4f}
+.toast[data-kind="reward"]{border-color:#c4ab73;background:linear-gradient(165deg,#34301f,#191d17)}
+.toast[data-kind="reward"]::before{content:'◆';color:#ffe9a6;background:#61502d}
+.toast[data-kind="event"]{border-color:#8d87ce;background:linear-gradient(165deg,#2d2a4a,#151b32)}
+.toast[data-kind="event"]::before{content:'✧';color:#ddd3ff;background:#554e80}
+.toast[data-kind="warn"]{border-color:#d48b75;background:linear-gradient(165deg,#3a2826,#20191e)}
+.toast[data-kind="warn"]::before{content:'!';color:#ffd3c5;background:#714a42}
+.planet-top{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name select" "tag progress";gap:6px 8px;align-items:center}
+#planet-name{grid-area:name;min-width:0}
+#open-planets{grid-area:select}
+#planet-tag{grid-area:tag;justify-self:start}
+#land-label{grid-area:progress;justify-self:end;text-align:right}
+.section-title{display:flex;align-items:center;gap:8px}
+.section-title h2{flex:1;min-width:0}
+.planet-extra{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.planet-extra-text{min-width:0}
+.footer{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-top:9px}
+.footer-actions{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.footer .linkbtn{min-height:37px;padding:8px 10px}
+.audio-switches{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:4px 0 16px}
+.audio-switches .linkbtn{min-height:43px;background:#162c3b;border:1px solid #4b7389;color:#ddf8ff;font-weight:850;font-size:.78rem}
+.audio-switches .linkbtn[aria-pressed="true"]{background:#204957;border-color:#66bfd0}
+@media(max-width:390px){.footer .linkbtn{padding:7px 8px!important;font-size:.69rem}.planet-top{gap:5px}}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
 <meta name="theme-color" content="#101219">
 </head>
-<body><main class="app"><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><div class="planet-extra"><span class="planet-extra-text" id="planet-extra-text"></span><button type="button" class="planet-log-btn" id="planet-log-btn">◈ Journal <span id="planet-log-count"></span></button></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Activer</button></div></div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><button type="button" class="objectives-open" id="objectives-open" aria-haspopup="dialog" aria-controls="objectives-overlay">✧ Objectifs <span id="objectives-badge">0/5</span></button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><button type="button" class="linkbtn atlas-open" id="atlas-open">🗺 Atlas</button><div class="footer-actions"><button type="button" class="linkbtn sound-toggle" id="sound-toggle" aria-label="Désactiver les effets sonores" aria-pressed="true">🔊 Sons</button><button type="button" class="linkbtn music-toggle" id="music-toggle" aria-label="Activer la musique" aria-pressed="false">♫ Musique</button><button type="button" class="linkbtn audio-settings-btn" id="audio-settings-open" aria-label="Réglages audio">⚙</button><button class="linkbtn" id="reset">Recommencer</button></div></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
+<body><main class="app"><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><div class="planet-extra"><span class="planet-extra-text" id="planet-extra-text"></span><button type="button" class="planet-log-btn" id="planet-log-btn">◈ Journal <span id="planet-log-count"></span></button></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Activer</button></div></div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><button type="button" class="objectives-open" id="objectives-open" aria-haspopup="dialog" aria-controls="objectives-overlay">✧ Objectifs <span id="objectives-badge">0/5</span></button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><button type="button" class="linkbtn atlas-open" id="atlas-open">🗺 Atlas</button><div class="footer-actions"><button type="button" class="linkbtn audio-settings-btn" id="audio-settings-open" aria-label="Réglages audio">♫ Audio</button><button class="linkbtn" id="reset">Recommencer</button></div></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
 <div class="audio-overlay hidden" id="audio-overlay">
  <section class="audio-dialog" role="dialog" aria-modal="true" aria-labelledby="audio-title">
   <div class="audio-dialog-header"><div><span>♫ AMBIANCE COSMIQUE</span><h2 id="audio-title">Réglages audio</h2></div><button type="button" id="audio-settings-close" aria-label="Fermer">✕</button></div>
+  <div class="audio-switches"><button type="button" class="linkbtn sound-toggle" id="sound-toggle" aria-label="Désactiver les effets sonores" aria-pressed="true">🔊 Sons</button><button type="button" class="linkbtn music-toggle" id="music-toggle" aria-label="Activer la musique" aria-pressed="false">♫ Musique</button></div>
   <label for="music-volume">Musique de fond <output id="music-volume-value">22 %</output></label>
   <input type="range" id="music-volume" min="0" max="100" step="1" value="22">
   <label for="sfx-volume">Effets sonores <output id="sfx-volume-value">55 %</output></label>
@@ -788,7 +834,16 @@ document.addEventListener('visibilitychange',()=>{
  if(document.hidden)stopMusic();
  else if(musicEnabled&&audioCtx&&audioCtx.state==='running')startMusic();
 });
-function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2200)}
+function toast(msg,type='info'){
+ const el=$('toast');
+ el.textContent=msg;
+ el.dataset.kind=type;
+ el.classList.remove('show');
+ void el.offsetWidth;
+ el.classList.add('show');
+ clearTimeout(toast.timer);
+ toast.timer=setTimeout(()=>el.classList.remove('show'),2300);
+}
 // Les archives se découvrent uniquement en développant le monde.
 const COSMIC_ARCHIVES=[
  {at:8,icon:'✦',title:'Premier écho',description:'Un faible signal traverse la surface de ce monde. Il semble réagir aux premiers territoires révélés.',perk:'Une nouvelle énergie parcourt la planète.'},
@@ -876,7 +931,7 @@ function claimMission(index){
  state.money+=reward;
  playSound('claim');
  save();renderUI();renderMissions(true);
- toast('Objectif atteint : +'+moneyFormat(reward));
+ toast('Objectif atteint : +'+moneyFormat(reward),'reward');
 }
 function renderMissions(force=false){
  const values=MISSIONS.map((m,i)=>({m,i,value:missionProgress(m),done:state.missions.includes(i),reward:missionReward(m)}));
@@ -991,7 +1046,7 @@ function claimBonus(i,type){
  cards[i].querySelector('.bonus-choices').classList.remove('open');
  save();renderUI();
 }
-function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0;playSound('unlock')}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++;playUpgradeClick()}save();renderUI();drawPlanet()}
+function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!','warn');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0;playSound('unlock')}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++;playUpgradeClick()}save();renderUI();drawPlanet()}
 function snapshotWorld(){
  state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money,discoveries:[...state.discoveries],missions:[...state.missions],events:[...state.events],eventActive:state.eventActive?{...state.eventActive}:null};
 }
@@ -1149,7 +1204,7 @@ function triggerCosmicEvent(){
  state.events.push(i); // Marqué utilisé avant l'application du bonus.
  state.eventActive={id:i,until:Date.now()+event.seconds*1000};
  playSound('event');
- save();renderCosmicEvent();renderUI();toast('✦ '+event.name+' : x'+event.factor+' pendant '+event.seconds+' s');
+ save();renderCosmicEvent();renderUI();toast('✦ '+event.name+' : x'+event.factor+' pendant '+event.seconds+' s','event');
 }
 function cosmicMultiplier(){
  const active=activeCosmicEvent();
@@ -1565,7 +1620,7 @@ function frame(now){
  requestAnimationFrame(frame);
 }
 canvas.addEventListener('click',()=>{const nextIndex=state.levels.findIndex(l=>l===0);if(nextIndex<0){toast('Tous les biomes sont déjà débloqués!');return}if(nextIndex>0&&state.money<unlockCost(nextIndex)){toast('Il te faut '+moneyFormat(unlockCost(nextIndex))+' pour ajouter '+BIOMES[nextIndex].name);return}buy(nextIndex)});
-$('next').addEventListener('click',()=>{if(cover()<99.999)return;playSound('discovery');switchWorld(state.planet+1,true);toast('Nouvelle planète découverte!')});
+$('next').addEventListener('click',()=>{if(cover()<99.999)return;playSound('discovery');switchWorld(state.planet+1,true);toast('Nouvelle planète découverte!','success')});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDiscovery()});
 $('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();BIOMES=makeBiomes(state.planet);normalizeProgress();closeObjectives();closeAtlas();lastCosmicDisplay='';lastMissionRender='';refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
 // Offline earnings capped at 4 hours; preserve partial production progress.
