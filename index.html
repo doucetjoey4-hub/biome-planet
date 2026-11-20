@@ -393,6 +393,7 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
 .mission-content{min-width:0;flex:1}
 .mission-name{display:block;font-size:.73rem;font-weight:800;color:#e7f7ff}
 .mission-detail{display:block;margin-top:3px;color:#85a8b8;font-size:.65rem}
+.mission-reward{display:block;margin-top:6px;color:#97f3c7;font-size:.7rem;font-weight:850;line-height:1.4}
 .mission-progress{height:3px;margin-top:5px;background:#1f3543;border-radius:4px;overflow:hidden}
 .mission-progress>span{height:100%;display:block;background:#5ddfd6}
 .mission-complete{font-size:.7rem;color:#6ee3bd;font-weight:800}
@@ -694,36 +695,46 @@ function missionProgress(m){
  if(m.kind==='discovery')return archiveClaimed().length;
  return Math.floor(cover());
 }
+// La même formule sert à l'affichage et à la remise effective de l'argent.
+function missionReward(mission){
+ const minute=BIOMES.reduce((total,b,i)=>total+(state.levels[i]?revenue(i)*60/cycleTime(i):0),0);
+ return Math.max(25*state.planet,Math.round(minute*(mission.bonus/100)));
+}
 function claimMission(index){
  if(state.missions.includes(index)||!MISSIONS[index])return;
  const mission=MISSIONS[index];
  if(missionProgress(mission)<mission.target)return;
- const minute=BIOMES.reduce((n,b,i)=>n+(state.levels[i]?revenue(i)*60/cycleTime(i):0),0);
- const reward=Math.max(25*state.planet,Math.round(minute*(mission.bonus/100)));
+ const reward=missionReward(mission);
  state.missions.push(index);
  state.money+=reward;
  save();renderUI();renderMissions(true);
  toast('Objectif atteint : +'+moneyFormat(reward));
 }
 function renderMissions(force=false){
- const values=MISSIONS.map((m,i)=>({m,i,value:missionProgress(m),done:state.missions.includes(i)}));
- const signature=state.planet+'|'+values.map(v=>v.value+'/'+(v.done?1:0)).join('|');
+ const values=MISSIONS.map((m,i)=>({m,i,value:missionProgress(m),done:state.missions.includes(i),reward:missionReward(m)}));
+ const signature=state.planet+'|'+values.map(v=>v.value+'/'+(v.done?1:0)+'/'+(v.done?'':v.reward)).join('|');
  if(!force&&signature===lastMissionRender)return;
  lastMissionRender=signature;
  $('mission-count').textContent=state.missions.length+' / '+MISSIONS.length;
  $('objectives-badge').textContent=state.missions.length+'/'+MISSIONS.length;
  $('objectives-open').classList.toggle('has-reward',values.some(v=>!v.done&&v.value>=v.m.target));
  const container=$('mission-list');container.replaceChildren();
- for(const {m,i,value,done} of values){
+ for(const {m,i,value,done,reward} of values){
    const item=document.createElement('div');item.className='mission-item';
    const info=document.createElement('div');info.className='mission-content';
    const name=document.createElement('span');name.className='mission-name';name.textContent=m.name;
    const detail=document.createElement('span');detail.className='mission-detail';detail.textContent=m.text+' · '+Math.min(m.target,value)+' / '+m.target;
    const track=document.createElement('div');track.className='mission-progress';
    const fill=document.createElement('span');fill.style.width=(Math.min(1,value/m.target)*100)+'%';track.appendChild(fill);
-   info.append(name,detail,track);item.appendChild(info);
-   if(done){const checked=document.createElement('span');checked.className='mission-complete';checked.textContent='✓';item.appendChild(checked)}
-   else if(value>=m.target){const claim=document.createElement('button');claim.type='button';claim.className='mission-claim';claim.textContent='Réclamer';claim.addEventListener('click',()=>claimMission(i));item.appendChild(claim)}
+   const prize=document.createElement('span');prize.className='mission-reward';
+   prize.textContent=done?'✓ Récompense réclamée':'💰 Récompense : +'+moneyFormat(reward);
+   info.append(name,detail,track,prize);item.appendChild(info);
+   if(!done&&value>=m.target){
+     const claim=document.createElement('button');claim.type='button';claim.className='mission-claim';
+     claim.textContent='Réclamer';
+     claim.setAttribute('aria-label','Réclamer '+moneyFormat(reward)+' pour '+m.name);
+     claim.addEventListener('click',()=>claimMission(i));item.appendChild(claim);
+   }
    container.appendChild(item);
  }
 }
