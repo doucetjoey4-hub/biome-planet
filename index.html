@@ -805,6 +805,7 @@ function nextSignal(){
 }
 function closeDiscovery(){$('discovery-overlay').classList.add('hidden');}
 function openDiscovery(index){
+ playSound('discovery');
  discoveryMode='claim';discoveryIndex=index;
  const event=COSMIC_ARCHIVES[index];if(!event)return;
  $('discovery-emblem').textContent=event.icon;
@@ -815,6 +816,7 @@ function openDiscovery(index){
  $('discovery-overlay').classList.remove('hidden');
 }
 function openJournal(){
+ playSound('open');
  discoveryMode='journal';discoveryIndex=-1;
  const claimed=archiveClaimed();
  $('discovery-emblem').textContent=claimed.length?'◈':'✧';
@@ -833,6 +835,7 @@ function claimDiscovery(){
  const reward=Math.max(30*state.planet,Math.round(production*.55));
  state.money+=reward;
  state.discoveries.push(i);
+ playSound('discovery');
  save();drawPlanet();renderUI();
  $('discovery-reward').textContent='+'+moneyFormat(reward)+'  ·  '+COSMIC_ARCHIVES[i].perk+'  ·  +2 % de revenus permanents';
  $('discovery-action').textContent='Continuer l’exploration';
@@ -871,6 +874,7 @@ function claimMission(index){
  const reward=missionReward(mission);
  state.missions.push(index);
  state.money+=reward;
+ playSound('claim');
  save();renderUI();renderMissions(true);
  toast('Objectif atteint : +'+moneyFormat(reward));
 }
@@ -914,6 +918,7 @@ function closeObjectives(){
  $('objectives-open').setAttribute('aria-expanded','false');
 }
 function openObjectives(){
+ playSound('open');
  $('objectives-planet').textContent='Planète '+state.planet+' · '+worldName(state.planet);
  renderMissions(true);
  $('objectives-overlay').classList.remove('hidden');
@@ -982,10 +987,11 @@ function claimBonus(i,type){
  const earned=Math.floor(state.levels[i]/25),claimed=(state.bonuses[i]||[]).length;
  if(claimed>=earned)return;
  state.bonuses[i].push(type);
+ playSound('claim');
  cards[i].querySelector('.bonus-choices').classList.remove('open');
  save();renderUI();
 }
-function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++;playUpgradeClick()}save();renderUI();drawPlanet()}
+function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0;playSound('unlock')}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++;playUpgradeClick()}save();renderUI();drawPlanet()}
 function snapshotWorld(){
  state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money,discoveries:[...state.discoveries],missions:[...state.missions],events:[...state.events],eventActive:state.eventActive?{...state.eventActive}:null};
 }
@@ -1102,7 +1108,7 @@ function switchWorld(num,award=false){
  const p=Math.floor(Number(num));
  if(!Number.isFinite(p)||p<1||p>999)return;
  if(p===state.planet){closeWorlds();return}
- stopHold();save();
+ stopHold();save();playSound('navigate');
  const stored=state.worlds[p];
  state.planet=p;BIOMES=makeBiomes(p);
  state.levels=stored?.levels?[...stored.levels]:BIOMES.map(()=>0);
@@ -1119,7 +1125,7 @@ function switchWorld(num,award=false){
  lastMissionRender='';refreshBiomeCards();buildPixelMap();drawPlanet();renderUI();save();
  $('biome-scroll').scrollTop=0;closeWorlds();
 }
-$('open-planets').addEventListener('click',()=>{renderWorldList();$('world-overlay').classList.remove('hidden');requestAnimationFrame(()=>showWorldIndex(worldCarouselIndex,false))});
+$('open-planets').addEventListener('click',()=>{playSound('open');renderWorldList();$('world-overlay').classList.remove('hidden');requestAnimationFrame(()=>showWorldIndex(worldCarouselIndex,false))});
 $('close-planets').addEventListener('click',closeWorlds);
 $('world-overlay').addEventListener('click',e=>{if(e.target===$('world-overlay'))closeWorlds()});
 $('world-jump').addEventListener('submit',e=>{e.preventDefault();switchWorld($('world-number').value)});
@@ -1142,6 +1148,7 @@ function triggerCosmicEvent(){
  const event=COSMIC_EVENTS[i];
  state.events.push(i); // Marqué utilisé avant l'application du bonus.
  state.eventActive={id:i,until:Date.now()+event.seconds*1000};
+ playSound('event');
  save();renderCosmicEvent();renderUI();toast('✦ '+event.name+' : x'+event.factor+' pendant '+event.seconds+' s');
 }
 function cosmicMultiplier(){
@@ -1172,6 +1179,7 @@ function atlasData(){
  return entries.sort((a,b)=>Number(a[0])-Number(b[0]));
 }
 function openAtlas(){
+ playSound('open');
  const entries=atlasData();
  const finished=entries.filter(([num,w])=>w.levels.every((l,i)=>Number(l)>=makeBiomes(Number(num))[i].max)).length;
  const missions=entries.reduce((n,[,w])=>n+(Array.isArray(w.missions)?w.missions.length:0),0);
@@ -1557,7 +1565,7 @@ function frame(now){
  requestAnimationFrame(frame);
 }
 canvas.addEventListener('click',()=>{const nextIndex=state.levels.findIndex(l=>l===0);if(nextIndex<0){toast('Tous les biomes sont déjà débloqués!');return}if(nextIndex>0&&state.money<unlockCost(nextIndex)){toast('Il te faut '+moneyFormat(unlockCost(nextIndex))+' pour ajouter '+BIOMES[nextIndex].name);return}buy(nextIndex)});
-$('next').addEventListener('click',()=>{if(cover()<99.999)return;switchWorld(state.planet+1,true);toast('Nouvelle planète découverte!')});
+$('next').addEventListener('click',()=>{if(cover()<99.999)return;playSound('discovery');switchWorld(state.planet+1,true);toast('Nouvelle planète découverte!')});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDiscovery()});
 $('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();BIOMES=makeBiomes(state.planet);normalizeProgress();closeObjectives();closeAtlas();lastCosmicDisplay='';lastMissionRender='';refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
 // Offline earnings capped at 4 hours; preserve partial production progress.
