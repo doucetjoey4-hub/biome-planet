@@ -501,6 +501,47 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
 .audio-switches .linkbtn[aria-pressed="true"]{background:#204957;border-color:#66bfd0}
 @media(max-width:390px){.footer .linkbtn{padding:7px 8px!important;font-size:.69rem}.planet-top{gap:5px}}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
+
+/* V36 - remettre les notifications dans le champ de vision, au-dessus du jeu. */
+#toast.toast{
+ position:fixed;
+ top:calc(env(safe-area-inset-top) + 82px);
+ bottom:auto;
+ left:50%;
+ transform:translate(-50%,-12px) scale(.97);
+ width:max-content;
+ min-width:min(280px,89vw);
+ max-width:min(92vw,430px);
+ min-height:62px;
+ padding:13px 16px;
+ border-width:1.5px;
+ border-radius:15px;
+ background:linear-gradient(155deg,#203a50,#0c1b2c);
+ color:#f2fcff;
+ font-size:.82rem;
+ font-weight:850;
+ line-height:1.45;
+ box-shadow:0 14px 50px #000c,0 0 0 1px #98d5ec22,inset 0 1px #ffffff20;
+ z-index:9999;
+ opacity:0;
+ visibility:hidden;
+ pointer-events:none;
+ transition:opacity .22s ease,transform .22s ease,visibility 0s linear .22s;
+}
+#toast.toast.show{
+ opacity:1;
+ visibility:visible;
+ transform:translate(-50%,0) scale(1);
+ transition:opacity .22s ease,transform .22s ease;
+}
+#toast.toast::before{width:30px;height:30px;flex:none;font-size:1.05rem;border-radius:10px}
+#toast.toast[data-kind="success"]{background:linear-gradient(150deg,#1c493d,#0d2728)}
+#toast.toast[data-kind="reward"]{background:linear-gradient(150deg,#514026,#26221c)}
+#toast.toast[data-kind="event"]{background:linear-gradient(150deg,#3b355d,#191a34)}
+#toast.toast[data-kind="warn"]{background:linear-gradient(150deg,#50332c,#281a22)}
+.notification-test{display:block;margin-top:15px;width:100%;min-height:39px;border:1px solid #5eaabb;border-radius:10px;background:#153647;color:#d8fbff;font-weight:800;font-size:.76rem}
+@media(max-height:640px){#toast.toast{top:calc(env(safe-area-inset-top) + 65px)}}
+@media(prefers-reduced-motion:reduce){#toast.toast,#toast.toast.show{transition:none}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
@@ -515,7 +556,7 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
   <input type="range" id="music-volume" min="0" max="100" step="1" value="22">
   <label for="sfx-volume">Effets sonores <output id="sfx-volume-value">55 %</output></label>
   <input type="range" id="sfx-volume" min="0" max="100" step="1" value="55">
-  <p>Une musique originale et discrète, créée directement dans le jeu. Elle démarre après une interaction avec la page.</p>
+  <p>Une musique originale et discrète, créée directement dans le jeu. Elle démarre après une interaction avec la page.</p><button type="button" class="notification-test" id="notification-test">✦ Tester une notification</button>
  </section>
 </div>
 <div class="atlas-overlay hidden" id="atlas-overlay">
@@ -827,6 +868,7 @@ $('sfx-volume').addEventListener('input',e=>{
  updateAudioLabels();
 });
 updateAudioLabels();updateSoundButton();
+$('notification-test').addEventListener('click',()=>toast('Notification cosmique : système opérationnel ✦','success'));
 // Les navigateurs mobiles exigent une interaction avant de permettre le son.
 document.addEventListener('pointerdown',()=>{if(musicEnabled&&!musicTimer)startMusic()},{passive:true});
 document.addEventListener('keydown',()=>{if(musicEnabled&&!musicTimer)startMusic()});
@@ -842,7 +884,7 @@ function toast(msg,type='info'){
  void el.offsetWidth;
  el.classList.add('show');
  clearTimeout(toast.timer);
- toast.timer=setTimeout(()=>el.classList.remove('show'),2300);
+ toast.timer=setTimeout(()=>el.classList.remove('show'),3400);
 }
 // Les archives se découvrent uniquement en développant le monde.
 const COSMIC_ARCHIVES=[
@@ -1043,10 +1085,11 @@ function claimBonus(i,type){
  if(claimed>=earned)return;
  state.bonuses[i].push(type);
  playSound('claim');
+ toast('Bonus activé : '+(type==='cash'?'+10 % revenus':type==='speed'?'-5 % temps':'-4 % coûts'),'reward');
  cards[i].querySelector('.bonus-choices').classList.remove('open');
  save();renderUI();
 }
-function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!','warn');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0;playSound('unlock')}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++;playUpgradeClick()}save();renderUI();drawPlanet()}
+function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!','warn');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0;playSound('unlock');toast('Nouveau biome : '+BIOMES[i].name,'success')}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++;playUpgradeClick()}save();renderUI();drawPlanet()}
 function snapshotWorld(){
  state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money,discoveries:[...state.discoveries],missions:[...state.missions],events:[...state.events],eventActive:state.eventActive?{...state.eventActive}:null};
 }
