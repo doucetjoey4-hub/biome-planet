@@ -900,7 +900,14 @@ function noise2(x,y,s=1){
 // A fixed pixel-art map for each planet. Every pixel has exactly one biome owner.
 // Improvements reveal more of that biome's PREDETERMINED pattern, never repaint it randomly.
 const SIZE=68, STEP=444/SIZE, MID=260, R=222;
-let pixelGroups=[],pixelTotal=0;
+let pixelGroups=[],pixelTotal=0,harmonyLinks=[];
+function harmonyPercent(i){
+ if(!state.levels[i])return 0;
+ let active=0;
+ for(const j of harmonyLinks[i]||[])if(state.levels[j]>0)active++;
+ return Math.min(12,active*4);
+}
+function biomeHarmony(i){return 1+harmonyPercent(i)/100;}
 function buildPixelMap(planet=state.planet,biomes=BIOMES,preview=false){
  // V23 : la carte se construit à partir du relief, de l'eau, du climat
  // et de l'humidité; les biomes suivent ces zones, pas des secteurs radiaux.
@@ -1076,7 +1083,26 @@ function buildPixelMap(planet=state.planet,biomes=BIOMES,preview=false){
    groups[best].push({x,y,reveal,tint});
  }
  groups.forEach(g=>g.sort((a,b)=>a.reveal-b.reveal));
- if(!preview){pixelGroups=groups;pixelTotal=pixels.length}
+ if(!preview){
+   pixelGroups=groups;pixelTotal=pixels.length;
+   // Les bonus d'harmonie utilisent les frontières réelles des biomes,
+   // pas leur position dans la liste. Seuls les voisins révélés collaborent.
+   const ownership=new Int16Array(SIZE*SIZE).fill(-1);
+   groups.forEach((group,i)=>group.forEach(p=>{ownership[p.y*SIZE+p.x]=i}));
+   const boundaries=Array.from({length:biomes.length},()=>new Map());
+   for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){
+     const owner=ownership[y*SIZE+x];if(owner<0)continue;
+     for(const [dx,dy] of [[1,0],[0,1]]){
+       const xx=x+dx,yy=y+dy;
+       if(xx>=SIZE||yy>=SIZE)continue;
+       const other=ownership[yy*SIZE+xx];
+       if(other<0||other===owner)continue;
+       boundaries[owner].set(other,(boundaries[owner].get(other)||0)+1);
+       boundaries[other].set(owner,(boundaries[other].get(owner)||0)+1);
+     }
+   }
+   harmonyLinks=boundaries.map((m,i)=>[...m.entries()].filter(([other,edges])=>edges>=8&&other!==i).map(([other])=>other));
+ }
  return groups;
 }
 
