@@ -647,13 +647,13 @@ const SOUND_KEY='biome-planet-sound-enabled';
 const MUSIC_KEY='biome-planet-music-enabled';
 const MUSIC_VOLUME_KEY='biome-planet-music-volume';
 const SFX_VOLUME_KEY='biome-planet-sfx-volume';
-const readAudioNumber=(key,fallback)=>{try{const n=Number(localStorage.getItem(key));return Number.isFinite(n)&&n>=0&&n<=1?n:fallback}catch(e){return fallback}};
-let soundEnabled=true,musicEnabled=false;
+const readAudioNumber=(key,fallback)=>{try{const raw=localStorage.getItem(key);if(raw===null)return fallback;const n=Number(raw);return Number.isFinite(n)&&n>=0&&n<=1?n:fallback}catch(e){return fallback}};
+let soundEnabled=true,musicEnabled=true;
 let musicVolume=readAudioNumber(MUSIC_VOLUME_KEY,.22);
 let sfxVolume=readAudioNumber(SFX_VOLUME_KEY,.55);
 try{
  soundEnabled=localStorage.getItem(SOUND_KEY)!=='false';
- musicEnabled=localStorage.getItem(MUSIC_KEY)==='true'; // Musique opt-in, pas de lecture imposée.
+ musicEnabled=localStorage.getItem(MUSIC_KEY)!=='false'; // Musique discrète après interaction, jamais en lecture automatique.
 }catch(e){}
 let audioCtx=null,masterAudio=null,sfxBus=null,musicBus=null,musicTimer=null,musicNext=0,musicStep=0,lastSound=0;
 function ensureAudio(){
