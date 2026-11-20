@@ -379,12 +379,34 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
 .discovery-reward{border:1px solid #618275;background:#132b30;padding:10px;border-radius:10px;color:#b6f7db;font-size:.82rem;font-weight:800}
 .discovery-primary{margin-top:14px;width:100%;min-height:45px;border:1px solid #78e5db;border-radius:11px;background:#34bed2;color:#061a24;font-weight:900}
 @media(prefers-reduced-motion:reduce){.signal-pulse,.discovery-emblem{animation:none}}
+
+/* V29 : objectifs discrets et étapes d'évolution, intégrés au design existant. */
+.evolution-line{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 2px 1px;min-height:24px}
+.evolution-stage{font-size:.7rem;font-weight:900;color:#91e2ec}
+.evolution-sub{font-size:.64rem;color:#829fb4;text-align:right}
+.mission-panel{margin:2px 0 13px;padding:11px 12px 12px;border:1px solid #315771;background:linear-gradient(180deg,#11202f,#0c1825);border-radius:14px}
+.mission-header{display:flex;justify-content:space-between;gap:8px;color:#a4d9eb;letter-spacing:.075em;font-weight:900;font-size:.69rem;margin-bottom:10px}
+.mission-count{color:#8ef4d6;letter-spacing:0}
+.mission-list{display:grid;gap:7px}
+.mission-item{display:flex;align-items:center;gap:8px;min-height:34px;padding:5px 0;border-top:1px solid #263c4c}
+.mission-item:first-child{border-top:0}
+.mission-content{min-width:0;flex:1}
+.mission-name{display:block;font-size:.73rem;font-weight:800;color:#e7f7ff}
+.mission-detail{display:block;margin-top:3px;color:#85a8b8;font-size:.65rem}
+.mission-progress{height:3px;margin-top:5px;background:#1f3543;border-radius:4px;overflow:hidden}
+.mission-progress>span{height:100%;display:block;background:#5ddfd6}
+.mission-complete{font-size:.7rem;color:#6ee3bd;font-weight:800}
+.mission-claim{min-width:78px;flex:none;border:1px solid #69d8c0;background:#153b42;border-radius:9px;padding:8px 9px;color:#b8ffe9;font-size:.67rem;font-weight:900}
+@media(max-height:680px){.mission-panel{padding:8px 10px}.mission-item{min-height:31px}.evolution-line{padding-top:2px}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
 <meta name="theme-color" content="#101219">
 </head>
-<body><main class="app"><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><div class="planet-extra"><span class="planet-extra-text" id="planet-extra-text"></span><button type="button" class="planet-log-btn" id="planet-log-btn">◈ Journal <span id="planet-log-count"></span></button></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><span class="muted">Revenus automatiques</span></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><span class="muted" id="save-label">Sauvegarde locale automatique</span><div class="footer-actions"><button type="button" class="linkbtn sound-toggle" id="sound-toggle" aria-label="Désactiver le son" aria-pressed="true">🔊 Son</button><button class="linkbtn" id="reset">Recommencer</button></div></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
+<body><main class="app"><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><div class="planet-extra"><span class="planet-extra-text" id="planet-extra-text"></span><button type="button" class="planet-log-btn" id="planet-log-btn">◈ Journal <span id="planet-log-count"></span></button></div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><span class="muted">Revenus automatiques</span></div><div class="biome-scroll" id="biome-scroll"><section class="mission-panel" id="mission-panel" aria-label="Objectifs planétaires">
+  <div class="mission-header"><span>✧ OBJECTIFS DU MONDE</span><span class="mission-count" id="mission-count">0 / 5</span></div>
+  <div class="mission-list" id="mission-list"></div>
+</section><section class="biomes" id="biomes"></section><footer class="footer"><span class="muted" id="save-label">Sauvegarde locale automatique</span><div class="footer-actions"><button type="button" class="linkbtn sound-toggle" id="sound-toggle" aria-label="Désactiver le son" aria-pressed="true">🔊 Son</button><button class="linkbtn" id="reset">Recommencer</button></div></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
 <div class="discovery-overlay hidden" id="discovery-overlay">
   <section class="discovery-dialog" role="dialog" aria-modal="true" aria-labelledby="discovery-title">
     <div class="discovery-head"><span>◈ ARCHIVES COSMIQUES</span><button type="button" id="discovery-close" aria-label="Fermer">✕</button></div>
@@ -502,11 +524,12 @@ function biomeShade(name,tile,planet){
  return clamp(3+Math.round(d*1.2)+Math.round(patch*.35));
 }
 const KEY='biome-planet-save-v10';let state;
-function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],bonuses:[],discoveries:[],worlds:{},last:Date.now()}}
+function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],bonuses:[],discoveries:[],missions:[],worlds:{},last:Date.now()}}
 try{state={...initial(),...JSON.parse(localStorage.getItem(KEY)||'null')}}catch(e){state=initial()}
 if(!Array.isArray(state.levels))state=initial();
 if(!Array.isArray(state.timers))state.timers=state.levels.map(()=>0);
 if(!Array.isArray(state.discoveries))state.discoveries=[];
+if(!Array.isArray(state.missions))state.missions=[];
 if(!state.worlds||typeof state.worlds!=='object'||Array.isArray(state.worlds))state.worlds={};
 state.planet=Math.max(1,Math.min(999,Math.floor(Number(state.planet)||1)));
 BIOMES=makeBiomes(state.planet);
@@ -522,7 +545,7 @@ function normalizeProgress(){
 normalizeProgress();
 // Migrer l'ancienne sauvegarde sans supprimer la planète courante.
 if(!state.worlds[state.planet]){
- state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money,discoveries:[...state.discoveries]};
+ state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money,discoveries:[...state.discoveries],missions:[...state.missions]};
 }
 const $=id=>document.getElementById(id),canvas=$('planet'),ctx=canvas.getContext('2d');
 ctx.imageSmoothingEnabled=false;
@@ -633,6 +656,65 @@ $('discovery-close').addEventListener('click',closeDiscovery);
 $('discovery-action').addEventListener('click',claimDiscovery);
 $('discovery-overlay').addEventListener('click',e=>{if(e.target===$('discovery-overlay'))closeDiscovery()});
 
+// Petits défis propres à chaque planète, indépendants des archives cosmiques.
+const MISSIONS=[
+ {name:'Premières racines',target:3,kind:'biomes',text:'Développer 3 biomes',bonus:38},
+ {name:'Une planète prend vie',target:25,kind:'coverage',text:'Révéler 25 % du monde',bonus:65},
+ {name:'Construction patiente',target:60,kind:'levels',text:'Atteindre 60 niveaux au total',bonus:90},
+ {name:'Un secret sous la surface',target:1,kind:'discovery',text:'Révéler une découverte cosmique',bonus:125},
+ {name:'Un monde florissant',target:75,kind:'coverage',text:'Révéler 75 % du monde',bonus:180}
+];
+let lastMissionRender='';
+function missionProgress(m){
+ if(m.kind==='biomes')return state.levels.filter(l=>l>0).length;
+ if(m.kind==='levels')return state.levels.reduce((a,b)=>a+b,0);
+ if(m.kind==='discovery')return archiveClaimed().length;
+ return Math.floor(cover());
+}
+function claimMission(index){
+ if(state.missions.includes(index)||!MISSIONS[index])return;
+ const mission=MISSIONS[index];
+ if(missionProgress(mission)<mission.target)return;
+ const minute=BIOMES.reduce((n,b,i)=>n+(state.levels[i]?revenue(i)*60/cycleTime(i):0),0);
+ const reward=Math.max(25*state.planet,Math.round(minute*(mission.bonus/100)));
+ state.missions.push(index);
+ state.money+=reward;
+ save();renderUI();renderMissions(true);
+ toast('Objectif atteint : +'+moneyFormat(reward));
+}
+function renderMissions(force=false){
+ const values=MISSIONS.map((m,i)=>({m,i,value:missionProgress(m),done:state.missions.includes(i)}));
+ const signature=state.planet+'|'+values.map(v=>v.value+'/'+(v.done?1:0)).join('|');
+ if(!force&&signature===lastMissionRender)return;
+ lastMissionRender=signature;
+ $('mission-count').textContent=state.missions.length+' / '+MISSIONS.length;
+ const container=$('mission-list');container.replaceChildren();
+ for(const {m,i,value,done} of values){
+   const item=document.createElement('div');item.className='mission-item';
+   const info=document.createElement('div');info.className='mission-content';
+   const name=document.createElement('span');name.className='mission-name';name.textContent=m.name;
+   const detail=document.createElement('span');detail.className='mission-detail';detail.textContent=m.text+' · '+Math.min(m.target,value)+' / '+m.target;
+   const track=document.createElement('div');track.className='mission-progress';
+   const fill=document.createElement('span');fill.style.width=(Math.min(1,value/m.target)*100)+'%';track.appendChild(fill);
+   info.append(name,detail,track);item.appendChild(info);
+   if(done){const checked=document.createElement('span');checked.className='mission-complete';checked.textContent='✓';item.appendChild(checked)}
+   else if(value>=m.target){const claim=document.createElement('button');claim.type='button';claim.className='mission-claim';claim.textContent='Réclamer';claim.addEventListener('click',()=>claimMission(i));item.appendChild(claim)}
+   container.appendChild(item);
+ }
+}
+const STAGES=[
+ {at:0,name:'◈ Monde en éveil',desc:'Les premières régions se dessinent'},
+ {at:25,name:'✦ Planète naissante',desc:'La vie gagne du terrain'},
+ {at:50,name:'✧ Planète vivante',desc:'Les biomes trouvent leur équilibre'},
+ {at:80,name:'✺ Planète florissante',desc:'Une énergie nouvelle rayonne'},
+ {at:100,name:'✵ Monde accompli',desc:'Un écosystème pleinement développé'}
+];
+function renderEvolution(){
+ const p=cover();
+ const stage=[...STAGES].reverse().find(v=>p+1e-6>=v.at)||STAGES[0];
+ $('evolution-stage').textContent=stage.name;
+ $('evolution-sub').textContent=stage.desc;
+}
 const cards=[];
 function refreshBiomeCards(){
  stopHold();
@@ -812,10 +894,11 @@ function switchWorld(num,award=false){
  state.bonuses=stored?.bonuses?stored.bonuses.map(v=>[...v]):BIOMES.map(()=>[]);
  state.money=Number.isFinite(stored?.money)?stored.money:0;
  state.discoveries=Array.isArray(stored?.discoveries)?[...stored.discoveries]:[];
+ state.missions=Array.isArray(stored?.missions)?[...stored.missions]:[];
  closeDiscovery();
  normalizeProgress();
  if(award&&!stored)state.money+=30*p;
- refreshBiomeCards();buildPixelMap();drawPlanet();renderUI();save();
+ lastMissionRender='';refreshBiomeCards();buildPixelMap();drawPlanet();renderUI();save();
  $('biome-scroll').scrollTop=0;closeWorlds();
 }
 $('open-planets').addEventListener('click',()=>{renderWorldList();$('world-overlay').classList.remove('hidden');requestAnimationFrame(()=>showWorldIndex(worldCarouselIndex,false))});
@@ -838,6 +921,7 @@ function renderUI(){
  $('planet-extra-text').textContent=signal>=0?'✦ Signal inhabituel détecté':found?'✧ '+found+' découverte'+(found>1?'s':'')+' archivée'+(found>1?'s':''):'';
 
  $('next').classList.toggle('hidden',cover()<99.999);
+ renderEvolution();renderMissions();
  let minIncome=0;
  BIOMES.forEach((b,i)=>{
    const l=state.levels[i],el=cards[i],btn=el.querySelector('button');
@@ -1146,7 +1230,7 @@ let lastTick=performance.now(),lastSave=Date.now();function frame(now){const ela
 canvas.addEventListener('click',()=>{const nextIndex=state.levels.findIndex(l=>l===0);if(nextIndex<0){toast('Tous les biomes sont déjà débloqués!');return}if(nextIndex>0&&state.money<unlockCost(nextIndex)){toast('Il te faut '+moneyFormat(unlockCost(nextIndex))+' pour ajouter '+BIOMES[nextIndex].name);return}buy(nextIndex)});
 $('next').addEventListener('click',()=>{if(cover()<99.999)return;switchWorld(state.planet+1,true);toast('Nouvelle planète découverte!')});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDiscovery()});
-$('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();BIOMES=makeBiomes(state.planet);normalizeProgress();refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
+$('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();BIOMES=makeBiomes(state.planet);normalizeProgress();lastMissionRender='';refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
 // Offline earnings capped at 4 hours; preserve partial production progress.
 const offline=Math.min(40*60*1000,Math.max(0,Date.now()-(Number(state.last)||Date.now())));if(offline>5000){let earned=0;BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+offline,cycles=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);earned+=cycles*revenue(i)});state.money+=earned;if(earned>0)setTimeout(()=>toast('Pendant ton absence : +'+moneyFormat(earned)),500)}
 window.addEventListener('pagehide',()=>{state.last=Date.now();save()});document.addEventListener('visibilitychange',()=>{if(document.hidden){state.last=Date.now();save()}else{let dt=Math.min(40*60*1000,Math.max(0,Date.now()-(state.last||Date.now())));BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+dt,n=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);state.money+=n*revenue(i)});lastTick=performance.now();state.last=Date.now();save()}});
