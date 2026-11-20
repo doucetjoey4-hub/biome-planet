@@ -357,12 +357,44 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
 .world-card.current .world-play{background:#193548;color:#b3e9f4;border-color:#3e809a}
 .world-card .world-play:active{transform:scale(.985)}
 @media(max-width:410px){.world-arrow{width:23px}.world-carousel{gap:8px;padding-left:max(0px,calc((100% - 258px)/2));padding-right:max(0px,calc((100% - 258px)/2))}.world-card{flex-basis:min(100%,258px);min-height:337px}.world-card canvas{max-width:187px}}
+
+/* Discoverable cosmic systems; deliberately quiet until found. */
+.planet-holder{isolation:isolate}
+.planet-extra{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 3px 0;min-height:25px}
+.planet-extra-text{font-size:.64rem;color:#83b5c5;line-height:1.4;text-align:left}
+.planet-log-btn{font-size:.67rem;font-weight:800;border:1px solid #38556b;color:#bad9e5;background:#112332;border-radius:99px;padding:6px 10px;white-space:nowrap}
+.planet-log-btn:not(.unlocked){opacity:.7}
+.anomaly-signal{position:absolute;right:8%;top:14%;z-index:4;width:48px;height:48px;border-radius:50%;border:1px solid #f4d991b0;background:radial-gradient(circle,#8c643cd9,#322943ec 65%);box-shadow:0 0 18px #ffd18788;display:grid;place-items:center;color:#fff6b5}
+.signal-glyph{font-size:1.48rem;z-index:1;text-shadow:0 0 10px #fff4bc}
+.signal-pulse{position:absolute;inset:-6px;border-radius:50%;border:1px solid #ffdd8f9c;animation:anomalyPulse 2.1s ease-out infinite;pointer-events:none}
+@keyframes anomalyPulse{0%{transform:scale(.72);opacity:.8}100%{transform:scale(1.7);opacity:0}}
+.discovery-overlay{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;background:#02060cdd;backdrop-filter:blur(10px);padding:20px}
+.discovery-dialog{width:min(100%,380px);padding:17px 19px 21px;background:radial-gradient(circle at 50% 13%,#24364b,#101a2a 69%);border:1px solid #6e8598;border-radius:21px;box-shadow:0 24px 70px #000d;color:#eaf8ff;text-align:center}
+.discovery-head{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.65rem;letter-spacing:.15em;color:#a7c5d8;font-weight:900}
+.discovery-head button{width:32px;height:32px;border:1px solid #425870;border-radius:8px;background:#1c2a3a;color:#fff}
+.discovery-emblem{font-size:3.8rem;margin:12px auto 4px;color:#ffe2a0;text-shadow:0 0 28px #ffdc9080;animation:emblemFloat 3s ease-in-out infinite}
+@keyframes emblemFloat{50%{transform:translateY(-5px)}}
+.discovery-dialog h2{font-size:1.15rem;margin:7px 0 10px;line-height:1.35}
+.discovery-dialog p{font-size:.8rem;color:#bfced9;line-height:1.6;margin:0 0 16px}
+.discovery-reward{border:1px solid #618275;background:#132b30;padding:10px;border-radius:10px;color:#b6f7db;font-size:.82rem;font-weight:800}
+.discovery-primary{margin-top:14px;width:100%;min-height:45px;border:1px solid #78e5db;border-radius:11px;background:#34bed2;color:#061a24;font-weight:900}
+@media(prefers-reduced-motion:reduce){.signal-pulse,.discovery-emblem{animation:none}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
 <meta name="theme-color" content="#101219">
 </head>
-<body><main class="app"><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><span class="muted">Revenus automatiques</span></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><span class="muted" id="save-label">Sauvegarde locale automatique</span><div class="footer-actions"><button type="button" class="linkbtn sound-toggle" id="sound-toggle" aria-label="Désactiver le son" aria-pressed="true">🔊 Son</button><button class="linkbtn" id="reset">Recommencer</button></div></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
+<body><main class="app"><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><div class="planet-extra"><span class="planet-extra-text" id="planet-extra-text"></span><button type="button" class="planet-log-btn" id="planet-log-btn">◈ Journal <span id="planet-log-count"></span></button></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><span class="muted">Revenus automatiques</span></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><span class="muted" id="save-label">Sauvegarde locale automatique</span><div class="footer-actions"><button type="button" class="linkbtn sound-toggle" id="sound-toggle" aria-label="Désactiver le son" aria-pressed="true">🔊 Son</button><button class="linkbtn" id="reset">Recommencer</button></div></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
+<div class="discovery-overlay hidden" id="discovery-overlay">
+  <section class="discovery-dialog" role="dialog" aria-modal="true" aria-labelledby="discovery-title">
+    <div class="discovery-head"><span>◈ ARCHIVES COSMIQUES</span><button type="button" id="discovery-close" aria-label="Fermer">✕</button></div>
+    <div class="discovery-emblem" id="discovery-emblem" aria-hidden="true">✧</div>
+    <h2 id="discovery-title"></h2>
+    <p id="discovery-description"></p>
+    <div class="discovery-reward" id="discovery-reward"></div>
+    <button type="button" class="discovery-primary" id="discovery-action">Continuer</button>
+  </section>
+</div>
 <div class="world-overlay hidden" id="world-overlay">
  <section class="world-dialog" role="dialog" aria-modal="true" aria-labelledby="world-title">
   <div class="world-dialog-head"><h2 id="world-title">🪐 Choisir une planète</h2><button type="button" id="close-planets" aria-label="Fermer">✕</button></div>
@@ -470,10 +502,11 @@ function biomeShade(name,tile,planet){
  return clamp(3+Math.round(d*1.2)+Math.round(patch*.35));
 }
 const KEY='biome-planet-save-v10';let state;
-function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],bonuses:[],worlds:{},last:Date.now()}}
+function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],bonuses:[],discoveries:[],worlds:{},last:Date.now()}}
 try{state={...initial(),...JSON.parse(localStorage.getItem(KEY)||'null')}}catch(e){state=initial()}
 if(!Array.isArray(state.levels))state=initial();
 if(!Array.isArray(state.timers))state.timers=state.levels.map(()=>0);
+if(!Array.isArray(state.discoveries))state.discoveries=[];
 if(!state.worlds||typeof state.worlds!=='object'||Array.isArray(state.worlds))state.worlds={};
 state.planet=Math.max(1,Math.min(999,Math.floor(Number(state.planet)||1)));
 BIOMES=makeBiomes(state.planet);
@@ -489,7 +522,7 @@ function normalizeProgress(){
 normalizeProgress();
 // Migrer l'ancienne sauvegarde sans supprimer la planète courante.
 if(!state.worlds[state.planet]){
- state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money};
+ state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money,discoveries:[...state.discoveries]};
 }
 const $=id=>document.getElementById(id),canvas=$('planet'),ctx=canvas.getContext('2d');
 ctx.imageSmoothingEnabled=false;
@@ -601,7 +634,7 @@ function claimBonus(i,type){
 }
 function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++;playUpgradeClick()}save();renderUI();drawPlanet()}
 function snapshotWorld(){
- state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money};
+ state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money,discoveries:[...state.discoveries]};
 }
 function save(){try{snapshotWorld();localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
 function worldName(p){return ['Aube','Tropicale','Glaciale','Aride','Fantaisie','Mystique'][(p-1)%6]}
@@ -723,6 +756,8 @@ function switchWorld(num,award=false){
  state.timers=stored?.timers?[...stored.timers]:BIOMES.map(()=>0);
  state.bonuses=stored?.bonuses?stored.bonuses.map(v=>[...v]):BIOMES.map(()=>[]);
  state.money=Number.isFinite(stored?.money)?stored.money:0;
+ state.discoveries=Array.isArray(stored?.discoveries)?[...stored.discoveries]:[];
+ closeDiscovery();
  normalizeProgress();
  if(award&&!stored)state.money+=30*p;
  refreshBiomeCards();buildPixelMap();drawPlanet();renderUI();save();
