@@ -1163,7 +1163,7 @@ function claimBonus(i,type){
 }
 function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!','warn');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0;playSound('unlock');toast('Nouveau biome : '+BIOMES[i].name,'success')}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++;playUpgradeClick()}save();renderUI();drawPlanet()}
 function snapshotWorld(){
- state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money,discoveries:[...state.discoveries],missions:[...state.missions],events:[...state.events],eventActive:state.eventActive?{...state.eventActive}:null};
+ state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money,discoveries:[...state.discoveries],missions:[...state.missions],events:[...state.events],eventActive:state.eventActive?{...state.eventActive}:null,exploration:normalizedExploration(state.exploration)};
 }
 function save(){try{snapshotWorld();localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
 function worldName(p){return ['Aube','Tropicale','Glaciale','Aride','Fantaisie','Mystique'][(p-1)%6]}
