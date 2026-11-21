@@ -3,7 +3,7 @@
   "name": "Biome Planet",
   "short_name": "Biome Planet",
   "description": "Jeu idle de terraformation en pixels",
-  "start_url": "./?app=v41-atelier-orbital",
+  "start_url": "./?app=v411-satellite-visible",
   "scope": "./",
   "display": "standalone",
   "background_color": "#101219",
