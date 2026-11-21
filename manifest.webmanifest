@@ -2,12 +2,12 @@
   "id": "./",
   "name": "Biome Planet",
   "short_name": "Biome Planet",
-  "description": "Jeu idle de terraformation en pixels",
-  "start_url": "./?app=v421-toast-compact",
+  "description": "Jeu de terraformation spatiale, construction de satellites et exploration des biomes",
+  "start_url": "./?app=v43-orbital-command",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#101219",
-  "theme_color": "#101219",
+  "background_color": "#080f1c",
+  "theme_color": "#0b192c",
   "orientation": "portrait",
   "icons": [
     {
