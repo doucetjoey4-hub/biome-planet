@@ -4152,6 +4152,11 @@ function frame(now){
    const period=cycleTime(i)*1000;
    state.timers[i]+=elapsed;
    if(state.timers[i]>=period){let n=Math.floor(state.timers[i]/period);state.timers[i]%=period;state.money+=revenue(i)*n}
+    // Update revenue rings independently of the heavier UI.
+    if(!document.hidden){
+      const ring=cards[i]?.querySelector('.cycle-fg');
+      if(ring)ring.style.strokeDashoffset=(100.53*(1-Math.max(0,Math.min(.99999,state.timers[i]/period)))).toFixed(2);
+    }
  }
  if(now-lastExplorationScan>1100&&!document.hidden){
    lastExplorationScan=now;eventTick();
