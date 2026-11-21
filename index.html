@@ -1430,61 +1430,6 @@ function switchWorld(num,award=false){
  normalizeProgress();
  if(award&&!stored)state.money+=30*p;
  lastMissionRender='';
-/* V39 : navigation centralisée, sans changer les systèmes de gameplay. */
-let sideMenuOpen=false;
-const SIDE_MENU_ACTIONS=['explore-open','objectives-open','atlas-open','planet-log-btn','audio-settings-open','reset'];
-function closeSideMenu(restoreFocus=true){
- const wasOpen=sideMenuOpen;
- sideMenuOpen=false;
- $('side-menu-overlay').classList.add('hidden');
- $('nav-toggle').setAttribute('aria-expanded','false');
- $('nav-toggle').setAttribute('aria-label','Ouvrir le menu principal');
- if(restoreFocus&&wasOpen)$('nav-toggle').focus();
-}
-function openSideMenu(){
- if(sideMenuOpen)return;
- sideMenuOpen=true;playSound('open');
- $('side-menu-overlay').classList.remove('hidden');
- $('nav-toggle').setAttribute('aria-expanded','true');
- $('nav-toggle').setAttribute('aria-label','Fermer le menu principal');
- $('nav-close').focus();
-}
-$('nav-toggle').setAttribute('aria-expanded','false');
-$('nav-toggle').addEventListener('click',()=>sideMenuOpen?closeSideMenu():openSideMenu());
-$('nav-close').addEventListener('click',()=>closeSideMenu());
-$('side-menu-overlay').addEventListener('click',e=>{
- if(e.target===$('side-menu-overlay'))closeSideMenu();
-});
-SIDE_MENU_ACTIONS.forEach(id=>$(id).addEventListener('click',()=>closeSideMenu(false)));
-document.addEventListener('keydown',e=>{
- if(!sideMenuOpen)return;
- if(e.key==='Escape'){e.preventDefault();closeSideMenu();return}
- if(e.key==='Tab'){
-  const items=Array.from($('side-menu').querySelectorAll('button:not(:disabled)'));
-  if(!items.length)return;
-  const first=items[0],last=items[items.length-1];
-  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
-  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
- }
-});
-const PLANET_LAYOUT_KEY='biome-planet-layout-expanded-v39';
-let planetExpanded=false;
-try{planetExpanded=localStorage.getItem(PLANET_LAYOUT_KEY)==='true'}catch(e){}
-function updatePlanetLayout(){
- document.querySelector('.app').classList.toggle('planet-expanded',planetExpanded);
- $('planet-layout-toggle').setAttribute('aria-pressed',String(planetExpanded));
- $('planet-layout-toggle').setAttribute('aria-label',planetExpanded?'Réduire la planète pour agrandir la liste des biomes':'Agrandir la planète');
- $('planet-layout-toggle').textContent=planetExpanded?'↧ Biomes':'⤢ Planète';
- $('menu-planet-size-label').textContent=planetExpanded?'Planète agrandie · moins de biomes visibles':'Compact · plus de biomes visibles';
-}
-function togglePlanetLayout(){
- planetExpanded=!planetExpanded;playSound('navigate');
- try{localStorage.setItem(PLANET_LAYOUT_KEY,String(planetExpanded))}catch(e){}
- updatePlanetLayout();
-}
-$('planet-layout-toggle').addEventListener('click',togglePlanetLayout);
-$('menu-planet-size').addEventListener('click',()=>{togglePlanetLayout();closeSideMenu(false)});
-updatePlanetLayout();
 refreshBiomeCards();buildPixelMap();drawPlanet();renderUI();save();
  $('biome-scroll').scrollTop=0;closeWorlds();
 }
@@ -2349,7 +2294,62 @@ function frame(now){
 canvas.addEventListener('click',()=>{const nextIndex=state.levels.findIndex(l=>l===0);if(nextIndex<0){toast('Tous les biomes sont déjà débloqués!');return}if(nextIndex>0&&state.money<unlockCost(nextIndex)){toast('Il te faut '+moneyFormat(unlockCost(nextIndex))+' pour ajouter '+BIOMES[nextIndex].name);return}buy(nextIndex)});
 $('next').addEventListener('click',()=>{if(cover()<99.999)return;playSound('discovery');switchWorld(state.planet+1,true);toast('Nouvelle planète découverte!','success')});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDiscovery()});
-$('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();state.exploration=normalizedExploration(null);BIOMES=makeBiomes(state.planet);normalizeProgress();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';lastMissionRender='';refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
+$('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();state.exploration=normalizedExploration(null);BIOMES=makeBiomes(state.planet);normalizeProgress();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';lastMissionRender='';/* V39 : navigation centralisée, sans changer les systèmes de gameplay. */
+let sideMenuOpen=false;
+const SIDE_MENU_ACTIONS=['explore-open','objectives-open','atlas-open','planet-log-btn','audio-settings-open','reset'];
+function closeSideMenu(restoreFocus=true){
+ const wasOpen=sideMenuOpen;
+ sideMenuOpen=false;
+ $('side-menu-overlay').classList.add('hidden');
+ $('nav-toggle').setAttribute('aria-expanded','false');
+ $('nav-toggle').setAttribute('aria-label','Ouvrir le menu principal');
+ if(restoreFocus&&wasOpen)$('nav-toggle').focus();
+}
+function openSideMenu(){
+ if(sideMenuOpen)return;
+ sideMenuOpen=true;playSound('open');
+ $('side-menu-overlay').classList.remove('hidden');
+ $('nav-toggle').setAttribute('aria-expanded','true');
+ $('nav-toggle').setAttribute('aria-label','Fermer le menu principal');
+ $('nav-close').focus();
+}
+$('nav-toggle').setAttribute('aria-expanded','false');
+$('nav-toggle').addEventListener('click',()=>sideMenuOpen?closeSideMenu():openSideMenu());
+$('nav-close').addEventListener('click',()=>closeSideMenu());
+$('side-menu-overlay').addEventListener('click',e=>{
+ if(e.target===$('side-menu-overlay'))closeSideMenu();
+});
+SIDE_MENU_ACTIONS.forEach(id=>$(id).addEventListener('click',()=>closeSideMenu(false)));
+document.addEventListener('keydown',e=>{
+ if(!sideMenuOpen)return;
+ if(e.key==='Escape'){e.preventDefault();closeSideMenu();return}
+ if(e.key==='Tab'){
+  const items=Array.from($('side-menu').querySelectorAll('button:not(:disabled)'));
+  if(!items.length)return;
+  const first=items[0],last=items[items.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+ }
+});
+const PLANET_LAYOUT_KEY='biome-planet-layout-expanded-v39';
+let planetExpanded=false;
+try{planetExpanded=localStorage.getItem(PLANET_LAYOUT_KEY)==='true'}catch(e){}
+function updatePlanetLayout(){
+ document.querySelector('.app').classList.toggle('planet-expanded',planetExpanded);
+ $('planet-layout-toggle').setAttribute('aria-pressed',String(planetExpanded));
+ $('planet-layout-toggle').setAttribute('aria-label',planetExpanded?'Réduire la planète pour agrandir la liste des biomes':'Agrandir la planète');
+ $('planet-layout-toggle').textContent=planetExpanded?'↧ Biomes':'⤢ Planète';
+ $('menu-planet-size-label').textContent=planetExpanded?'Planète agrandie · moins de biomes visibles':'Compact · plus de biomes visibles';
+}
+function togglePlanetLayout(){
+ planetExpanded=!planetExpanded;playSound('navigate');
+ try{localStorage.setItem(PLANET_LAYOUT_KEY,String(planetExpanded))}catch(e){}
+ updatePlanetLayout();
+}
+$('planet-layout-toggle').addEventListener('click',togglePlanetLayout);
+$('menu-planet-size').addEventListener('click',()=>{togglePlanetLayout();closeSideMenu(false)});
+updatePlanetLayout();
+refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
 // Offline earnings capped at 4 hours; preserve partial production progress.
 const offline=Math.min(40*60*1000,Math.max(0,Date.now()-(Number(state.last)||Date.now())));if(offline>5000){let earned=0;BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+offline,cycles=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);earned+=cycles*revenue(i)});state.money+=earned;if(earned>0)setTimeout(()=>toast('Pendant ton absence : +'+moneyFormat(earned)),500)}
 window.addEventListener('pagehide',()=>{state.last=Date.now();save()});document.addEventListener('visibilitychange',()=>{if(document.hidden){state.last=Date.now();save()}else{let dt=Math.min(40*60*1000,Math.max(0,Date.now()-(state.last||Date.now())));BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+dt,n=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);state.money+=n*revenue(i)});lastTick=performance.now();state.last=Date.now();save()}});
