@@ -774,6 +774,40 @@ button,.planet-holder canvas{touch-action:manipulation}
 #toast.toast{touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;pointer-events:none}
 #toast.toast.show{pointer-events:auto}
 #toast.toast:not(.show){opacity:0!important}
+
+/* V41 : Atelier orbital, fabrication tactile et aperçu pixel-art évolutif. */
+.workshop-inventory{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.workshop-inventory-item{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:8px 3px;border:1px solid #41637b;background:#14283b;border-radius:9px;min-width:0}
+.workshop-inventory-item span{font-size:.61rem;color:#9dc9d7;text-align:center}
+.workshop-inventory-item strong{font-size:.89rem;color:#e6f8ff}
+.workshop-switcher{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.workshop-switch{border:1px solid #3a6179;border-radius:8px;background:#102337;color:#a6c2d2;font-size:.66rem;font-weight:800;padding:9px 3px;min-height:38px}
+.workshop-switch.active{background:#245368;color:#f2ffff;border-color:#6ec9d7}
+.workshop-project-head{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.workshop-project-head strong{font-size:.83rem;color:#f1fcff}
+.workshop-stage{font-size:.56rem;font-weight:850;color:#b2f3dc;text-align:right}
+.workshop-preview{overflow:hidden;border:1px solid #3e6177;border-radius:11px;background:radial-gradient(circle at center,#1f3950,#0d1c2b)}
+.workshop-ship{display:block;width:100%;max-height:180px;aspect-ratio:280/142;object-fit:contain;image-rendering:pixelated}
+.workshop-progress{display:grid;gap:6px}
+.workshop-progress-labels{display:flex;justify-content:space-between;gap:8px;color:#c8e8ed;font-size:.67rem}
+.workshop-progress-track{height:8px;border-radius:8px;background:#294253;overflow:hidden}
+.workshop-progress-fill{height:100%;background:linear-gradient(90deg,#5ba8dc,#81ecca);transition:width .23s}
+.workshop-locked,.workshop-blueprint{font-size:.68rem;line-height:1.5;color:#b6cdda;margin:0}
+.workshop-parts{display:grid;gap:7px}
+.workshop-part{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #355b73;background:#152a3d;border-radius:10px}
+.workshop-part.built{border-color:#427967;background:#182e32}
+.workshop-part-info{flex:1;min-width:0}
+.workshop-part-info strong{display:block;font-size:.73rem;color:#e8faff}
+.workshop-part-info p{font-size:.63rem;margin:4px 0 6px;color:#a8bfcd}
+.workshop-part-materials{display:flex;flex-wrap:wrap;gap:4px}
+.workshop-part-materials span{font-size:.60rem;padding:3px 5px;border-radius:5px;background:#213748;color:#b4cbd8}
+.workshop-part-materials .enough{color:#b0e6d6}.workshop-part-materials .missing{color:#f2b7af}.workshop-part-materials .ready{color:#8be4b0}
+.workshop-part>button{flex:none;min-width:76px;border:1px solid #65a6b9;color:#e4faff;background:#245065;border-radius:8px;padding:8px 5px;font-size:.63rem;font-weight:850}
+.workshop-part>button:disabled{opacity:.45}
+.workshop-finish{padding:11px;border:1px solid #47718a;border-radius:11px;background:#142b3e}
+.workshop-finish p{color:#adcedd;font-size:.69rem;margin:0 0 9px}
+.workshop-launch{width:100%;border:1px solid #79dfd5;background:#1e645f;color:#efffff;font-weight:900;font-size:.76rem;border-radius:9px;min-height:43px}
+.workshop-launch:disabled{opacity:.5}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
@@ -785,7 +819,7 @@ button,.planet-holder canvas{touch-action:manipulation}
   <div class="side-menu-head"><div><span>BIOME PLANET</span><h2 id="side-menu-title">Centre de contrôle</h2></div><button type="button" id="nav-close" class="nav-close" aria-label="Fermer le menu">✕</button></div>
   <div class="side-menu-scroll">
    <section class="menu-group"><h3>Explorer</h3>
-    <button type="button" class="menu-action explore-open" id="explore-open" aria-haspopup="dialog" aria-controls="explore-overlay"><span>🛰</span><span>Exploration <small>Satellites, expéditions et recherche</small></span><b class="menu-alert hidden" id="explore-indicator">✦</b></button>
+    <button type="button" class="menu-action explore-open" id="explore-open" aria-haspopup="dialog" aria-controls="explore-overlay"><span>🛰</span><span>Exploration <small>Atelier, expéditions et recherche</small></span><b class="menu-alert hidden" id="explore-indicator">✦</b></button>
     <button type="button" class="menu-action" id="objectives-open" aria-haspopup="dialog" aria-controls="objectives-overlay"><span>✧</span><span>Objectifs <small>Défis et récompenses</small></span><b id="objectives-badge">0/5</b></button>
     <button type="button" class="menu-action" id="atlas-open"><span>🗺</span><span>Atlas <small>Progression de tes planètes</small></span></button>
     <button type="button" class="menu-action" id="planet-log-btn"><span>◈</span><span>Journal cosmique <small id="planet-extra-text">Découvertes du monde</small></span><b id="planet-log-count">0/5</b></button>
@@ -827,7 +861,7 @@ button,.planet-holder canvas{touch-action:manipulation}
  <section class="explore-dialog" role="dialog" aria-modal="true" aria-labelledby="explore-title">
   <div class="explore-header"><div><span class="explore-eyebrow">✦ CENTRE D'EXPLORATION</span><h2 id="explore-title">Explorer l'univers</h2><p id="explore-world-label">Planète 1</p></div><button type="button" id="explore-close" aria-label="Fermer l'exploration">✕</button></div>
   <nav class="explore-tabs" aria-label="Sections d'exploration">
-   <button type="button" class="explore-tab active" data-explore="satellites">🛰 Satellites</button>
+   <button type="button" class="explore-tab active" data-explore="satellites">🛠 Atelier</button>
    <button type="button" class="explore-tab" data-explore="missions">🚀 Expéditions</button>
    <button type="button" class="explore-tab" data-explore="science">⚗ Recherche</button>
    <button type="button" class="explore-tab" data-explore="nature">🌱 Monde vivant</button>
@@ -1971,6 +2005,48 @@ document.querySelectorAll('.explore-tab').forEach(b=>b.addEventListener('click',
 }));
 $('orbital-find').addEventListener('click',claimEncounter);
 $('relic-find').addEventListener('click',findRelic);
+let workshopSelected=0;
+function drawWorkshopSatellite(canvas,i,parts,assembled,launched){
+ const c=canvas.getContext('2d');if(!c)return;
+ const w=canvas.width,h=canvas.height; c.clearRect(0,0,w,h);
+ const color=['#84e5ff','#f4d69c','#a2ffd1'][i];
+ c.fillStyle='#0d1c2b';c.fillRect(0,0,w,h);
+ c.fillStyle='#1d3446';
+ for(let x=11;x<w;x+=22)for(let y=9;y<h;y+=22)c.fillRect(x,y,1,1);
+ c.strokeStyle='#3a5b6b';c.strokeRect(55,20,170,104);
+ const x=140,y=72;
+ if(parts[0]){
+  c.fillStyle='#627d96';c.fillRect(x-23,y-22,46,44);
+  c.fillStyle='#c7dcea';c.fillRect(x-18,y-17,36,34);
+  c.fillStyle='#2d5268';c.fillRect(x-9,y-8,18,16);
+ }
+ if(parts[1]){
+  c.fillStyle=color;c.fillRect(x-8,y-9,16,18);
+  c.fillStyle='#ebffff';c.fillRect(x-4,y-5,8,10);
+ }
+ if(parts[2]){
+  c.fillStyle='#829db6';c.fillRect(x-39,y-4,16,8);c.fillRect(x+23,y-4,16,8);
+  for(const side of [-1,1]){
+   const px=side<0?x-95:x+39;
+   c.fillStyle='#438fb9';c.fillRect(px,y-28,56,56);
+   c.fillStyle='#225475';
+   for(let j=1;j<4;j++)c.fillRect(px+j*14,y-28,2,56);
+   for(let j=1;j<4;j++)c.fillRect(px,y-28+j*14,56,2);
+   c.strokeStyle='#8ec9e8';c.strokeRect(px,y-28,56,56);
+  }
+ }
+ if(parts[3]){
+  c.fillStyle='#d0e6ea';c.fillRect(x-2,y-40,4,18);
+  c.fillStyle=color;c.fillRect(x-13,y-45,26,5);
+  c.fillStyle='#95b6c9';c.fillRect(x-10,y+22,20,7);
+  c.fillStyle='#d1e6f8';c.fillRect(x-5,y+29,10,5);
+ }
+ if(assembled||launched){c.strokeStyle=color;c.strokeRect(4,4,w-8,h-8)}
+ if(launched){c.fillStyle='#caffdd';c.font='bold 12px monospace';c.fillText('✓ EN ORBITE',9,17)}
+ else if(!parts.some(Boolean)){
+  c.fillStyle='#64859a';c.font='12px monospace';c.fillText('PROJET EN ATTENTE',77,h-10);
+ }
+}
 function renderExploration(){
  if($('explore-overlay').classList.contains('hidden'))return;
  $('explore-world-label').textContent='Planète '+state.planet+' · '+worldName(state.planet);
@@ -1979,13 +2055,81 @@ function renderExploration(){
  const paragraph=text=>container.appendChild(exploreElement('p','explore-summary',text));
  const summary=(a,b)=>{const line=exploreElement('div','explore-statbar');line.append(exploreElement('span','',a),exploreElement('span','',b));container.appendChild(line)};
  if(explorationTab==='satellites'){
-  paragraph('Construis une petite flotte en orbite. Chaque satellite reste sur cette planète et améliore ses biomes.');
-  summary('Satellites en orbite',state.exploration.satellites.length+' / 3');
-  SATELLITES.forEach((sat,i)=>{
-   const threshold=[12,45,95][i],ready=totalLevels()>=threshold,owned=hasSatellite(i),price=satellitePrice(i);
-   exploreCard(container,sat.icon+' '+sat.name,sat.detail,owned?'✓ En orbite':ready?'Prix : '+moneyFormat(price):'Disponible à '+threshold+' niveaux cumulés',
-    owned?'Installé':ready?'Construire':'Verrouillé',owned||!ready||state.money<price,()=>buySatellite(i));
+  paragraph('Récolte des ressources en améliorant tes biomes, fabrique les quatre composants, assemble ton satellite puis lance-le en orbite.');
+  const inventory=exploreElement('div','workshop-inventory');
+  WORKSHOP_MATERIALS.forEach(k=>{
+   const el=exploreElement('div','workshop-inventory-item');
+   el.append(exploreElement('span','',WORKSHOP_ICONS[k]+' '+WORKSHOP_LABELS[k]),
+             exploreElement('strong','',String(state.workshop[k]||0)));
+   inventory.appendChild(el);
   });
+  container.appendChild(inventory);
+  const switcher=exploreElement('div','workshop-switcher');
+  SATELLITES.forEach((sat,i)=>{
+   const b=exploreElement('button','workshop-switch'+(workshopSelected===i?' active':''),
+    (hasSatellite(i)?'✓ ':isAssembled(i)?'✦ ':'')+(i+1)+' · '+(i===0?'Observatoire':i===1?'Climat':'Relais'));
+   b.type='button';b.setAttribute('aria-pressed',String(workshopSelected===i));
+   b.addEventListener('click',()=>{workshopSelected=i;renderExploration()});
+   switcher.appendChild(b);
+  });
+  container.appendChild(switcher);
+  const id=workshopSelected,sat=SATELLITES[id];
+  const unlocked=totalLevels()>=satelliteThresholds[id];
+  const owned=hasSatellite(id),assembled=isAssembled(id),parts=craftParts(id),completed=parts.filter(Boolean).length;
+  const stage=owned?'EN ORBITE':assembled?'PRÊT AU LANCEMENT':completed===4?'ASSEMBLAGE POSSIBLE':!unlocked?'PROJET VERROUILLÉ':'EN FABRICATION';
+  const heading=exploreElement('div','workshop-project-head');
+  const name=exploreElement('strong','',sat.icon+' '+sat.name);
+  const status=exploreElement('span','workshop-stage',stage);
+  heading.append(name,status);container.appendChild(heading);
+  const preview=exploreElement('div','workshop-preview');
+  const ship=document.createElement('canvas');
+  ship.width=280;ship.height=142;ship.className='workshop-ship';
+  ship.setAttribute('role','img');ship.setAttribute('aria-label','Satellite en construction, '+completed+' pièces sur quatre');
+  preview.appendChild(ship);container.appendChild(preview);
+  drawWorkshopSatellite(ship,id,parts,assembled,owned);
+  const percent=Math.round((completed+(assembled&&!owned?.3:0))*100/4);
+  const progress=exploreElement('div','workshop-progress');
+  const progressLabels=exploreElement('div','workshop-progress-labels');
+  progressLabels.append(exploreElement('span','','Assemblage'),exploreElement('strong','',percent+' % · '+completed+'/4 pièces'));
+  const track=exploreElement('div','workshop-progress-track');
+  const fill=exploreElement('div','workshop-progress-fill');
+  fill.style.width=percent+'%';track.appendChild(fill);progress.append(progressLabels,track);
+  container.appendChild(progress);
+  if(!unlocked&&!owned){
+   const unlock=exploreElement('p','workshop-locked','Débloque ce projet à '+satelliteThresholds[id]+' niveaux cumulés. Tu peux déjà récolter ses matériaux.');
+   container.appendChild(unlock);
+  }
+  const partList=exploreElement('div','workshop-parts');
+  WORKSHOP_PARTS.forEach((part,j)=>{
+   const recipe=SATELLITE_RECIPES[id][j],made=parts[j];
+   const card=exploreElement('article','workshop-part'+(made?' built':''));
+   const partInfo=exploreElement('div','workshop-part-info');
+   const heading=exploreElement('strong','',part.icon+' '+part.name);
+   const desc=exploreElement('p','',part.explain);
+   const materials=exploreElement('div','workshop-part-materials');
+   WORKSHOP_MATERIALS.filter(k=>recipe[k]).forEach(k=>{
+     const enough=state.workshop[k]>=recipe[k];
+     const tag=exploreElement('span',made?'ready':enough?'enough':'missing',
+       WORKSHOP_ICONS[k]+' '+WORKSHOP_LABELS[k]+' '+(made?'✓':(state.workshop[k]||0)+'/'+recipe[k]));
+     materials.appendChild(tag);
+   });
+   partInfo.append(heading,desc,materials);
+   const button=exploreElement('button','',made?'✓ Faite':'Fabriquer');
+   button.type='button';button.disabled=made||!unlocked||owned||!canPayMaterials(recipe);
+   button.addEventListener('click',()=>craftSatellitePart(id,j));
+   card.append(partInfo,button);partList.appendChild(card);
+  });
+  container.appendChild(partList);
+  const footer=exploreElement('div','workshop-finish');
+  footer.append(exploreElement('p','',sat.detail));
+  const action=exploreElement('button','workshop-launch',
+    owned?'✓ Satellite actif':assembled?'🚀 Lancer en orbite':'🛠 Assembler les pièces');
+  action.type='button';action.disabled=owned||!parts.every(Boolean);
+  action.addEventListener('click',()=>assembled?launchSatellite(id):assembleSatellite(id));
+  footer.appendChild(action);container.appendChild(footer);
+  if(state.prestige.blueprints.includes(id)){
+   container.appendChild(exploreElement('p','workshop-blueprint','✦ Plan conservé dans les archives de renaissance.'));
+  }
  }else if(explorationTab==='missions'){
   paragraph('Les sondes explorent automatiquement l’espace. Récupère leur cargaison à leur retour pour obtenir de l’argent et de la recherche.');
   const exp=state.exploration.expedition;
