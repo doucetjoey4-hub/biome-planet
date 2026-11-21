@@ -721,6 +721,50 @@ html,body{height:100%;height:100dvh}
  .app.planet-layout-grand .planet-holder{width:min(100%,43dvh,390px)!important}
  .app.planet-layout-compact .planet-holder{width:min(100%,26dvh,265px)!important}
 }
+
+/* V40 · Renaissance cosmique : interface séparée de la réinitialisation définitive. */
+.rebirth-menu-action{border-color:#7b6bb1;background:linear-gradient(120deg,#29243e,#17273b)}
+.rebirth-menu-action>span:first-child{color:#e2c4ff;font-size:1.35rem}
+.rebirth-overlay,.rebirth-confirm-overlay{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:#02040ee0;backdrop-filter:blur(8px);z-index:172;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
+.rebirth-dialog{width:min(100%,570px);max-height:min(90dvh,850px);display:flex;flex-direction:column;border:1px solid #7767a9;border-radius:18px;background:linear-gradient(165deg,#28233c,#121b2d 60%,#0a1521);color:#eef3ff;box-shadow:0 24px 70px #000c;overflow:hidden}
+.rebirth-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 17px 12px;border-bottom:1px solid #67548877}
+.rebirth-head span{color:#cca8ff;font-size:.63rem;font-weight:900;letter-spacing:.13em}
+.rebirth-head h2{margin:5px 0 4px;font-size:1.22rem}
+.rebirth-head p{margin:0;font-size:.7rem;color:#b7b7d2}
+.rebirth-head>button{width:38px;height:38px;flex:none;border-radius:10px;border:1px solid #706389;background:#2e2b43;color:#f6e9ff}
+.rebirth-body{display:flex;flex-direction:column;gap:12px;overflow-y:auto;overscroll-behavior:contain;padding:14px 16px 18px}
+.rebirth-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.rebirth-stats>div{padding:10px 8px;border:1px solid #5c547d;border-radius:10px;background:#24233b;text-align:center}
+.rebirth-stats small{display:block;color:#bdbcd3;font-size:.61rem;line-height:1.4}
+.rebirth-stats strong{display:block;color:#f1d7ff;font-size:.93rem;margin-top:4px}
+.rebirth-progress{padding:12px;border:1px solid #5b5783;border-radius:12px;background:#1a2538}
+.rebirth-progress-top{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.7rem;color:#dee7ff;font-weight:800}
+.rebirth-progress-top strong{color:#e1baff;white-space:nowrap}
+.rebirth-track{height:8px;margin:9px 0;border-radius:20px;overflow:hidden;background:#36364f}
+.rebirth-track>div{height:100%;width:0;background:linear-gradient(90deg,#8674da,#deb0ff);transition:width .25s}
+.rebirth-progress p{font-size:.67rem;line-height:1.55;color:#b8bfd8;margin:0}
+.rebirth-body>h3{font-size:.75rem;color:#e9d8ff;margin:1px 0 0;letter-spacing:.03em}
+.rebirth-upgrades{display:grid;gap:8px}
+.rebirth-upgrade{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px;border:1px solid #4c5375;border-radius:12px;background:#182538}
+.rebirth-upgrade>div{flex:1;min-width:0}
+.rebirth-upgrade strong{font-size:.76rem;color:#e9ecff}
+.rebirth-upgrade p{font-size:.65rem;color:#aebdd2;line-height:1.45;margin:4px 0}
+.rebirth-upgrade small{font-size:.63rem;color:#d3baff;font-weight:800}
+.rebirth-upgrade button{min-width:97px;max-width:115px;flex:none;border:1px solid #ab85de;border-radius:9px;background:#42335e;color:#f8eaff;padding:9px 7px;font-size:.67rem;font-weight:850}
+.rebirth-upgrade button:disabled{opacity:.46}
+.rebirth-actions{border-top:1px solid #4b4c69;padding-top:12px}
+.rebirth-actions p{font-size:.65rem;line-height:1.6;color:#c3bfd2;margin:0 0 10px}
+.rebirth-trigger{width:100%;min-height:45px;border:1px solid #cfb0fa;border-radius:11px;color:#241a32;background:linear-gradient(90deg,#cfb0ff,#e9ceff);font-size:.81rem;font-weight:950}
+.rebirth-trigger:disabled{opacity:.42}
+.rebirth-confirm-overlay{z-index:195}
+.rebirth-confirm{width:min(100%,420px);padding:23px 19px;border-radius:17px;border:1px solid #ba8cc9;background:linear-gradient(150deg,#32283d,#141c2c);box-shadow:0 20px 60px #000d;text-align:center;color:#f6efff}
+.rebirth-confirm-emblem{font-size:2rem;color:#dfbaff}
+.rebirth-confirm h2{font-size:1.12rem;margin:10px 0}
+.rebirth-confirm p{font-size:.76rem;line-height:1.6;color:#cfc6dc}
+.rebirth-confirm-actions{display:flex;gap:8px;margin-top:15px}
+.rebirth-confirm-actions button{flex:1;min-width:0;padding:12px 5px;border-radius:9px;font-size:.72rem;font-weight:800;background:#262b3c;color:#f2efff;border:1px solid #73738f}
+#rebirth-commit{background:#a884cc;color:#21172b;border-color:#d2b3ee}
+@media(max-width:360px){.rebirth-body{padding:10px}.rebirth-stats strong{font-size:.81rem}.rebirth-upgrade{padding:9px}.rebirth-upgrade button{min-width:82px}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
@@ -741,6 +785,9 @@ html,body{height:100%;height:100dvh}
     <button type="button" class="menu-action" id="menu-planet-size"><span>◉</span><span>Affichage planète <small id="menu-planet-size-label">Compact pour les biomes</small></span></button>
     <button type="button" class="menu-action" id="audio-settings-open" aria-label="Réglages audio"><span>♫</span><span>Audio <small>Musique et effets sonores</small></span></button>
    </section>
+   <section class="menu-group"><h3>Progression permanente</h3>
+   <button type="button" class="menu-action rebirth-menu-action" id="rebirth-open"><span>✵</span><span>Renaissance <small id="rebirth-menu-summary">Recommencer avec des pouvoirs permanents</small></span><b id="rebirth-menu-count">0</b></button>
+   </section>
    <section class="menu-group menu-danger"><h3>Partie</h3>
     <button type="button" class="menu-action" id="reset"><span>↺</span><span>Recommencer <small>Effacer toute la progression</small></span></button>
    </section>
@@ -749,6 +796,24 @@ html,body{height:100%;height:100dvh}
  </aside>
 </div>
 <div class="toast" id="toast" aria-live="polite"></div>
+<div class="rebirth-overlay hidden" id="rebirth-overlay">
+ <section class="rebirth-dialog" role="dialog" aria-modal="true" aria-labelledby="rebirth-title">
+  <div class="rebirth-head"><div><span>✵ CYCLE COSMIQUE</span><h2 id="rebirth-title">Renaissance</h2><p>Chaque nouveau départ rend ton univers plus puissant.</p></div><button id="rebirth-close" aria-label="Fermer la renaissance" type="button">✕</button></div>
+  <div class="rebirth-body">
+   <div class="rebirth-stats"><div><small>Renaissances</small><strong id="rebirth-count">0</strong></div><div><small>Éclats disponibles</small><strong id="rebirth-points">0 ✦</strong></div><div><small>Bonus de production</small><strong id="rebirth-bonus">+0 %</strong></div></div>
+   <div class="rebirth-progress"><div class="rebirth-progress-top"><span id="rebirth-progress-label">Progression du cycle</span><strong id="rebirth-progress-ratio">0 / 120</strong></div><div class="rebirth-track"><div id="rebirth-progress-fill"></div></div><p id="rebirth-gain-description">Développe tes planètes pour débloquer une renaissance.</p></div>
+   <h3>Améliorations permanentes</h3><div class="rebirth-upgrades" id="rebirth-upgrades"></div>
+   <div class="rebirth-actions"><p>Une renaissance remet à zéro les planètes, les biomes, l'argent, les missions, les satellites et la recherche. Les éclats et leurs bonus restent pour toujours.</p><button type="button" id="rebirth-trigger" class="rebirth-trigger" disabled>Renaissance verrouillée</button></div>
+  </div>
+ </section>
+</div>
+<div class="rebirth-confirm-overlay hidden" id="rebirth-confirm-overlay">
+ <section class="rebirth-confirm" role="alertdialog" aria-modal="true" aria-labelledby="rebirth-confirm-title" aria-describedby="rebirth-confirm-detail">
+  <span class="rebirth-confirm-emblem">✵</span><h2 id="rebirth-confirm-title">Recommencer l'univers?</h2>
+  <p id="rebirth-confirm-detail"></p>
+  <div class="rebirth-confirm-actions"><button type="button" id="rebirth-cancel">Annuler</button><button type="button" id="rebirth-commit">Confirmer la renaissance</button></div>
+ </section>
+</div>
 <div class="explore-overlay hidden" id="explore-overlay">
  <section class="explore-dialog" role="dialog" aria-modal="true" aria-labelledby="explore-title">
   <div class="explore-header"><div><span class="explore-eyebrow">✦ CENTRE D'EXPLORATION</span><h2 id="explore-title">Explorer l'univers</h2><p id="explore-world-label">Planète 1</p></div><button type="button" id="explore-close" aria-label="Fermer l'exploration">✕</button></div>
@@ -905,7 +970,7 @@ function biomeShade(name,tile,planet){
  return clamp(3+Math.round(d*1.2)+Math.round(patch*.35));
 }
 const KEY='biome-planet-save-v10';let state;
-function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],bonuses:[],discoveries:[],missions:[],events:[],eventActive:null,exploration:null,science:{points:0,upgrades:[0,0,0,0]},worlds:{},last:Date.now()}}
+function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],bonuses:[],discoveries:[],missions:[],events:[],eventActive:null,exploration:null,science:{points:0,upgrades:[0,0,0,0]},prestige:{count:0,points:0,earned:0,upgrades:[0,0,0,0]},worlds:{},last:Date.now()}}
 try{state={...initial(),...JSON.parse(localStorage.getItem(KEY)||'null')}}catch(e){state=initial()}
 if(!Array.isArray(state.levels))state=initial();
 if(!Array.isArray(state.timers))state.timers=state.levels.map(()=>0);
@@ -917,6 +982,13 @@ if(!state.worlds||typeof state.worlds!=='object'||Array.isArray(state.worlds))st
 if(!state.science||typeof state.science!=='object')state.science={points:0,upgrades:[0,0,0,0]};
 state.science.points=Math.max(0,Math.floor(Number(state.science.points)||0));
 state.science.upgrades=Array.from({length:4},(_,i)=>Math.max(0,Math.min(5,Math.floor(Number(state.science.upgrades?.[i])||0))));
+function normalizePrestige(raw){
+ const x=raw&&typeof raw==='object'?raw:{};
+ const finiteInt=v=>Number.isFinite(Number(v))?Math.max(0,Math.min(100000,Math.floor(Number(v)))):0;
+ return {count:finiteInt(x.count),points:finiteInt(x.points),earned:finiteInt(x.earned),
+  upgrades:Array.from({length:4},(_,i)=>Math.min(10,finiteInt(x.upgrades?.[i])))};
+}
+state.prestige=normalizePrestige(state.prestige);
 function normalizedExploration(input){
  const d=input&&typeof input==='object'?input:{};
  return{
@@ -951,15 +1023,21 @@ if(!state.worlds[state.planet]){
 const $=id=>document.getElementById(id),canvas=$('planet'),ctx=canvas.getContext('2d');
 ctx.imageSmoothingEnabled=false;
 const moneyFormat=n=>{if(n<1e3)return Math.floor(n).toLocaleString('fr-CA')+' $';let i=Math.floor(Math.log10(Math.max(1,n))/3);i=Math.min(i,5);return (n/Math.pow(1000,i)).toLocaleString('fr-CA',{maximumFractionDigits:2})+' '+['','k','M','G','T','P'][i]+'$'};
+// Rebirth : bonus permanents globaux, conservés entre les cycles.
+const prestigeLevel=i=>state.prestige.upgrades[i]||0;
+const prestigeRevenue=()=>1+Math.min(30,state.prestige.count)*.12+prestigeLevel(0)*.18;
+const prestigeCycle=()=>Math.pow(.965,prestigeLevel(1));
+const prestigeCost=()=>Math.pow(.965,prestigeLevel(2));
+const prestigeStarter=()=>Math.floor(120*prestigeLevel(3)*Math.pow(1.18,Math.max(0,state.planet-1)));
 const multiplier=()=>Math.pow(1.16,state.planet-1);
 const bonusCount=(i,type)=>(state.bonuses[i]||[]).filter(v=>v===type).length;
-const cycleTime=i=>BIOMES[i].time*Math.pow(.95,bonusCount(i,'speed'))*researchCycle()*satelliteCycle();
-const upgradeCost=i=>Math.max(1,Math.floor(BIOMES[i].cost*Math.pow(1.075,state.levels[i])*Math.pow(1.20,state.planet-1)*Math.pow(.96,bonusCount(i,'discount'))*researchCost()*satelliteCost()));
-const unlockCost=i=>i===0?0:Math.floor(BIOMES[i].cost*Math.pow(1.20,state.planet-1)*researchCost()*satelliteCost());
+const cycleTime=i=>BIOMES[i].time*Math.pow(.95,bonusCount(i,'speed'))*researchCycle()*satelliteCycle()*prestigeCycle();
+const upgradeCost=i=>Math.max(1,Math.floor(BIOMES[i].cost*Math.pow(1.075,state.levels[i])*Math.pow(1.20,state.planet-1)*Math.pow(.96,bonusCount(i,'discount'))*researchCost()*satelliteCost()*prestigeCost()));
+const unlockCost=i=>i===0?0:Math.floor(BIOMES[i].cost*Math.pow(1.20,state.planet-1)*researchCost()*satelliteCost()*prestigeCost());
 // Les paliers de 25 niveaux doublent le revenu de chaque cycle :
  // 1-24: x1, 25-49: x2, 50-74: x4, 75-99: x8, etc.
 function bonusPalier(level){return Math.pow(2,Math.floor(level/25))}
-function revenue(i){return BIOMES[i].base*state.levels[i]*bonusPalier(state.levels[i])*multiplier()*Math.pow(1.10,bonusCount(i,'cash'))*1.12*(1+archiveClaimed().length*.02)*biomeHarmony(i)*cosmicMultiplier()*researchRevenue()*satelliteRevenue()}
+function revenue(i){return BIOMES[i].base*state.levels[i]*bonusPalier(state.levels[i])*multiplier()*Math.pow(1.10,bonusCount(i,'cash'))*1.12*(1+archiveClaimed().length*.02)*biomeHarmony(i)*cosmicMultiplier()*researchRevenue()*satelliteRevenue()*prestigeRevenue()}
 function cover(){return Math.min(100,100*pixelShown()/pixelTotal)}
 // Petit clic synthétique, très bref et discret. Aucun fichier audio externe.
 const SOUND_KEY='biome-planet-sound-enabled';
@@ -1446,7 +1524,7 @@ function switchWorld(num,award=false){
  state.levels=stored?.levels?[...stored.levels]:BIOMES.map(()=>0);
  state.timers=stored?.timers?[...stored.timers]:BIOMES.map(()=>0);
  state.bonuses=stored?.bonuses?stored.bonuses.map(v=>[...v]):BIOMES.map(()=>[]);
- state.money=Number.isFinite(stored?.money)?stored.money:0;
+ state.money=Number.isFinite(stored?.money)?stored.money:prestigeStarter();
  state.discoveries=Array.isArray(stored?.discoveries)?[...stored.discoveries]:[];
  state.missions=Array.isArray(stored?.missions)?[...stored.missions]:[];
  state.events=Array.isArray(stored?.events)?[...stored.events]:[];
