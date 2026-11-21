@@ -573,13 +573,14 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
 .explore-world strong{font-size:.8rem;display:block}
 .explore-world span{font-size:.66rem;color:#a6c6d4;display:block;margin-top:5px}
 .explore-world.current{border-color:#5dd5ce;background:#16424c}
-.orbital-find,.relic-find{position:absolute;z-index:6;display:flex;align-items:center;justify-content:center;border-radius:50%;width:42px;height:42px;font-size:1.27rem;font-weight:900;color:#fffbe5;border:1px solid #d7c384;background:radial-gradient(circle,#65533d,#263248);box-shadow:0 0 20px #ffc78566;animation:anomalyPulse 3s ease-in-out infinite}
+.orbital-find,.relic-find{position:absolute;z-index:6;display:flex;align-items:center;justify-content:center;border-radius:50%;width:42px;height:42px;font-size:1.27rem;font-weight:900;color:#fffbe5;border:1px solid #d7c384;background:radial-gradient(circle,#65533d,#263248);box-shadow:0 0 20px #ffc78566;animation:eventWink 2.6s ease-in-out infinite}
 .orbital-find{top:47%;left:6%}
 .orbital-find span{display:none}
 .relic-find{top:59%;right:7%;border-color:#86c6bd;background:radial-gradient(circle,#315d59,#152f42);box-shadow:0 0 19px #71e2c266}
 .orbital-find.hidden,.relic-find.hidden{display:none}
 @media(min-width:700px){.explore-overlay{align-items:center}}
 @media(max-width:390px){.footer{flex-wrap:wrap}.footer-quick{flex:1}.footer-actions{margin-left:auto}.footer .linkbtn{min-height:33px;padding:6px!important;font-size:.66rem}.explore-dialog{padding:12px}.explore-card{padding:10px}}
+@keyframes eventWink{0%,100%{filter:brightness(.9);transform:scale(1)}50%{filter:brightness(1.25);transform:scale(1.07)}}
 @media(prefers-reduced-motion:reduce){.orbital-find,.relic-find{animation:none}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
@@ -2056,11 +2057,63 @@ function drawPlanet(){
     }
   }
   ctx.globalAlpha=1;
+  // Météo planétaire légère : la carte reste lisible et les pixels originaux inchangés.
+  if(state.levels.some(l=>l>0)){
+    const climate=weatherStatus(),shift=Math.floor(performance.now()/1600);
+    ctx.save();
+    const colors=['#c4f0fb','#c6f3e7','#e5f8ff','#e8c994','#f5c5ff','#b1fbe2'];
+    ctx.fillStyle=colors[climate.family];
+    ctx.globalAlpha=climate.variant===1?.22:.13;
+    for(let j=0;j<27;j++){
+      const xx=48+hash(j*39.13+climate.family*17.1+shift*.7)*425;
+      const yy=48+hash(j*17.97+climate.variant*47+shift*.19)*425;
+      const dx=xx-c,dy=yy-c;
+      if(dx*dx+dy*dy>r*r)continue;
+      const size=climate.family===2?3:climate.family===3?5:2;
+      ctx.fillRect(Math.floor(xx),Math.floor(yy),size,climate.variant===1?size*3:size);
+    }
+    ctx.restore();
+  }
+  // Traces de vie au-dessus des parcelles déjà révélées.
+  for(const lifeId of state.exploration.life){
+    const idx=(lifeId*2+state.planet)%BIOMES.length;
+    const group=pixelGroups[idx],n=pixelCount(idx);
+    if(!group||n<15)continue;
+    const tile=group[Math.min(n-1,13+lifeId*29)];
+    if(!tile)continue;
+    const px=Math.floor(c-r+tile.x*STEP),py=Math.floor(c-r+tile.y*STEP);
+    ctx.fillStyle=['#b4ffbb','#d2ffff','#f2dcff'][lifeId];
+    ctx.fillRect(px,py,5,5);ctx.fillRect(px+6,py-4,3,3);ctx.fillRect(px-3,py+5,3,3);
+  }
+  // Site ancien permanent, une fois repéré (et plus lumineux après restauration).
+  if(state.exploration.monumentFound){
+    const target=(state.planet*7)%pixelGroups.length;
+    const group=pixelGroups[target],n=pixelCount(target);
+    if(group&&n>10){
+      const tile=group[Math.min(n-1,Math.max(0,Math.floor(n*.24)))];
+      const px=Math.floor(c-r+tile.x*STEP),py=Math.floor(c-r+tile.y*STEP);
+      ctx.fillStyle=state.exploration.monumentRestored?'#e8ffba':'#8be6d3';
+      ctx.fillRect(px-7,py-6,15,3);ctx.fillRect(px-5,py-3,11,12);
+      ctx.fillStyle=state.exploration.monumentRestored?'#fdf9b6':'#364f66';
+      ctx.fillRect(px-2,py,5,5);ctx.fillRect(px,py-10,2,4);
+    }
+  }
   // Keep the crisp edges of the terrain pixels; only shade the globe gently.
   const shade=ctx.createLinearGradient(65,65,475,475);
   shade.addColorStop(0,'#ffffff10');shade.addColorStop(.55,'#00000000');shade.addColorStop(1,'#00000048');
   ctx.fillStyle=shade;ctx.fillRect(c-r,c-r,2*r,2*r);
   ctx.restore();ctx.beginPath();ctx.arc(c,c,r,0,Math.PI*2);ctx.lineWidth=3;ctx.strokeStyle='#879eab66';ctx.stroke();
+  // Satellites animés autour du globe, hors du disque, dessinés en gros pixels.
+  const orbitPhase=performance.now()/7500;
+  state.exploration.satellites.forEach((id,k)=>{
+    const angle=orbitPhase+id*2.0944+state.planet*.23;
+    const radius=231+id*8;
+    const x=c+Math.cos(angle)*radius,y=c+Math.sin(angle)*radius*.94;
+    ctx.save();ctx.translate(Math.round(x),Math.round(y));
+    ctx.fillStyle=['#a7ecff','#ffe5a1','#b9ffdf'][id];
+    ctx.fillRect(-4,-4,8,8);ctx.fillStyle='#46768c';ctx.fillRect(-11,-3,6,6);ctx.fillRect(5,-3,6,6);
+    ctx.restore();
+  });
 }
 refreshBiomeCards();buildPixelMap();
 let lastTick=performance.now(),lastSave=Date.now(),lastPlanetGlow=0,lastExplorationScan=0,lastExplorePanelRefresh=0;
