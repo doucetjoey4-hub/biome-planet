@@ -1409,6 +1409,13 @@ function buildPixelMap(planet=state.planet,biomes=BIOMES,preview=false){
  };
  const field=(x,y,k)=>.60*noise(x*1.8,y*1.8,k)+.29*noise(x*4.1,y*4.1,k+13)+.11*noise(x*8,y*8,k+26);
  const names=biomes.map(b=>b.name.toLowerCase()),world=(planet-1)%6;
+ // Silhouettes géographiques différentes entre cycles de six planètes.
+ const cycle=Math.floor((planet-1)/6),structure=cycle%7;
+ const profileSeed=cycle*.879+world*2.31;
+ const driftX=.14*Math.sin(profileSeed*1.73),driftY=.13*Math.cos(profileSeed*2.11);
+ const ellipse=(x,y,cx,cy,rx,ry)=>1-Math.hypot((x-cx)/rx,(y-cy)/ry);
+ const terrainWave=(x,y)=>.17*Math.sin((2.9+structure*.32)*x+2.2*Math.sin(y*2.7+profileSeed))
+                         +.13*Math.cos((3.2+structure*.21)*y-1.7*x+profileSeed*1.4);
  const types=names.map(n=>/océan|lagon|récif|rivière|lac |lac$/.test(n)?'water':
    /banquise|glacier|glace/.test(n)?'ice':
    /taïga|brume/.test(n)?'cold':
@@ -1427,16 +1434,25 @@ function buildPixelMap(planet=state.planet,biomes=BIOMES,preview=false){
  for(let y=0;y<SIZE;y++)for(let x=0;x<SIZE;x++){
    const nx=(x+.5-SIZE/2)/(SIZE/2),ny=(y+.5-SIZE/2)/(SIZE/2);
    if(nx*nx+ny*ny>1)continue;
-   const wx=nx+.19*(field(nx+2.4,ny+1.9,7)-.5);
-   const wy=ny+.19*(field(nx-3.2,ny-2.8,8)-.5);
+   const wx=nx+driftX+.19*(field(nx+2.4,ny+1.9,7)-.5);
+   const wy=ny+driftY+.19*(field(nx-3.2,ny-2.8,8)-.5);
    const backbone=.28*Math.sin(wx*2.65+1.8*Math.sin(wy*1.65+planet*.7))
                +.18*Math.cos(wy*3.3-wx*.75+planet*.53);
    const relief=field(wx*1.55+planet*.17,wy*1.55,16);
    const ridge=Math.abs(Math.sin(wx*5.6+wy*2.4+1.5*Math.sin(wy*2)+planet*.6));
-   const height=.2+backbone+.63*(relief-.5)+.15*(1-ridge);
+   const geomorph=cycle===0?0:
+     structure===0?.18*terrainWave(wx,wy):
+     structure===1?.17*Math.cos(wx*4.6+profileSeed)*Math.cos(wy*2.7):
+     structure===2?-.19*Math.cos(Math.hypot(wx+.1,wy-.13)*5.3):
+     structure===3?.16*Math.sin(wx*6.2+wy*2.4+profileSeed):
+     structure===4?.23*ellipse(wx,wy,-.18,.03,.95,.78):
+     structure===5?-.22*(field(wx*3.2+4,wy*3.2-3,141)-.5):
+                   .19*Math.sin(wy*4.4-profileSeed);
+   const height=.2+backbone+.63*(relief-.5)+.15*(1-ridge)+geomorph;
    const humidity=Math.max(0,Math.min(1,.54+.67*(field(wx*1.8+4,wy*1.8-2,61)-.5)-.14*Math.max(0,height-.22)+.12*Math.sin(wy*2.4+planet)));
    const temp=Math.max(0,Math.min(1,1-Math.pow(Math.abs(ny),1.6)*.87+.13*(field(wx*1.8,wy*1.8,83)-.5)));
-   const sea=world===1?.19:world===2?-.05:world===3?-.20:.08;
+   const sea=(world===1?.19:world===2?-.05:world===3?-.20:.08)
+     +(cycle===0?0:(structure-3)*.025);
    const depth=sea-height,shore=Math.max(0,1-Math.abs(depth)*7),alt=Math.max(0,height-sea);
    const mountain=Math.max(0,1-ridge),polar=Math.max(0,Math.abs(ny)-.54);
    const vd=Math.hypot(wx-vX,wy-vY)+.022*Math.sin(Math.atan2(wy-vY,wx-vX)*6+planet*.4);
@@ -1444,13 +1460,43 @@ function buildPixelMap(planet=state.planet,biomes=BIOMES,preview=false){
    // Aube : un continent à l'ouest, une côte sinueuse à l'est et un fleuve.
    const coast=wx-(.20+.20*Math.sin(wy*3.6+planet*.28)+.065*Math.sin(wy*9.3));
    const river=Math.abs(wx-(-.21+.13*Math.sin(wy*5.1+planet*.31)));
-   // Tropicale : archipel de terres reliées par leur climat, océan entre les îles.
+   // Archipels déterministes, mais avec sept silhouettes géographiques distinctes.
+   // Planète 2 : îles originales. Planète 8 : croissant. Planète 14 : atoll.
    const isle1=Math.hypot((wx+.38)/.39,(wy+.24)/.34);
    const isle2=Math.hypot((wx-.31)/.36,(wy-.17)/.39);
    const isle3=Math.hypot((wx+.11)/.25,(wy-.53)/.22);
-   const island=Math.max(1-isle1,1-isle2,1-isle3)
-              +.12*(field(wx*2.7+3.2,wy*2.7-2.1,223)-.5);
+   let island=Math.max(1-isle1,1-isle2,1-isle3);
+   if(cycle>0){
+     if(structure===1){
+       const arcX=-.31+.48*Math.sin((wy+.1)*2.05+profileSeed*.18);
+       island=Math.max(.37-Math.abs(wx-arcX)/.39-.22*Math.abs(wy),
+         ellipse(wx,wy,.56,-.45,.18,.20),ellipse(wx,wy,-.54,.56,.20,.19));
+     }else if(structure===2){
+       const radius=Math.hypot((wx+.03)/.79,(wy-.04)/.68);
+       island=Math.max(.22-Math.abs(radius-.80)*1.45,
+         ellipse(wx,wy,-.40,-.15,.26,.25),ellipse(wx,wy,.38,.39,.24,.22));
+     }else if(structure===3){
+       island=Math.max(ellipse(wx,wy,-.24,-.67,.20,.21),ellipse(wx,wy,.18,-.23,.29,.24),
+         ellipse(wx,wy,-.16,.28,.26,.28),ellipse(wx,wy,.29,.67,.20,.20));
+     }else if(structure===4){
+       const bay=ellipse(wx,wy,.44,.04,.41,.40);
+       island=Math.max(ellipse(wx,wy,-.22,.01,.76,.78)-Math.max(0,bay)*1.2,
+         ellipse(wx,wy,.55,-.63,.18,.18));
+     }else if(structure===5){
+       island=Math.max(ellipse(wx,wy,-.57,-.43,.21,.22),ellipse(wx,wy,.1,-.65,.16,.20),
+         ellipse(wx,wy,.54,-.33,.19,.19),ellipse(wx,wy,-.38,.14,.17,.24),
+         ellipse(wx,wy,.31,.27,.22,.20),ellipse(wx,wy,-.02,.64,.18,.17));
+     }else if(structure===6){
+       island=Math.max(ellipse(wx,wy,-.47,-.03,.40,.72),ellipse(wx,wy,.46,.02,.37,.69),
+         ellipse(wx,wy,-.04,-.70,.13,.12));
+     }else{
+       island=Math.max(ellipse(wx,wy,-.47,.22,.30,.38),ellipse(wx,wy,.42,-.28,.32,.31),
+         ellipse(wx,wy,.29,.65,.23,.17));
+     }
+     island+=.12*(field(wx*3.0+cycle*.39,wy*3.0-2.1,223)-.5);
+   }else island+=.12*(field(wx*2.7+3.2,wy*2.7-2.1,223)-.5);
    const archipelagoSea=island<.01;
+   const shoreRing=Math.abs(island)<.13;
    const scores=biomes.map((b,i)=>{
      const n=names[i],type=types[i];
      // Chaque biome possède son propre grand motif naturel, indépendant des autres.
@@ -1498,12 +1544,37 @@ function buildPixelMap(planet=state.planet,biomes=BIOMES,preview=false){
      if(world===1){
        // Lagons et récifs épousent les eaux; la jungle occupe les grandes îles.
        if(n==='lagon')score+=archipelagoSea?1.90: -.75;
-       if(n==='récif')score+=island>-.12&&island<.11?2.55:island<-.12?.75:-.95;
+       if(n==='récif')score+=shoreRing?2.55:island<-.12?.75:-.95;
        if(n==='jungle')score+=island>.15?2.00:island<0?-1.4:0;
        if(n==='mangrove')score+=island>-.08&&island<.20?1.75:island<-.22?-1:0;
        if(n==='marais')score+=island>.07&&humidity>.46?1.20:0;
        if(n==='savane')score+=island>.10&&humidity<.59?1.2:island<-.12?-.75:0;
        if(n==='fleurs tropicales')score+=island>.19&&temp>.55?.95:0;
+     }
+     // Pour les autres familles, relief, orientation et regroupement des biomes évoluent.
+     if(cycle>0&&world!==1&&world!==0){
+       const wave=terrainWave(wx,wy);
+       if(world===2){
+         const polarBelt=structure%2===0?Math.abs(wy):Math.abs(wx);
+         if(type==='ice')score+=.8*Math.max(0,polarBelt-.31)+(structure%3===1?.55*Math.max(0,-height):0);
+         if(type==='cold')score+=.45*(1-polarBelt);
+         if(type==='rock')score+=.56*(structure%2?Math.abs(wx-wy):Math.abs(wx+wy));
+       }else if(world===3){
+         const rift=Math.abs(wx-.28*Math.sin(wy*3.7+profileSeed));
+         if(type==='rock')score+=.55*Math.max(0,1-rift/.23)+.4*Math.abs(wave);
+         if(type==='dry')score+=.42*Math.max(0,rift-.20);
+         if(type==='lava')score+=.72*Math.max(0,1-rift/.19);
+       }else if(world===4){
+         const garden=Math.hypot(wx-.26*Math.sin(wy*2.1+profileSeed),wy*.8);
+         if(type==='forest'||type==='plain')score+=.45*(1-garden)+.42*wave;
+         if(type==='rock')score+=.48*garden-.31*wave;
+         if(type==='water')score+=.35*Math.max(0,1-Math.abs(wave)*3);
+       }else if(world===5){
+         const spiral=Math.sin(Math.atan2(wy,wx)*2.5+Math.hypot(wx,wy)*5.4+profileSeed);
+         if(type==='forest'||type==='wet')score+=.50*spiral;
+         if(type==='rock')score-=.45*spiral;
+         if(type==='lava')score+=.30*Math.abs(wave);
+       }
      }
      // Lac de caldeira entouré de lave, puis anneau de roches volcaniques.
      if(volcano){
