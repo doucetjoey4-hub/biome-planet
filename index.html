@@ -695,6 +695,32 @@ html,body{height:100%;height:100dvh}
  .planet-expanded .planet-holder{width:min(100%,40dvh,375px)!important}
 }
 @media(prefers-reduced-motion:reduce){.side-menu-overlay{backdrop-filter:none}}
+
+/* V39.1 · Planète prioritaire par défaut, sans sacrifier la zone de biomes. */
+.app .planet-panel{padding:7px 10px 6px!important;margin:6px 0 6px!important}
+.app .balance{padding:7px 10px!important}
+.app .section-title{margin:0 2px 5px!important}
+.app .biome-scroll{padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.app .planet-holder{width:min(100%,30dvh,295px)!important;margin:4px auto 2px!important}
+.app.planet-layout-grand .planet-holder{width:min(100%,42dvh,375px)!important}
+.app.planet-layout-compact .planet-holder{width:min(100%,23dvh,235px)!important}
+.app.planet-layout-grand .planet-layout-toggle{border-color:#73d5d4;color:#e6fff9}
+.app.planet-layout-compact .planet-layout-toggle{border-color:#73d5d4;color:#e6fff9}
+@media(max-height:760px){
+ .app .planet-holder{width:min(100%,26dvh,255px)!important}
+ .app.planet-layout-grand .planet-holder{width:min(100%,36dvh,345px)!important}
+ .app.planet-layout-compact .planet-holder{width:min(100%,20dvh,200px)!important}
+}
+@media(max-height:570px){
+ .app .planet-holder{width:min(100%,23dvh,215px)!important}
+ .app.planet-layout-grand .planet-holder{width:min(100%,32dvh,300px)!important}
+ .app.planet-layout-compact .planet-holder{width:min(100%,18dvh,170px)!important}
+}
+@media(min-width:670px) and (min-height:820px){
+ .app .planet-holder{width:min(100%,33dvh,340px)!important}
+ .app.planet-layout-grand .planet-holder{width:min(100%,43dvh,390px)!important}
+ .app.planet-layout-compact .planet-holder{width:min(100%,26dvh,265px)!important}
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
@@ -2306,19 +2332,35 @@ document.addEventListener('keydown',e=>{
   else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
  }
 });
-const PLANET_LAYOUT_KEY='biome-planet-layout-expanded-v39';
-let planetExpanded=false;
-try{planetExpanded=localStorage.getItem(PLANET_LAYOUT_KEY)==='true'}catch(e){}
+// V39.1 : trois proportions, avec une planète mise en valeur par défaut.
+const PLANET_LAYOUT_KEY='biome-planet-layout-mode-v391';
+const PLANET_LAYOUT_MODES=['normal','grand','compact'];
+let planetLayout='normal';
+try{
+ const savedMode=localStorage.getItem(PLANET_LAYOUT_KEY);
+ if(PLANET_LAYOUT_MODES.includes(savedMode))planetLayout=savedMode;
+ else if(localStorage.getItem('biome-planet-layout-expanded-v39')==='true')planetLayout='grand';
+}catch(e){}
 function updatePlanetLayout(){
- document.querySelector('.app').classList.toggle('planet-expanded',planetExpanded);
- $('planet-layout-toggle').setAttribute('aria-pressed',String(planetExpanded));
- $('planet-layout-toggle').setAttribute('aria-label',planetExpanded?'Réduire la planète pour agrandir la liste des biomes':'Agrandir la planète');
- $('planet-layout-toggle').textContent=planetExpanded?'↧ Biomes':'⤢ Planète';
- $('menu-planet-size-label').textContent=planetExpanded?'Planète agrandie · moins de biomes visibles':'Compact · plus de biomes visibles';
+ const app=document.querySelector('.app');
+ PLANET_LAYOUT_MODES.forEach(mode=>app.classList.toggle('planet-layout-'+mode,planetLayout===mode));
+ app.classList.toggle('planet-expanded',false);
+ const labels={
+  normal:{button:'◉ Normal',description:'Normal · planète mise en valeur',hint:'Affichage normal'},
+  grand:{button:'⤢ Grande',description:'Grande planète · exploration en priorité',hint:'Grande planète'},
+  compact:{button:'▤ Biomes',description:'Compact · plus d’améliorations visibles',hint:'Vue biomes'}
+ };
+ const label=labels[planetLayout];
+ $('planet-layout-toggle').setAttribute('aria-label',label.hint+' · toucher pour changer de mode');
+ $('planet-layout-toggle').setAttribute('aria-pressed',String(planetLayout!=='normal'));
+ $('planet-layout-toggle').textContent=label.button;
+ $('menu-planet-size-label').textContent=label.description;
 }
 function togglePlanetLayout(){
- planetExpanded=!planetExpanded;playSound('navigate');
- try{localStorage.setItem(PLANET_LAYOUT_KEY,String(planetExpanded))}catch(e){}
+ const index=PLANET_LAYOUT_MODES.indexOf(planetLayout);
+ planetLayout=PLANET_LAYOUT_MODES[(index+1)%PLANET_LAYOUT_MODES.length];
+ playSound('navigate');
+ try{localStorage.setItem(PLANET_LAYOUT_KEY,planetLayout)}catch(e){}
  updatePlanetLayout();
 }
 $('planet-layout-toggle').addEventListener('click',togglePlanetLayout);
