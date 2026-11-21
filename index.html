@@ -2012,46 +2012,157 @@ document.querySelectorAll('.explore-tab').forEach(b=>b.addEventListener('click',
 $('orbital-find').addEventListener('click',claimEncounter);
 $('relic-find').addEventListener('click',findRelic);
 let workshopSelected=0;
-function drawWorkshopSatellite(canvas,i,parts,assembled,launched){
- const c=canvas.getContext('2d');if(!c)return;
- const w=canvas.width,h=canvas.height; c.clearRect(0,0,w,h);
- const color=['#84e5ff','#f4d69c','#a2ffd1'][i];
- c.fillStyle='#0d1c2b';c.fillRect(0,0,w,h);
- c.fillStyle='#1d3446';
- for(let x=11;x<w;x+=22)for(let y=9;y<h;y+=22)c.fillRect(x,y,1,1);
- c.strokeStyle='#3a5b6b';c.strokeRect(55,20,170,104);
- const x=140,y=72;
- if(parts[0]){
-  c.fillStyle='#627d96';c.fillRect(x-23,y-22,46,44);
-  c.fillStyle='#c7dcea';c.fillRect(x-18,y-17,36,34);
-  c.fillStyle='#2d5268';c.fillRect(x-9,y-8,18,16);
+let workshopPreviewCanvas=null,workshopAnim=null,workshopLastFrame=0;
+const WORKSHOP_PALETTE=['#78e6ff','#ffcf8a','#98ffc9'];
+const easeOutBack=t=>1+2.70158*Math.pow(t-1,3)+1.70158*Math.pow(t-1,2);
+const easeOut=t=>1-Math.pow(1-t,3);
+function workshopPixelRect(c,x,y,w,h,fill){
+ c.fillStyle=fill;c.fillRect(Math.round(x),Math.round(y),w,h);
+}
+function workshopPartSprite(c,part,id,ghost,now){
+ const color=WORKSHOP_PALETTE[id];
+ const fill=(x,y,w,h,tint)=>workshopPixelRect(c,x,y,w,h,tint);
+ if(ghost){
+  c.save();c.globalAlpha=.38;c.lineWidth=2;
+  c.strokeStyle='#6a9eb5';c.setLineDash([5,5]);
+  if(part===0)c.strokeRect(-37,-34,74,68);
+  if(part===1)c.strokeRect(-17,-20,34,40);
+  if(part===2){c.strokeRect(-149,-33,90,66);c.strokeRect(59,-33,90,66);c.strokeRect(-59,-6,22,12);c.strokeRect(37,-6,22,12)}
+  if(part===3){c.strokeRect(-22,-83,44,51);c.strokeRect(-22,34,44,24)}
+  c.restore();return;
  }
- if(parts[1]){
-  c.fillStyle=color;c.fillRect(x-8,y-9,16,18);
-  c.fillStyle='#ebffff';c.fillRect(x-4,y-5,8,10);
+ c.save();
+ if(part===0){
+  fill(-37,-34,74,68,'#293c54');fill(-34,-32,68,64,'#7194a8');
+  fill(-29,-28,58,56,'#b7d1dc');fill(-24,-24,48,48,'#738fa8');
+  fill(-28,-28,7,56,'#dbeef8');fill(21,-28,7,56,'#466a86');
+  fill(-15,-32,30,6,'#e6f2fd');fill(-15,26,30,7,'#375c76');
+  fill(-28,-26,6,6,color);fill(22,-26,6,6,color);
+  fill(-28,21,6,6,color);fill(22,21,6,6,color);
+  fill(-7,-13,14,26,'#25455d');
  }
- if(parts[2]){
-  c.fillStyle='#829db6';c.fillRect(x-39,y-4,16,8);c.fillRect(x+23,y-4,16,8);
-  for(const side of [-1,1]){
-   const px=side<0?x-95:x+39;
-   c.fillStyle='#438fb9';c.fillRect(px,y-28,56,56);
-   c.fillStyle='#225475';
-   for(let j=1;j<4;j++)c.fillRect(px+j*14,y-28,2,56);
-   for(let j=1;j<4;j++)c.fillRect(px,y-28+j*14,56,2);
-   c.strokeStyle='#8ec9e8';c.strokeRect(px,y-28,56,56);
+ if(part===1){
+  fill(-18,-19,36,38,'#244e69');
+  fill(-15,-16,30,32,color);fill(-10,-12,20,24,'#e0ffff');
+  const pulse=.77+.23*Math.sin(now/220);
+  c.globalAlpha=pulse;fill(-6,-8,12,16,'#ffffff');c.globalAlpha=1;
+  fill(-21,-4,5,8,'#92f9ff');fill(16,-4,5,8,'#92f9ff');
+ }
+ if(part===2){
+  fill(-59,-7,25,14,'#8faab9');fill(34,-7,25,14,'#8faab9');
+  for(const px of [-149,59]){
+   fill(px-4,-36,98,72,'#375777');
+   fill(px,-32,90,64,'#c2e0ee');
+   fill(px+4,-28,82,56,'#387fae');
+   for(let gx=0;gx<4;gx++)for(let gy=0;gy<3;gy++){
+    fill(px+7+gx*20,-24+gy*18,17,15,'#1d476b');
+    fill(px+9+gx*20,-22+gy*18,11,7,'#4aa7d2');
+   }
+   fill(px+44,-33,3,66,'#bad5e6');
+   fill(px-1,-2,92,3,'#bad5e6');
   }
  }
- if(parts[3]){
-  c.fillStyle='#d0e6ea';c.fillRect(x-2,y-40,4,18);
-  c.fillStyle=color;c.fillRect(x-13,y-45,26,5);
-  c.fillStyle='#95b6c9';c.fillRect(x-10,y+22,20,7);
-  c.fillStyle='#d1e6f8';c.fillRect(x-5,y+29,10,5);
+ if(part===3){
+  fill(-6,-59,12,26,'#b6d8df');
+  fill(-18,-70,36,11,'#668aa9');
+  fill(-31,-82,62,13,color);
+  fill(-19,-88,38,7,'#e3f9ff');
+  fill(-4,-97,8,10,'#bdddef');
+  fill(-28,33,56,10,'#6c899c');
+  fill(-24,40,48,11,'#304e66');
+  fill(-17,50,14,10,'#8eafc5');fill(3,50,14,10,'#8eafc5');
+  fill(-11,55,8,7,color);fill(3,55,8,7,color);
  }
- if(assembled||launched){c.strokeStyle=color;c.strokeRect(4,4,w-8,h-8)}
- if(launched){c.fillStyle='#caffdd';c.font='bold 12px monospace';c.fillText('✓ EN ORBITE',9,17)}
- else if(!parts.some(Boolean)){
-  c.fillStyle='#64859a';c.font='12px monospace';c.fillText('PROJET EN ATTENTE',77,h-10);
+ c.restore();
+}
+function workshopAnimProgress(now){
+ if(!workshopAnim)return 1;
+ return Math.min(1,Math.max(0,(now-workshopAnim.start)/workshopAnim.duration));
+}
+function drawWorkshopSatellite(canvas,i,parts,assembled,launched,now=performance.now()){
+ const c=canvas&&canvas.getContext('2d');if(!c)return;
+ const w=canvas.width,h=canvas.height;
+ c.clearRect(0,0,w,h);
+ const theme=WORKSHOP_PALETTE[i];
+ // Scene d'atelier visible même sur un petit écran mobile.
+ c.fillStyle='#0a1728';c.fillRect(0,0,w,h);
+ for(let gx=0;gx<w;gx+=20){
+   c.fillStyle='#183249';c.fillRect(gx,0,1,h);
  }
+ for(let gy=0;gy<h;gy+=20){
+   c.fillStyle='#183249';c.fillRect(0,gy,w,1);
+ }
+ c.fillStyle='#10263a';c.fillRect(8,8,w-16,h-16);
+ c.strokeStyle='#3f687c';c.lineWidth=2;c.strokeRect(9,9,w-18,h-18);
+ for(let j=0;j<10;j++){
+   const sx=20+((j*73+i*29)%320),sy=25+((j*37+i*41)%162);
+   c.fillStyle='#3a7891';c.fillRect(sx,sy,2,2);
+ }
+ c.fillStyle='#87b9ca';c.font='bold 10px monospace';c.fillText('STATION D’ASSEMBLAGE  /  '+(i+1).toString().padStart(2,'0'),20,25);
+ c.textAlign='right';
+ c.fillStyle=launched?'#a1fbd6':assembled?'#f8dda3':theme;
+ c.fillText(launched?'EN ORBITE':assembled?'ASSEMBLÉ':parts.filter(Boolean).length+' / 4 PIÈCES',w-20,25);
+ c.textAlign='left';
+ c.strokeStyle='#315b70';c.lineWidth=1;
+ c.beginPath();c.moveTo(20,34);c.lineTo(w-20,34);c.stroke();
+ // Nacelle, points de fixation et plateforme de travail.
+ c.fillStyle='#2d485b';c.fillRect(59,177,242,5);
+ c.fillStyle='#62839a';c.fillRect(83,182,194,6);
+ c.fillStyle='#1b3448';c.fillRect(108,188,144,8);
+ c.fillStyle='#679bb1';c.fillRect(86,188,7,12);c.fillRect(267,188,7,12);
+ c.fillStyle='#3a627e';c.fillRect(175,57,10,7);
+ c.fillRect(176,164,8,12);
+ const ax=180,ay=111+(assembled?Math.sin(now/600)*1.4:0);
+ // Les silhouettes des quatre modules restent en place en tout temps.
+ c.save();c.translate(ax,ay);
+ for(let part=0;part<4;part++)if(!parts[part])workshopPartSprite(c,part,i,true,now);
+ c.restore();
+ const current=workshopAnim&&workshopAnim.id===i&&workshopAnim.planet===state.planet
+   ?workshopAnim:null;
+ const progress=current?workshopAnimProgress(now):1;
+ for(let part=0;part<4;part++){
+   if(!parts[part])continue;
+   c.save();
+   let px=ax,py=ay,scale=1;
+   if(current&&current.part===part&&progress<1){
+     const eased=easeOutBack(progress),dist=1-eased;
+     const origins=[[-125,-65],[0,-122],[-160,0],[120,-90]];
+     px+=origins[part][0]*dist;
+     py+=origins[part][1]*dist;
+     scale=.72+.28*Math.min(1,easeOut(progress));
+     c.globalAlpha=.45+.55*Math.min(1,progress*2);
+   }
+   c.translate(px,py);c.scale(scale,scale);
+   workshopPartSprite(c,part,i,false,now);
+   c.restore();
+ }
+ if(current&&progress<1){
+   const x=ax,y=ay,opacity=1-progress;
+   c.save();c.globalAlpha=opacity;
+   c.strokeStyle=theme;c.lineWidth=3;
+   c.strokeRect(x-55-progress*32,y-50-progress*15,110+progress*64,100+progress*30);
+   for(let j=0;j<18;j++){
+     const a=j*Math.PI*2/18+now/350;
+     const rr=39+progress*75+(j%3)*6;
+     const sx=x+Math.cos(a)*rr,sy=y+Math.sin(a)*rr*.65;
+     c.fillStyle=j%3?'#e7faff':theme;
+     c.fillRect(Math.round(sx),Math.round(sy),j%2?3:5,j%2?3:5);
+   }
+   c.restore();
+ }
+ if(assembled||launched){
+   c.save();
+   c.globalAlpha=.55+.23*Math.sin(now/450);
+   c.strokeStyle=theme;c.lineWidth=2;
+   c.strokeRect(16,39,w-32,165);
+   c.restore();
+ }
+ c.font='bold 11px monospace';
+ c.fillStyle=launched?'#a0f8d5':assembled?'#ffdd9a':parts.some(Boolean)?'#c9e8f4':'#93b2c5';
+ let info=launched?'✓ SATELLITE EN ORBITE':assembled?'✓ MODULE ASSEMBLÉ · PRÊT':parts.some(Boolean)?'▣ FABRICATION EN COURS':'◈ PIÈCES À CONSTRUIRE';
+ c.fillText(info,20,h-10);
+ // La séquence ne se perd pas si le panneau est réouvert.
+ if(current&&progress>=1)workshopAnim=null;
 }
 function renderExploration(){
  if($('explore-overlay').classList.contains('hidden'))return;
