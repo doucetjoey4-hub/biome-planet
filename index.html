@@ -802,7 +802,7 @@ button,.planet-holder canvas{touch-action:manipulation}
 .workshop-part-materials{display:flex;flex-wrap:wrap;gap:4px}
 .workshop-part-materials span{font-size:.60rem;padding:3px 5px;border-radius:5px;background:#213748;color:#b4cbd8}
 .workshop-part-materials .enough{color:#b0e6d6}.workshop-part-materials .missing{color:#f2b7af}.workshop-part-materials .ready{color:#8be4b0}
-.workshop-part>button{flex:none;min-width:76px;border:1px solid #65a6b9;color:#e4faff;background:#245065;border-radius:8px;padding:8px 5px;font-size:.63rem;font-weight:850}
+.workshop-part>button{flex:none;min-width:76px;min-height:42px;border:1px solid #65a6b9;color:#e4faff;background:#245065;border-radius:8px;padding:8px 5px;font-size:.63rem;font-weight:850}
 .workshop-part>button:disabled{opacity:.45}
 .workshop-finish{padding:11px;border:1px solid #47718a;border-radius:11px;background:#142b3e}
 .workshop-finish p{color:#adcedd;font-size:.69rem;margin:0 0 9px}
@@ -846,7 +846,7 @@ button,.planet-holder canvas{touch-action:manipulation}
    <div class="rebirth-stats"><div><small>Renaissances</small><strong id="rebirth-count">0</strong></div><div><small>Éclats disponibles</small><strong id="rebirth-points">0 ✦</strong></div><div><small>Bonus de production</small><strong id="rebirth-bonus">+0 %</strong></div></div>
    <div class="rebirth-progress"><div class="rebirth-progress-top"><span id="rebirth-progress-label">Progression du cycle</span><strong id="rebirth-progress-ratio">0 / 120</strong></div><div class="rebirth-track"><div id="rebirth-progress-fill"></div></div><p id="rebirth-gain-description">Développe tes planètes pour débloquer une renaissance.</p></div>
    <h3>Améliorations permanentes</h3><div class="rebirth-upgrades" id="rebirth-upgrades"></div>
-   <div class="rebirth-actions"><p>Une renaissance remet à zéro les planètes, les biomes, l'argent, les missions, les satellites et la recherche. Les éclats et leurs bonus restent pour toujours.</p><button type="button" id="rebirth-trigger" class="rebirth-trigger" disabled>Renaissance verrouillée</button></div>
+   <div class="rebirth-actions"><p>Une renaissance remet à zéro les planètes, les biomes, l'argent, les missions, les matériaux de fabrication, les satellites et la recherche. Les éclats, leurs bonus et les plans découverts restent pour toujours.</p><button type="button" id="rebirth-trigger" class="rebirth-trigger" disabled>Renaissance verrouillée</button></div>
   </div>
  </section>
 </div>
@@ -2061,7 +2061,7 @@ function renderExploration(){
  const paragraph=text=>container.appendChild(exploreElement('p','explore-summary',text));
  const summary=(a,b)=>{const line=exploreElement('div','explore-statbar');line.append(exploreElement('span','',a),exploreElement('span','',b));container.appendChild(line)};
  if(explorationTab==='satellites'){
-  paragraph('Récolte des ressources en améliorant tes biomes, fabrique les quatre composants, assemble ton satellite puis lance-le en orbite.');
+  paragraph('Récolte du métal tous les 5 niveaux, des cristaux tous les 10, des circuits tous les 15 et des fragments tous les 25. Les expéditions et anomalies rapportent aussi des matériaux. Fabrique, assemble et lance tes satellites.');
   const inventory=exploreElement('div','workshop-inventory');
   WORKSHOP_MATERIALS.forEach(k=>{
    const el=exploreElement('div','workshop-inventory-item');
@@ -2819,7 +2819,7 @@ function requestRebirth(){
  const progress=rebirthProgress();
  if(!progress.unlocked||progress.gain<1)return;
  rebirthConfirmOpen=true;
- $('rebirth-confirm-detail').textContent='Tes '+progress.visited+' monde(s) développés, les niveaux, l’argent, les missions, les satellites et les recherches recommenceront à zéro. Tu recevras '+progress.gain+' éclat(s) ✦. Tes renaissances et améliorations permanentes seront conservées. Cette action est irréversible.';
+ $('rebirth-confirm-detail').textContent='Tes '+progress.visited+' monde(s) développés, les niveaux, l’argent, les missions, les satellites et les recherches recommenceront à zéro. Tu recevras '+progress.gain+' éclat(s) ✦. Tes renaissances, améliorations permanentes et plans de satellites découverts seront conservés. Les matériaux de fabrication seront perdus. Cette action est irréversible.';
  $('rebirth-confirm-overlay').classList.remove('hidden');
  $('rebirth-cancel').focus();
 }
