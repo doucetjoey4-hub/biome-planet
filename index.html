@@ -2825,38 +2825,58 @@ function drawPlanet(){
     ctx.lineWidth=2;ctx.shadowColor='#af85ff';ctx.shadowBlur=13;ctx.stroke();
     ctx.restore();
   }
-  // Satellites animés autour du globe, hors du disque, dessinés en gros pixels.
-  const orbitPhase=performance.now()/7500;
-  state.exploration.satellites.forEach((id,k)=>{
-    if(launchVisual&&launchVisual.planet===state.planet&&launchVisual.id===id) return;
+  // Les satellites déployés utilisent les mêmes pièces que dans l'atelier.
+  const orbitTime=performance.now();
+  const orbitPhase=orbitTime/7500;
+  const orbitPoint=id=>{
     const angle=orbitPhase+id*2.0944+state.planet*.23;
     const radius=231+id*8;
-    const x=c+Math.cos(angle)*radius,y=c+Math.sin(angle)*radius*.94;
-    ctx.save();ctx.translate(Math.round(x),Math.round(y));
-    ctx.fillStyle=['#a7ecff','#ffe5a1','#b9ffdf'][id];
-    ctx.fillRect(-4,-4,8,8);ctx.fillStyle='#46768c';ctx.fillRect(-11,-3,6,6);ctx.fillRect(5,-3,6,6);
+    return {x:c+Math.cos(angle)*radius,y:c+Math.sin(angle)*radius*.94};
+  };
+  const showCraftedSatellite=(id,x,y,scale=.115)=>{
+    ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);
+    for(let part=0;part<4;part++)workshopPartSprite(ctx,part,id,false,orbitTime);
     ctx.restore();
+  };
+  state.exploration.satellites.forEach(id=>{
+    if(launchVisual&&launchVisual.planet===state.planet&&launchVisual.id===id)return;
+    const point=orbitPoint(id);
+    showCraftedSatellite(id,point.x,point.y);
   });
-  // Lancement visible : la fusée traverse le fond étoilé jusqu'à la zone orbitale.
+  // Décollage : fusée porteuse, séparation, puis satellite visible jusqu'à l'orbite.
   if(launchVisual&&launchVisual.planet===state.planet){
-    const elapsed=performance.now()-launchVisual.start;
+    const elapsed=orbitTime-launchVisual.start;
     const t=Math.max(0,Math.min(1,elapsed/launchVisual.duration));
     if(t>=1)launchVisual=null;
     else{
-      const ease=1-Math.pow(1-t,3);
-      const x=c+Math.sin(t*2.1)*78;
-      const y=490-ease*455;
-      ctx.save();ctx.translate(x,y);
-      ctx.fillStyle='#9bcade';ctx.fillRect(-8,-16,16,25);
-      ctx.fillStyle='#f2fcff';ctx.fillRect(-4,-21,8,9);
-      ctx.fillStyle='#6fcce5';ctx.fillRect(-15,0,7,11);ctx.fillRect(8,0,7,11);
-      ctx.fillStyle='#fecb81';ctx.fillRect(-5,10,10,8+Math.round(9*Math.sin(t*42)**2));
-      ctx.fillStyle='#ff824f';ctx.fillRect(-3,14,6,8);
-      ctx.restore();
-      ctx.save();ctx.globalAlpha=.48*(1-t);
-      ctx.fillStyle='#8feaf8';
-      ctx.fillRect(x-2,y+24,4,22+18*t);
-      ctx.restore();
+      const id=launchVisual.id,arrival=orbitPoint(id);
+      if(t<.58){
+        const phase=t/.58;
+        const eased=1-Math.pow(1-phase,2);
+        const x=c+Math.sin(phase*2)*61;
+        const y=484-eased*326;
+        ctx.save();ctx.translate(x,y);
+        ctx.fillStyle='#a4c0d3';ctx.fillRect(-10,-18,20,33);
+        ctx.fillStyle='#eaf6ff';ctx.fillRect(-6,-27,12,12);
+        ctx.fillStyle='#75cbe7';ctx.fillRect(-18,-1,9,13);ctx.fillRect(9,-1,9,13);
+        ctx.fillStyle='#fbc783';ctx.fillRect(-7,16,14,13+Math.round(8*Math.sin(t*55)**2));
+        ctx.fillStyle='#ff8052';ctx.fillRect(-4,26,8,8);
+        ctx.restore();
+        ctx.save();ctx.globalAlpha=.5*(1-phase);
+        ctx.fillStyle='#93def3';ctx.fillRect(x-3,y+34,6,35);
+        ctx.restore();
+      }else{
+        const phase=(t-.58)/.42;
+        const eased=1-Math.pow(1-phase,3);
+        const startX=c+Math.sin(2)*61,startY=158;
+        const x=startX+(arrival.x-startX)*eased;
+        const y=startY+(arrival.y-startY)*eased;
+        ctx.save();ctx.globalAlpha=.55*(1-phase);
+        ctx.strokeStyle=WORKSHOP_PALETTE[id];ctx.lineWidth=2;
+        ctx.beginPath();ctx.arc(x,y,19+phase*24,0,Math.PI*2);ctx.stroke();
+        ctx.restore();
+        showCraftedSatellite(id,x,y,.105+.01*eased);
+      }
     }
   }
 }
