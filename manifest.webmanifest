@@ -3,7 +3,7 @@
   "name": "Biome Planet",
   "short_name": "Biome Planet",
   "description": "Jeu de terraformation spatiale, construction de satellites et exploration des biomes",
-  "start_url": "./?app=v432-centre-controle",
+  "start_url": "./?app=v44-biomes-svg-logo",
   "scope": "./",
   "display": "standalone",
   "background_color": "#080f1c",
@@ -11,7 +11,7 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "./icons/planet.svg",
+      "src": "./icons/biome-planet-app.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
