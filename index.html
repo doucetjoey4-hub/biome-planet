@@ -1013,7 +1013,7 @@ function biomeShade(name,tile,planet){
  return clamp(3+Math.round(d*1.2)+Math.round(patch*.35));
 }
 const KEY='biome-planet-save-v10';let state;
-function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],bonuses:[],discoveries:[],missions:[],events:[],eventActive:null,exploration:null,science:{points:0,upgrades:[0,0,0,0]},workshop:{metal:0,crystal:0,circuit:0,fragment:0},prestige:{count:0,points:0,earned:0,upgrades:[0,0,0,0]},worlds:{},last:Date.now()}}
+function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],bonuses:[],discoveries:[],missions:[],events:[],eventActive:null,exploration:null,science:{points:0,upgrades:[0,0,0,0]},workshop:{metal:0,crystal:0,circuit:0,fragment:0},prestige:{count:0,points:0,earned:0,upgrades:[0,0,0,0],blueprints:[]},worlds:{},last:Date.now()}}
 try{state={...initial(),...JSON.parse(localStorage.getItem(KEY)||'null')}}catch(e){state=initial()}
 if(!Array.isArray(state.levels))state=initial();
 if(!Array.isArray(state.timers))state.timers=state.levels.map(()=>0);
@@ -1032,6 +1032,12 @@ function normalizePrestige(raw){
   upgrades:Array.from({length:4},(_,i)=>Math.min(10,finiteInt(x.upgrades?.[i]))),blueprints:[...new Set(Array.isArray(x.blueprints)?x.blueprints.filter(i=>Number.isInteger(i)&&i>=0&&i<3):[])]};
 }
 state.prestige=normalizePrestige(state.prestige);
+// Les satellites déjà déployés dans les anciennes sauvegardes restent connus.
+for(const w of [...Object.values(state.worlds),{exploration:state.exploration}]){
+ for(const id of w?.exploration?.satellites||[]){
+  if(Number.isInteger(id)&&id>=0&&id<3&&!state.prestige.blueprints.includes(id))state.prestige.blueprints.push(id);
+ }
+}
 const WORKSHOP_MATERIALS=['metal','crystal','circuit','fragment'];
 function normalizeWorkshop(raw){
  const data=raw&&typeof raw==='object'?raw:{};
