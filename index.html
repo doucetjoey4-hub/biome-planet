@@ -1282,8 +1282,10 @@ function toast(msg,type='info'){
  const el=$('toast');
  el.style.transform='';el.style.transition='';el.style.opacity='';
  el.classList.remove('dismissed');
- el.textContent=msg;
+ $('toast-message').textContent=msg;
+ $('toast-icon').textContent=type==='reward'?'✦':type==='success'?'✓':type==='warn'?'!':type==='event'?'☄':'◈';
  el.dataset.kind=type;
+ el.setAttribute('aria-label',msg);
  el.classList.remove('show');
  void el.offsetWidth;
  el.classList.add('show');
@@ -1427,8 +1429,13 @@ function renderMissions(force=false){
  $('objectives-badge').textContent=state.missions.length+'/'+MISSIONS.length;
  $('objectives-open').classList.toggle('has-reward',values.some(v=>!v.done&&v.value>=v.m.target));
  const container=$('mission-list');container.replaceChildren();
- for(const {m,i,value,done,reward} of values){
+ for(const {m,i,value,done,reward} of values.slice().sort((a,b)=>{
+    const rank=v=>v.done?2:v.value>=v.m.target?0:1;
+    return rank(a)-rank(b)||a.i-b.i;
+ })){
    const item=document.createElement('div');item.className='mission-item';
+   item.classList.toggle('mission-ready',!done&&value>=m.target);
+   item.classList.toggle('mission-completed',done);
    const info=document.createElement('div');info.className='mission-content';
    const name=document.createElement('span');name.className='mission-name';name.textContent=m.name;
    const detail=document.createElement('span');detail.className='mission-detail';detail.textContent=m.text+' · '+Math.min(m.target,value)+' / '+m.target;
@@ -2366,7 +2373,7 @@ function renderUI(){
  $('relic-find').classList.toggle('hidden',!relicRevealed());
  const readyToExplore=encounterReady||relicRevealed()||!!(state.exploration.expedition&&state.exploration.expedition.end<=Date.now());
  $('explore-indicator').classList.toggle('hidden',!readyToExplore);
- $('nav-dot').classList.toggle('hidden',!(rebirthReady||readyToExplore||signal>=0||state.missions.length<MISSIONS.length&&MISSIONS.some((m,i)=>!state.missions.includes(i)&&missionProgress(m)>=m.target)));
+ // Les alertes sont centralisées et mises à jour par le gestionnaire V42.
  renderCosmicEvent();
  renderEvolution();renderMissions();
  let minIncome=0;
@@ -2423,6 +2430,7 @@ function renderUI(){
    }
  });
  $('rates').textContent='≈ +'+moneyFormat(minIncome)+' / min';
+ updateGameSignals();
 }
 function hash(x){let a=Math.sin(x*127.1+state.planet*45.17)*43758.5453;return a-Math.floor(a)}
 function noise2(x,y,s=1){
@@ -3026,6 +3034,153 @@ function updateRebirthBadge(){
  $('rebirth-menu-summary').textContent=rebirthReady?'Renaissance prête · +'+p.gain+' éclats ✦':'✦ '+state.prestige.points+' éclat(s) · +'+Math.round((prestigeRevenue()-1)*100)+' % de production';
  if(rebirthOpen&&!rebirthConfirmOpen)renderRebirth();
 }
+/* V42 : un seul inventaire d'actions disponibles pour tout le jeu.
+   Les badges affichent une vraie raison, jamais un signal générique sans destination. */
+let lastGameSignalTime=0,lastGameSignalSignature='';
+function getGameSignals(){
+ const alerts=[];
+ const add=(type,title,detail,count=1,priority=3,target=type)=>alerts.push({type,title,detail,count,priority,target});
+ const readyBonuses=[];
+ state.levels.forEach((level,i)=>{
+  const n=Math.max(0,Math.floor(level/25)-(state.bonuses[i]||[]).length);
+  if(n>0)readyBonuses.push({i,n});
+ });
+ if(readyBonuses.length){
+  const count=readyBonuses.reduce((n,b)=>n+b.n,0);
+  add('bonus','Bonus de biomes',count+' bonus à choisir sur '+readyBonuses.length+' biome'+(readyBonuses.length>1?'s':''),count,1,'biome:'+readyBonuses[0].i);
+ }
+ const missionsReady=MISSIONS.filter((m,i)=>!state.missions.includes(i)&&missionProgress(m)>=m.target);
+ if(missionsReady.length)add('objectives','Objectifs',missionsReady.length+' récompense'+(missionsReady.length>1?'s':'')+' à réclamer',missionsReady.length,1);
+ let craftable=0,assembly=0,launch=0,firstWorkshop=0;
+ for(let i=0;i<SATELLITES.length;i++){
+  if(hasSatellite(i)||totalLevels()<satelliteThresholds[i])continue;
+  const parts=craftParts(i);
+  if(isAssembled(i)&&parts.every(Boolean)){launch++;firstWorkshop=i;continue}
+  if(parts.every(Boolean)){assembly++;firstWorkshop=i;continue}
+  let count=0;
+  for(let j=0;j<4;j++)if(!parts[j]&&canPayMaterials(SATELLITE_RECIPES[i][j]))count++;
+  if(count){craftable+=count;firstWorkshop=i}
+ }
+ if(launch)add('workshop','Satellite prêt à lancer',launch+' lancement'+(launch>1?'s':'')+' possible'+(launch>1?'s':''),launch,0,'workshop:'+firstWorkshop);
+ if(assembly)add('workshop','Satellite à assembler',assembly+' projet'+(assembly>1?'s':'')+' prêt'+(assembly>1?'s':'')+' à assembler',assembly,1,'workshop:'+firstWorkshop);
+ if(craftable)add('workshop','Atelier orbital',craftable+' pièce'+(craftable>1?'s':'')+' à fabriquer',craftable,2,'workshop:'+firstWorkshop);
+ const exp=state.exploration.expedition;
+ if(exp&&exp.end<=Date.now())add('expeditions','Sonde revenue','Expédition terminée · cargaison à récupérer',1,1);
+ const availableTech=TECHNOLOGIES.filter((tech,i)=>researchLevel(i)<5&&techPrerequisite(i)&&state.science.points>=scienceCost(i)).length;
+ if(availableTech)add('science','Recherche disponible',availableTech+' technologie'+(availableTech>1?'s':'')+' à améliorer',availableTech,3);
+ if(state.exploration.encounter&&state.exploration.encounter.until>Date.now())
+  add('anomaly','Anomalie spatiale','Signal actif sur la planète · à collecter',1,0);
+ if(relicRevealed())add('relic','Vestige découvert','Monument mystérieux à examiner sur la planète',1,1);
+ const signal=nextSignal();
+ if(signal>=0)add('journal','Découverte cosmique',COSMIC_ARCHIVES[signal].name||COSMIC_ARCHIVES[signal].title||'Signal à découvrir',1,1);
+ if(availableCosmicEvent()>=0)add('cosmic','Phénomène cosmique','Événement prêt à activer sur la planète',1,3);
+ const rebirth=rebirthProgress();
+ if(rebirth.unlocked)add('rebirth','Renaissance disponible','+'+rebirth.gain+' éclat'+(rebirth.gain>1?'s':'')+' cosmique'+(rebirth.gain>1?'s':''),1,2);
+ if(cover()>=99.999)add('next','Planète terminée','Prochain monde prêt à explorer',1,3);
+ return alerts.sort((a,b)=>a.priority-b.priority||a.title.localeCompare(b.title,'fr'));
+}
+function openGameSignal(alert){
+ closeSideMenu(false);
+ if(alert.type==='workshop'){
+  const i=Number(alert.target.split(':')[1]);
+  if(Number.isInteger(i)&&i>=0&&i<3)workshopSelected=i;
+  openExploration('satellites');return;
+ }
+ if(alert.type==='objectives'){openObjectives();return}
+ if(alert.type==='expeditions'){openExploration('missions');return}
+ if(alert.type==='science'){openExploration('science');return}
+ if(alert.type==='rebirth'){openRebirth();return}
+ if(alert.type==='journal'){$('planet-log-btn').click();return}
+ if(alert.type==='bonus'){
+  const i=Number(alert.target.split(':')[1]);
+  if(Number.isInteger(i)&&cards[i]){
+   cards[i].querySelector('.bonus-choices').classList.add('open');
+   cards[i].scrollIntoView?.({behavior:'smooth',block:'center'});
+  }
+  return;
+ }
+ const target=alert.type==='anomaly'?'orbital-find':
+  alert.type==='relic'?'relic-find':alert.type==='cosmic'?'event-trigger':'next';
+ $(target).focus();
+ $('planet-panel')?.scrollIntoView?.({behavior:'smooth',block:'nearest'});
+}
+function setGameMenuStatus(button,sub,badge,n,label,defaultText){
+ const bt=$(button),sb=$(sub),b=$(badge);
+ bt.classList.toggle('game-action-ready',n>0);
+ sb.textContent=n>0?label:defaultText;
+ b.textContent=n>0?String(n):'';
+ b.classList.toggle('hidden',n===0);
+}
+function updateGameSignals(force=false){
+ const now=Date.now();
+ if(!force&&now-lastGameSignalTime<650)return;
+ lastGameSignalTime=now;
+ const alerts=getGameSignals();
+ const total=alerts.reduce((n,a)=>n+a.count,0);
+ const navBadge=$('nav-count');
+ navBadge.textContent=total>99?'99+':String(total);
+ navBadge.classList.toggle('hidden',total===0);
+ $('nav-dot').classList.add('hidden');
+ $('nav-toggle').setAttribute('aria-label',total?'Menu principal · '+total+' action'+(total>1?'s':'')+' disponible'+(total>1?'s':''):'Ouvrir le menu principal');
+ const missionN=alerts.filter(a=>a.type==='objectives').reduce((n,a)=>n+a.count,0);
+ const craftAlerts=alerts.filter(a=>a.type==='workshop');
+ const craftN=craftAlerts.reduce((n,a)=>n+a.count,0);
+ const expN=alerts.filter(a=>a.type==='expeditions').length;
+ const sciN=alerts.filter(a=>a.type==='science').reduce((n,a)=>n+a.count,0);
+ setGameMenuStatus('menu-workshop','menu-workshop-sub','menu-workshop-badge',craftN,
+   craftAlerts[0]?.detail||'Atelier prêt','Fabrique tes satellites, pièce par pièce');
+ setGameMenuStatus('menu-expeditions','menu-expeditions-sub','menu-expeditions-badge',expN,
+   'Cargaison à récupérer','Envoyer et récupérer les sondes');
+ setGameMenuStatus('menu-science','menu-science-sub','menu-science-badge',sciN,
+   sciN+' technologie'+(sciN>1?'s':'')+' disponible'+(sciN>1?'s':''),'Débloque des technologies');
+ $('objectives-open').classList.toggle('game-action-ready',missionN>0);
+ $('menu-objectives-sub').textContent=missionN?missionN+' récompense'+(missionN>1?'s':'')+' à réclamer':'Défis et récompenses';
+ $('objectives-badge').textContent=missionN?String(missionN):state.missions.length+'/'+MISSIONS.length;
+ $('planet-log-btn').classList.toggle('game-action-ready',alerts.some(a=>a.type==='journal'));
+ $('explore-summary').textContent=alerts.some(a=>a.type==='anomaly'||a.type==='relic')?'Signal sur la planète à examiner':'Nature, galaxies et découvertes';
+ const misc=alerts.filter(a=>['anomaly','relic'].includes(a.type));
+ $('explore-indicator').textContent=misc.length?String(misc.length):'';
+ $('explore-indicator').classList.toggle('hidden',misc.length===0);
+ $('rebirth-open').classList.toggle('game-action-ready',alerts.some(a=>a.type==='rebirth'));
+ $('menu-world-info').textContent='Planète '+worldName(state.planet)+' · '+Math.round(cover())+' % explorée';
+ $('menu-activity-count').textContent=String(total);
+ $('menu-dashboard').classList.toggle('is-quiet',total===0);
+ $('menu-dashboard-subtitle').textContent=total?total+' action'+(total>1?'s':'')+' disponible'+(total>1?'s':'')+' · touche pour y aller':'Aucune action urgente · poursuis ton exploration';
+ const signature=state.planet+'|'+alerts.map(a=>a.type+':'+a.title+':'+a.detail+':'+a.count+':'+a.target).join('|');
+ if(signature===lastGameSignalSignature&&!force)return;
+ lastGameSignalSignature=signature;
+ const list=$('menu-activity-list');
+ list.replaceChildren();
+ if(!alerts.length){
+  const empty=document.createElement('div');empty.className='game-activity-empty';
+  empty.textContent='✓ Tous les systèmes sont à jour';
+  list.appendChild(empty);return;
+ }
+ const symbols={bonus:'🎁',objectives:'✧',workshop:'🛠',expeditions:'🚀',science:'⚗',anomaly:'☄',relic:'◈',journal:'✦',cosmic:'☀',rebirth:'✵',next:'🪐'};
+ for(const a of alerts.slice(0,8)){
+  const b=document.createElement('button');
+  b.type='button';b.className='game-activity game-activity-'+a.type;
+  b.setAttribute('aria-label',a.title+' : '+a.detail);
+  const icon=document.createElement('span');icon.className='game-activity-icon';icon.textContent=symbols[a.type]||'✦';
+  const info=document.createElement('span');info.className='game-activity-info';
+  const title=document.createElement('strong');title.textContent=a.title;
+  const detail=document.createElement('small');detail.textContent=a.detail;
+  info.append(title,detail);
+  const count=document.createElement('span');count.className='game-activity-count';
+  count.textContent=a.count>1?String(a.count):'›';
+  b.append(icon,info,count);
+  b.addEventListener('click',()=>openGameSignal(a));
+  list.appendChild(b);
+ }
+ if(alerts.length>8){
+  const more=document.createElement('span');more.className='game-activity-more';
+  more.textContent='+'+(alerts.length-8)+' autre'+(alerts.length-8>1?'s':'')+' activité'+(alerts.length-8>1?'s':'');
+  list.appendChild(more);
+ }
+}
+$('menu-workshop').addEventListener('click',()=>{closeSideMenu(false);openExploration('satellites')});
+$('menu-expeditions').addEventListener('click',()=>{closeSideMenu(false);openExploration('missions')});
+$('menu-science').addEventListener('click',()=>{closeSideMenu(false);openExploration('science')});
 /* V39 : navigation centralisée, sans changer les systèmes de gameplay. */
 let sideMenuOpen=false;
 const SIDE_MENU_ACTIONS=['explore-open','objectives-open','atlas-open','planet-log-btn','audio-settings-open','reset'];
@@ -3040,6 +3195,7 @@ function closeSideMenu(restoreFocus=true){
 function openSideMenu(){
  if(sideMenuOpen)return;
  sideMenuOpen=true;playSound('open');
+ updateGameSignals(true);
  $('side-menu-overlay').classList.remove('hidden');
  $('nav-toggle').setAttribute('aria-expanded','true');
  $('nav-toggle').setAttribute('aria-label','Fermer le menu principal');
