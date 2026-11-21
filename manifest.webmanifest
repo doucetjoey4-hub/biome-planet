@@ -3,7 +3,7 @@
   "name": "Biome Planet",
   "short_name": "Biome Planet",
   "description": "Jeu de terraformation spatiale, construction de satellites et exploration des biomes",
-  "start_url": "./?app=v43-orbital-command",
+  "start_url": "./?app=v431-menu-repare",
   "scope": "./",
   "display": "standalone",
   "background_color": "#080f1c",
