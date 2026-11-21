@@ -1,5 +1,5 @@
 /* Biome Planet V20: priorité au réseau pour empêcher les versions périmées. */
-const CACHE = 'biome-planet-v45-official-icon';
+const CACHE = 'biome-planet-v46-smooth-cycles';
 const CORE = ['./index.html','./manifest.webmanifest','./icons/biome-planet-app.svg?v=45'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
