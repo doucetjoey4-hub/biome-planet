@@ -1051,6 +1051,16 @@ button:focus-visible{outline:2px solid #91f6ee;outline-offset:2px}
  .side-menu,.bonus-choices.open{animation:none!important}
  button{transition:none!important}
 }
+
+/* V42 · Statuts de récompense directement dans les écrans. */
+.workshop-part.craftable{border-color:#57c1c2!important;background:linear-gradient(110deg,#245154,#183747)!important;box-shadow:inset 3px 0 0 #64dcd4,0 0 12px #61d4c021}
+.workshop-part.craftable strong{color:#dbfff7}
+.workshop-part.craftable>button{background:linear-gradient(110deg,#28746f,#205d67);border-color:#8df2e3;color:#f5ffff;box-shadow:0 2px 12px #51dac326}
+.workshop-launch.launch-ready{background:linear-gradient(105deg,#389b80,#2d746b);border-color:#b3ffdb;color:#f6fff9;box-shadow:0 3px 18px #4fd1a03d}
+.explore-card.explore-ready{border-color:#59c5b2!important;box-shadow:inset 3px 0 0 #59e6bb,0 0 12px #54d2bc22}
+.explore-card.explore-ready button:not(:disabled){background:#286b63;color:#dbfff0;border-color:#79e3c8}
+.app .planet-holder{filter:none!important}
+.app .balance,.app .planet-panel{backdrop-filter:none!important}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
@@ -2240,6 +2250,7 @@ function exploreCard(container,title,desc,detail,buttonLabel,disabled,action){
  if(buttonLabel){
   const btn=exploreElement('button','',buttonLabel);
   btn.type='button';btn.disabled=!!disabled;
+  if(!disabled&&['Récupérer','Étudier','Améliorer','Réclamer'].some(t=>buttonLabel.includes(t)))card.classList.add('explore-ready');
   if(action)btn.addEventListener('click',action);
   card.appendChild(btn);
  }
@@ -2484,9 +2495,11 @@ function renderExploration(){
   const partList=exploreElement('div','workshop-parts');
   WORKSHOP_PARTS.forEach((part,j)=>{
    const recipe=SATELLITE_RECIPES[id][j],made=parts[j];
-   const card=exploreElement('article','workshop-part'+(made?' built':''));
+   const craftable=!made&&unlocked&&!owned&&canPayMaterials(recipe);
+   const card=exploreElement('article','workshop-part'+(made?' built':craftable?' craftable':''));
    const partInfo=exploreElement('div','workshop-part-info');
    const heading=exploreElement('strong','',part.icon+' '+part.name);
+   if(craftable)heading.textContent+=' · PRÊT';
    const desc=exploreElement('p','',part.explain);
    const materials=exploreElement('div','workshop-part-materials');
    WORKSHOP_MATERIALS.filter(k=>recipe[k]).forEach(k=>{
@@ -2497,14 +2510,14 @@ function renderExploration(){
    });
    partInfo.append(heading,desc,materials);
    const button=exploreElement('button','',made?'✓ Faite':'Fabriquer');
-   button.type='button';button.disabled=made||!unlocked||owned||!canPayMaterials(recipe);
+   button.type='button';button.disabled=!craftable;
    button.addEventListener('click',()=>craftSatellitePart(id,j));
    card.append(partInfo,button);partList.appendChild(card);
   });
   container.appendChild(partList);
   const footer=exploreElement('div','workshop-finish');
   footer.append(exploreElement('p','',sat.detail));
-  const action=exploreElement('button','workshop-launch',
+  const action=exploreElement('button','workshop-launch'+(!owned&&parts.every(Boolean)?' launch-ready':''),
     owned?'✓ Satellite actif':assembled?'🚀 Lancer en orbite':'🛠 Assembler les pièces');
   action.type='button';action.disabled=owned||!parts.every(Boolean);
   action.addEventListener('click',()=>assembled?launchSatellite(id):assembleSatellite(id));
