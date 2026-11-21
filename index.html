@@ -192,7 +192,7 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
   transition:width .28s cubic-bezier(.2,.8,.2,1);
 }
 .section-title h2{font-size:1.02rem; font-weight:900}
-.biome-scroll{padding:2px 4px 14px; mask-image:linear-gradient(180deg,transparent 0,#000 8px,#000 calc(100% - 14px),transparent 100%);}
+.biome-scroll{padding:2px 4px 14px; mask-image:none;-webkit-mask-image:none;}
 .biomes{gap:12px}
 .biome{
   position:relative;
@@ -1685,9 +1685,7 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
   <p>Explore les mondes à ton rythme. Tes crédits et ta progression sont conservés sur chaque planète.</p>
   <div class="world-carousel-head"><span id="world-carousel-count">1 / 18</span><span>‹ Glisse pour naviguer ›</span></div>
   <div class="world-carousel-control"><button type="button" class="world-arrow" id="world-prev" aria-label="Planète précédente">‹</button><div class="world-carousel" id="world-grid" aria-label="Planètes à explorer"></div><button type="button" class="world-arrow" id="world-next" aria-label="Planète suivante">›</button></div>
-  <div class="world-position" id="world-position" aria-label="Position dans les planètes"></div><form class="world-jump" id="world-jump"><label for="world-number">Accéder directement à une planète</label>
-   <div><input type="number" min="1" max="999" id="world-number" inputmode="numeric" placeholder="Numéro 1 à 999" required><button type="submit">Aller</button></div>
-  </form>
+  <div class="world-position" id="world-position" aria-label="Position dans les planètes"></div>
  </section>
 </div>
 <script>
@@ -2454,6 +2452,7 @@ function renderWorldList(){
  const ids=new Set(Array.from({length:18},(_,i)=>i+1));
  for(let p=Math.max(1,state.planet-1);p<=Math.min(999,state.planet+2);p++)ids.add(p);
  Object.keys(state.worlds).forEach(k=>{const n=Number(k);if(Number.isInteger(n)&&n>=1&&n<=999)ids.add(n)});
+ const furthest=Math.max(state.planet,...ids);for(let p=1;p<=Math.min(999,furthest+2);p++)ids.add(p);
  worldCarouselIds=[...ids].sort((a,b)=>a-b);
  worldPreviewObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{
    for(const entry of entries){
@@ -2530,7 +2529,7 @@ refreshBiomeCards();buildPixelMap();drawPlanet();renderUI();save();
 $('open-planets').addEventListener('click',()=>{playSound('open');renderWorldList();$('world-overlay').classList.remove('hidden');requestAnimationFrame(()=>showWorldIndex(worldCarouselIndex,false))});
 $('close-planets').addEventListener('click',closeWorlds);
 $('world-overlay').addEventListener('click',e=>{if(e.target===$('world-overlay'))closeWorlds()});
-$('world-jump').addEventListener('submit',e=>{e.preventDefault();switchWorld($('world-number').value)});
+
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWorlds();else if(!$('world-overlay').classList.contains('hidden')&&!/INPUT|TEXTAREA/.test(document.activeElement?.tagName||'')&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();showWorldIndex(worldCarouselIndex+(e.key==='ArrowRight'?1:-1))}});
 // Phénomènes cosmiques à débloquer une fois chacun, par monde.
 // L'heure de fin est persistante pour empêcher de rallonger un bonus en changeant de planète.
