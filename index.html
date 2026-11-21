@@ -1577,12 +1577,21 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 @media(max-height:550px){.world-dialog{padding:10px}.world-dialog>p{display:none}.world-card{gap:5px;padding:8px}.world-card-head{min-height:30px}.world-card canvas{max-width:clamp(80px,23dvh,150px)}.world-card .world-play{min-height:34px}.world-position{margin-bottom:5px}}
 @media(prefers-reduced-motion:reduce){.world-card,.world-position button{transition:none}}
 
+
+/* V49: Visualisations des phénomènes cosmiques */
+.planet-holder{isolation:isolate}
+.planet-holder #cosmic-fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;display:block;touch-action:none}
+.planet-holder button,.planet-holder .planet-hint{z-index:3}
+.fx-setting{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#13293b;border:1px solid #3c6980;border-radius:12px;padding:11px;margin-bottom:13px}
+.fx-setting strong{display:block;font-size:.8rem;color:#e7faff}.fx-setting small{display:block;font-size:.67rem;margin-top:3px;color:#a8c8d8}
+.fx-setting button{border:1px solid #73c4d0;border-radius:9px;background:#1a4957;color:#c7fff4;padding:9px;min-width:86px;font-weight:800}
+.fx-setting button[aria-pressed="false"]{background:#172b3a;color:#b2bdc7;border-color:#52687b}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=45">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
 <meta name="theme-color" content="#0b192c">
 </head>
-<body><main class="app"><div class="balance"><div class="balance-money"><div class="muted"><span class="hud-finance-mark">◈</span> CRÉDITS COSMIQUES</div><div class="amount" id="money">0 $</div></div><div class="balance-actions"><div class="income" id="rates">+0 $ / min</div><button type="button" class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu principal" aria-controls="side-menu" aria-expanded="false"><span aria-hidden="true">☰</span><span class="nav-dot hidden" id="nav-dot" aria-hidden="true"></span><span class="nav-count hidden" id="nav-count" aria-hidden="true">0</span></button></div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-progress-rail" aria-hidden="true"><span id="planet-progress-fill"></span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="orbital-find hidden" id="orbital-find" aria-label="Collecter une anomalie spatiale"><span id="orbital-glyph">✧</span></button><button type="button" class="relic-find hidden" id="relic-find" aria-label="Examiner un site mystérieux">⌁</button><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Activer</button></div></div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2><span class="biome-title-glyph">◈</span> MODULES DE BIOMES <span class="biome-title-index" id="biome-title-index"></span></h2><button type="button" class="planet-layout-toggle" id="planet-layout-toggle" aria-pressed="false" aria-label="Agrandir la planète">⤢ Planète</button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section></div></main>
+<body><main class="app"><div class="balance"><div class="balance-money"><div class="muted"><span class="hud-finance-mark">◈</span> CRÉDITS COSMIQUES</div><div class="amount" id="money">0 $</div></div><div class="balance-actions"><div class="income" id="rates">+0 $ / min</div><button type="button" class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu principal" aria-controls="side-menu" aria-expanded="false"><span aria-hidden="true">☰</span><span class="nav-dot hidden" id="nav-dot" aria-hidden="true"></span><span class="nav-count hidden" id="nav-count" aria-hidden="true">0</span></button></div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-progress-rail" aria-hidden="true"><span id="planet-progress-fill"></span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><canvas id="cosmic-fx" aria-hidden="true"></canvas><button type="button" class="orbital-find hidden" id="orbital-find" aria-label="Collecter une anomalie spatiale"><span id="orbital-glyph">✧</span></button><button type="button" class="relic-find hidden" id="relic-find" aria-label="Examiner un site mystérieux">⌁</button><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Activer</button></div></div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2><span class="biome-title-glyph">◈</span> MODULES DE BIOMES <span class="biome-title-index" id="biome-title-index"></span></h2><button type="button" class="planet-layout-toggle" id="planet-layout-toggle" aria-pressed="false" aria-label="Agrandir la planète">⤢ Planète</button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section></div></main>
 <div class="side-menu-overlay hidden" id="side-menu-overlay">
  <aside class="side-menu" id="side-menu" role="dialog" aria-modal="true" aria-labelledby="side-menu-title">
   <div class="side-menu-head"><div class="bp-menu-heading"><div class="bp-menu-brand"><span class="bp-brand-sigil" aria-hidden="true"><img src="./icons/biome-planet-app.svg" alt="" width="42" height="42" decoding="async"></span><span class="bp-brand-wordmark">BIOME <b>PLANET</b><small>ORBITAL COMMAND</small></span></div><h2 id="side-menu-title">Centre de contrôle</h2><p id="menu-world-info">Planète Aube · Exploration en cours</p></div><button type="button" id="nav-close" class="nav-close" aria-label="Fermer le menu">✕</button></div>
@@ -1647,7 +1656,7 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  <section class="audio-dialog" role="dialog" aria-modal="true" aria-labelledby="audio-title">
   <div class="audio-dialog-header"><div><span>♫ AMBIANCE COSMIQUE</span><h2 id="audio-title">Réglages audio</h2></div><button type="button" id="audio-settings-close" aria-label="Fermer">✕</button></div>
   <div class="audio-switches"><button type="button" class="linkbtn sound-toggle" id="sound-toggle" aria-label="Désactiver les effets sonores" aria-pressed="true">🔊 Sons</button><button type="button" class="linkbtn music-toggle" id="music-toggle" aria-label="Activer la musique" aria-pressed="false">♫ Musique</button></div>
-  <label for="music-volume">Musique de fond <output id="music-volume-value">22 %</output></label>
+  <div class="fx-setting"><div><strong>✦ Animations cosmiques</strong><small>Étoiles filantes, aurores, alignements</small></div><button id="cosmic-fx-toggle" type="button" aria-pressed="true">Activées</button></div><label for="music-volume">Musique de fond <output id="music-volume-value">22 %</output></label>
   <input type="range" id="music-volume" min="0" max="100" step="1" value="22">
   <label for="sfx-volume">Effets sonores <output id="sfx-volume-value">55 %</output></label>
   <input type="range" id="sfx-volume" min="0" max="100" step="1" value="55">
@@ -2538,6 +2547,64 @@ const COSMIC_EVENTS=[
  {levels:75,name:'Aurore magnétique',desc:'Production augmentée pendant 120 secondes',seconds:120,factor:1.5},
  {levels:160,name:'Alignement céleste',desc:'Production augmentée pendant 150 secondes',seconds:150,factor:1.7}
 ];
+
+const FX_PREF='biome-planet-cosmic-fx-v49';
+let fxEnabled=true;try{fxEnabled=localStorage.getItem(FX_PREF)!=='false'}catch(e){}
+const fxCanvas=$('cosmic-fx'),fx=fxCanvas.getContext('2d',{alpha:true});
+let fxLast=0,fxEvent=-1,fxStars=[];
+function fxClear(){fx.clearRect(0,0,fxCanvas.width,fxCanvas.height)}
+function fxUpdateToggle(){const b=$('cosmic-fx-toggle');b.textContent=fxEnabled?'✓ Activées':'Désactivées';b.setAttribute('aria-pressed',String(fxEnabled));if(!fxEnabled){fxEvent=-1;fxStars=[];fxClear()}}
+$('cosmic-fx-toggle').addEventListener('click',()=>{fxEnabled=!fxEnabled;try{localStorage.setItem(FX_PREF,String(fxEnabled))}catch(e){}fxUpdateToggle()});fxUpdateToggle();
+function drawCosmicFX(now){
+ const e=fxEnabled?activeCosmicEvent():null;
+ if(!e||document.hidden){if(fxEvent!==-1){fxEvent=-1;fxStars=[];fxClear()}return}
+ if(now-fxLast<33)return;
+ const dt=Math.min(.06,(now-fxLast)/1000||.033);fxLast=now;
+ const rect=fxCanvas.getBoundingClientRect();if(rect.width<8||rect.height<8)return;
+ const dpr=Math.min(devicePixelRatio||1,1.5),w=Math.round(rect.width*dpr),h=Math.round(rect.height*dpr);
+ if(fxCanvas.width!==w||fxCanvas.height!==h){fxCanvas.width=w;fxCanvas.height=h}
+ if(e.id!==fxEvent){fxEvent=e.id;fxStars=[]}
+ const u=Math.min(w,h),t=now/1000,c=fx;c.clearRect(0,0,w,h);
+ if(e.id===0){
+  if(fxStars.length<12&&Math.random()<dt*10)fxStars.push({x:Math.random()*w*1.5,y:Math.random()*h*.5-h*.15,v:u*(.43+Math.random()*.36),len:u*(.07+Math.random()*.08)});
+  c.lineCap='round';
+  for(let i=fxStars.length-1;i>=0;i--){
+   const p=fxStars[i];p.x-=p.v*dt*.56;p.y+=p.v*dt;
+   if(p.y>h+u*.15||p.x< -u*.2){fxStars.splice(i,1);continue}
+   const g=c.createLinearGradient(p.x+p.len*.56,p.y-p.len,p.x,p.y);
+   g.addColorStop(0,'#88eaff00');g.addColorStop(.6,'#65dcff77');g.addColorStop(1,'#ffffffee');
+   c.strokeStyle=g;c.lineWidth=Math.max(1.4,u*.006);c.beginPath();c.moveTo(p.x+p.len*.56,p.y-p.len);c.lineTo(p.x,p.y);c.stroke();
+  }
+ }else if(e.id===1){
+  // Drapés lumineux ondulants et transparents
+  c.save();c.globalCompositeOperation='screen';
+  for(let i=0;i<4;i++){
+   const base=h*(.12+i*.095),amp=h*(.05+i*.015),rgb=['93,246,170','98,201,255','160,130,255','102,244,216'][i];
+   const g=c.createLinearGradient(0,base-amp,0,base+amp*2.5);
+   g.addColorStop(0,'rgba('+rgb+',0)');g.addColorStop(.45,'rgba('+rgb+',.23)');g.addColorStop(1,'rgba('+rgb+',0)');
+   c.fillStyle=g;c.beginPath();
+   for(let x=0;x<=w+8;x+=8){const y=base+Math.sin(x/w*8+t*.8+i)*amp*.6+Math.cos(x/w*11-t*.5+i)*amp*.24;if(x===0)c.moveTo(x,y);else c.lineTo(x,y)}
+   for(let x=w;x>=0;x-=8)c.lineTo(x,base+amp*2.3+Math.sin(x/w*8+t*.8+i)*amp*.6);
+   c.closePath();c.fill();
+  }c.restore();
+ }else if(e.id===2){
+  c.save();c.translate(w/2,h/2);c.rotate(-.35);
+  for(let i=0;i<3;i++){
+   c.strokeStyle=['#88e6ff66','#b6aaff66','#80ffdd55'][i];c.lineWidth=Math.max(1.1,u*.003);
+   c.setLineDash([u*.065,u*.034]);c.lineDashOffset=-t*u*.02*(i%2?-1:1);
+   c.beginPath();c.ellipse(0,0,u*(.36+i*.065),u*(.15+i*.03),0,0,Math.PI*2);c.stroke();
+  }
+  c.setLineDash([]);
+  for(let i=0;i<3;i++){
+   const a=t*.25+i*2*Math.PI/3,x=Math.cos(a)*u*.42,y=Math.sin(a)*u*.17;
+   const g=c.createRadialGradient(x,y,0,x,y,u*.04);
+   g.addColorStop(0,'#e8ffffdd');g.addColorStop(.25,'#94d9ff88');g.addColorStop(1,'#94d9ff00');
+   c.fillStyle=g;c.beginPath();c.arc(x,y,u*.04,0,2*Math.PI);c.fill();
+   c.fillStyle='#e8ffff';c.beginPath();c.arc(x,y,Math.max(1.5,u*.006),0,2*Math.PI);c.fill();
+  }c.restore();
+ }
+}
+
 function totalLevels(){return state.levels.reduce((a,b)=>a+(Number(b)||0),0)}
 function activeCosmicEvent(){const e=state.eventActive;return e&&Number.isInteger(e.id)&&COSMIC_EVENTS[e.id]&&Number(e.until)>Date.now()?e:null}
 function availableCosmicEvent(){
@@ -4198,6 +4265,7 @@ function frame(now){
  if(now-lastUiRender>100){lastUiRender=now;renderUI()}
  if(!document.hidden){
    drawPlanet();
+   drawCosmicFX(now);
    if(workshopPreviewCanvas&&explorationTab==='satellites'&&!$('explore-overlay').classList.contains('hidden')&&now-lastWorkshopDraw>=30){
      lastWorkshopDraw=now;
      drawWorkshopSatellite(workshopPreviewCanvas,workshopSelected,craftParts(workshopSelected),isAssembled(workshopSelected),hasSatellite(workshopSelected),now);
