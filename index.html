@@ -1619,6 +1619,30 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 #explore-overlay .explore-tabs,
 #explore-overlay .explore-tab,
 #explore-overlay nav[aria-label="Sections d'exploration"]{display:none!important;visibility:hidden!important;height:0!important;margin:0!important;padding:0!important}
+
+/* V54 — centrer systématiquement les croix dans leurs boutons carrés. */
+:is(#nav-close,#explore-close,#objectives-close,#atlas-close,
+#audio-settings-close,#rebirth-close,#discovery-close,#close-planets){
+ display:grid!important;
+ place-items:center!important;
+ align-content:center!important;
+ justify-content:center!important;
+ flex-shrink:0;
+ padding:0!important;
+ line-height:1!important;
+ text-align:center!important;
+ vertical-align:middle!important;
+ box-sizing:border-box!important;
+}
+:is(#nav-close,#explore-close,#objectives-close,#atlas-close,
+#audio-settings-close,#rebirth-close,#discovery-close,#close-planets) > svg{
+ display:block!important;
+ width:18px;
+ height:18px;
+ margin:0!important;
+ flex:none;
+ transform:none!important;
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
