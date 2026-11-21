@@ -3,7 +3,7 @@
   "name": "Biome Planet",
   "short_name": "Biome Planet",
   "description": "Jeu de terraformation spatiale, construction de satellites et exploration des biomes",
-  "start_url": "./?app=v44-biomes-svg-logo",
+  "start_url": "./?app=v45-official-icon",
   "scope": "./",
   "display": "standalone",
   "background_color": "#080f1c",
@@ -11,10 +11,16 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "./icons/biome-planet-app.svg",
+      "src": "./icons/biome-planet-app.svg?v=45",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/biome-planet-app.svg?v=45",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ]
 }
