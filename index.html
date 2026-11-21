@@ -1614,8 +1614,13 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 .explore-header{padding-bottom:9px;border-bottom:1px solid #365e77}
 .explore-header h2{font-size:1.45rem!important}
 .explore-content{flex:1;min-height:0}
+
+/* V53 - defensive removal of obsolete exploration navigation. */
+#explore-overlay .explore-tabs,
+#explore-overlay .explore-tab,
+#explore-overlay nav[aria-label="Sections d'exploration"]{display:none!important;visibility:hidden!important;height:0!important;margin:0!important;padding:0!important}
 </style>
-<link rel="manifest" href="./manifest.webmanifest?v=45">
+<link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
 <meta name="theme-color" content="#0b192c">
 </head>
@@ -4180,7 +4185,6 @@ function installBpIcons(){
   if($(id))$(id).innerHTML=bpIcon('close',18);
  }
  const meta={satellites:['workshop','Atelier'],missions:['rocket','Expéditions'],science:['atom','Recherche'],nature:['nature','Monde vivant'],galaxy:['globe','Galaxie']};
- document.querySelectorAll('.explore-tab').forEach(btn=>{const entry=meta[btn.dataset.explore];if(entry)btn.innerHTML=bpIcon(entry[0],17)+'<span>'+entry[1]+'</span>'});
  const sel=$('open-planets')?.querySelector('.planet-select-text');if(sel)sel.innerHTML=bpIcon('planet',17)+'<span>Planètes</span>';
 }
 /* V39 : navigation centralisée, sans changer les systèmes de gameplay. */
@@ -4321,4 +4325,4 @@ document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=53').catch(console.warn));}</script></body></html>
