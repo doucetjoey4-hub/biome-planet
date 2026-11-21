@@ -1548,6 +1548,35 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  .biome .biome-icon.biome-icon-art{border-color:#487287!important;background:#193344!important}
  .biome .bp-biome-svg{filter:none}
 }
+
+/* V47 — navigation orbitale, swipe natif et aperçu centré. */
+.world-overlay{align-items:center;padding:10px;background:#020711e8}
+.world-dialog{width:min(100%,560px);max-height:calc(100dvh - 20px);border-radius:20px;padding:16px 12px;background:radial-gradient(ellipse at 50% 30%,#19364b 0%,#0c1929 48%,#070e19 100%);border:1px solid #47768f;box-shadow:0 0 45px #40b8e315,0 24px 80px #000b}
+.world-dialog-head{margin:0 5px}.world-dialog-head h2{font-family:Rajdhani,sans-serif;font-size:1.55rem;letter-spacing:.04em;line-height:1.05}
+.world-kicker{display:block;font:700 .65rem "Space Grotesk",sans-serif;letter-spacing:.18em;color:#77d9e9;margin-bottom:5px}
+.world-dialog>p{font-size:.72rem;margin:9px 5px 14px;color:#9db8cc}
+.world-carousel-head{margin:0 5px 8px;color:#9db8cc;letter-spacing:.025em}
+#world-carousel-count{font:700 .83rem "Space Grotesk",sans-serif;color:#b4faff}
+.world-carousel-control{position:relative;display:block}
+.world-carousel{--card-width:min(82%,340px);position:relative;display:flex;width:100%;gap:12px;padding:8px 0 12px;scroll-snap-type:x mandatory;scroll-padding-inline:0;touch-action:pan-x;overscroll-behavior-x:contain;scrollbar-width:none}
+.world-carousel::before,.world-carousel::after{content:"";flex:0 0 max(0px,calc((100% - var(--card-width))/2 - 12px));pointer-events:none}
+.world-card{box-sizing:border-box;flex:0 0 var(--card-width);min-width:0;min-height:0;gap:9px;padding:12px;scroll-snap-align:center;scroll-snap-stop:always;opacity:.58;transform:scale(.95);transition:opacity .2s,transform .2s,border-color .2s;isolation:isolate;background:radial-gradient(ellipse at 50% 36%,#1b4358,#101d30 54%,#091321 100%);border-radius:18px}
+.world-card.focused{opacity:1;transform:none;border-color:#69c9df;box-shadow:inset 0 0 20px #54d8ef12,0 5px 16px #0007}
+.world-card.current.focused{border-color:#79f1cb}
+.world-card-head{min-height:43px}.world-card strong{font:700 1.16rem Rajdhani,sans-serif;letter-spacing:.025em}.world-card .world-status{font-size:.6rem;align-self:start}
+.world-card canvas{max-width:min(100%,clamp(115px,29dvh,225px));filter:drop-shadow(0 0 20px #60ceec30);margin:0 auto;touch-action:pan-x;cursor:grab}
+.world-card .world-summary{font-size:.7rem;color:#b7cfde}.world-card .world-percent{font:700 1.12rem Rajdhani,sans-serif;color:#a5ffe0}
+.world-card .world-progress{height:6px}.world-card .world-play{min-height:42px;font:700 .92rem Rajdhani,sans-serif;letter-spacing:.04em;background:linear-gradient(110deg,#81e8ed,#3aa4cc);border-color:#8aebef;color:#061823}
+.world-card.current .world-play{color:#b6f9e4;border-color:#519d92;background:#173a40}
+.world-arrow{position:absolute;top:46%;z-index:3;width:30px;height:46px;border-radius:10px;background:#0b1a2aeb;box-shadow:0 3px 12px #0007;transform:translateY(-50%)}
+#world-prev{left:0}#world-next{right:0}.world-arrow:disabled{opacity:.2}
+.world-position{display:flex;justify-content:center;gap:5px;align-items:center;height:14px;margin:2px 0 9px}
+.world-position button{width:7px;height:7px;padding:0;border:0;border-radius:99px;background:#365268;transition:width .18s,background .18s}
+.world-position button.active{width:21px;background:#8aeaf2;box-shadow:0 0 8px #72ddf472}
+.world-jump{margin:0 5px;padding-top:10px;border-color:#29485d}.world-jump label{font-size:.68rem;color:#a7c5d5}.world-jump input{padding:9px}.world-jump button{background:#21445b;color:#c8faff;border:1px solid #487f99;padding:8px 14px}
+@media(max-height:550px){.world-dialog{padding:10px}.world-dialog>p{display:none}.world-card{gap:5px;padding:8px}.world-card-head{min-height:30px}.world-card canvas{max-width:clamp(80px,23dvh,150px)}.world-card .world-play{min-height:34px}.world-position{margin-bottom:5px}}
+@media(prefers-reduced-motion:reduce){.world-card,.world-position button{transition:none}}
+
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=45">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -1652,11 +1681,11 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 </div>
 <div class="world-overlay hidden" id="world-overlay">
  <section class="world-dialog" role="dialog" aria-modal="true" aria-labelledby="world-title">
-  <div class="world-dialog-head"><h2 id="world-title">🪐 Choisir une planète</h2><button type="button" id="close-planets" aria-label="Fermer">✕</button></div>
-  <p>Change de planète quand tu veux. Ta progression et ton argent restent sauvegardés séparément sur chaque monde. Chaque planète réserve ses propres surprises.</p>
-  <div class="world-carousel-head"><span id="world-carousel-count">1 / 18</span><span>Glisse vers la gauche ou la droite</span></div>
+  <div class="world-dialog-head"><div><span class="world-kicker">◈ NAVIGATION ORBITALE</span><h2 id="world-title">Choisir une planète</h2></div><button type="button" id="close-planets" aria-label="Fermer">✕</button></div>
+  <p>Explore les mondes à ton rythme. Tes crédits et ta progression sont conservés sur chaque planète.</p>
+  <div class="world-carousel-head"><span id="world-carousel-count">1 / 18</span><span>‹ Glisse pour naviguer ›</span></div>
   <div class="world-carousel-control"><button type="button" class="world-arrow" id="world-prev" aria-label="Planète précédente">‹</button><div class="world-carousel" id="world-grid" aria-label="Planètes à explorer"></div><button type="button" class="world-arrow" id="world-next" aria-label="Planète suivante">›</button></div>
-  <form class="world-jump" id="world-jump"><label for="world-number">Accéder directement à une planète</label>
+  <div class="world-position" id="world-position" aria-label="Position dans les planètes"></div><form class="world-jump" id="world-jump"><label for="world-number">Accéder directement à une planète</label>
    <div><input type="number" min="1" max="999" id="world-number" inputmode="numeric" placeholder="Numéro 1 à 999" required><button type="submit">Aller</button></div>
   </form>
  </section>
@@ -2409,13 +2438,15 @@ function drawWorldPreview(canvas,p,biomes,levels){
 function showWorldIndex(index,smooth=true){
  worldCarouselIndex=Math.max(0,Math.min(worldCarouselIds.length-1,index));
  const carousel=$('world-grid'),card=carousel.children[worldCarouselIndex];
- if(card){carousel.scrollTo({left:card.offsetLeft-carousel.offsetLeft-(carousel.clientWidth-card.clientWidth)/2,behavior:smooth?'smooth':'instant'});}
+ if(card){const left=carousel.scrollLeft+card.getBoundingClientRect().left-carousel.getBoundingClientRect().left-(carousel.clientWidth-card.getBoundingClientRect().width)/2;carousel.scrollTo({left,behavior:smooth&&!matchMedia('(prefers-reduced-motion: reduce)').matches?'smooth':'instant'});}
  updateWorldArrows();
 }
 function updateWorldArrows(){
  $('world-prev').disabled=worldCarouselIndex<=0;
  $('world-next').disabled=worldCarouselIndex>=worldCarouselIds.length-1;
- $('world-carousel-count').textContent=worldCarouselIds[worldCarouselIndex]+' / '+worldCarouselIds[worldCarouselIds.length-1];
+ $('world-carousel-count').textContent='MONDE '+String(worldCarouselIds[worldCarouselIndex]).padStart(2,'0')+' · '+(worldCarouselIndex+1)+' / '+worldCarouselIds.length;
+ const grid=$('world-grid');Array.from(grid.children).forEach((card,i)=>card.classList.toggle('focused',i===worldCarouselIndex));
+ const dots=$('world-position');dots.replaceChildren();const start=Math.max(0,Math.min(worldCarouselIndex-3,worldCarouselIds.length-7));for(let i=start;i<Math.min(start+7,worldCarouselIds.length);i++){const dot=document.createElement('button');dot.type='button';dot.className=i===worldCarouselIndex?'active':'';dot.setAttribute('aria-label','Planète '+worldCarouselIds[i]);if(i===worldCarouselIndex)dot.setAttribute('aria-current','true');dot.addEventListener('click',()=>showWorldIndex(i));dots.appendChild(dot);}
 }
 function renderWorldList(){
  const grid=$('world-grid');grid.replaceChildren();
@@ -2468,7 +2499,7 @@ $('world-grid').addEventListener('scroll',()=>{
  const grid=$('world-grid'),center=grid.scrollLeft+grid.clientWidth/2;
  let closest=worldCarouselIndex,dist=Infinity;
  [...grid.children].forEach((card,i)=>{
-   const d=Math.abs(card.offsetLeft-grid.offsetLeft+card.clientWidth/2-center);
+   const d=Math.abs(card.getBoundingClientRect().left+card.getBoundingClientRect().width/2-(grid.getBoundingClientRect().left+grid.clientWidth/2));
    if(d<dist){dist=d;closest=i}
  });
  if(closest!==worldCarouselIndex){worldCarouselIndex=closest;updateWorldArrows()}
@@ -2500,7 +2531,7 @@ $('open-planets').addEventListener('click',()=>{playSound('open');renderWorldLis
 $('close-planets').addEventListener('click',closeWorlds);
 $('world-overlay').addEventListener('click',e=>{if(e.target===$('world-overlay'))closeWorlds()});
 $('world-jump').addEventListener('submit',e=>{e.preventDefault();switchWorld($('world-number').value)});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWorlds()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWorlds();else if(!$('world-overlay').classList.contains('hidden')&&!/INPUT|TEXTAREA/.test(document.activeElement?.tagName||'')&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();showWorldIndex(worldCarouselIndex+(e.key==='ArrowRight'?1:-1))}});
 // Phénomènes cosmiques à débloquer une fois chacun, par monde.
 // L'heure de fin est persistante pour empêcher de rallonger un bonus en changeant de planète.
 const COSMIC_EVENTS=[
