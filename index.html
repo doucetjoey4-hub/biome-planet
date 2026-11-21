@@ -1904,6 +1904,7 @@ function renderExploration(){
 function renderUI(){
  $('planet-hint').classList.toggle('hidden',state.levels[0]>0);
  $('money').textContent=moneyFormat(state.money);
+ updateRebirthBadge();
  $('planet-tag').textContent='Planète '+state.planet+' · '+BIOMES.length+' biomes';
  $('planet-name').textContent='Planète '+worldName(state.planet);
  const percent=Math.round(cover());
@@ -2372,6 +2373,142 @@ function drawPlanet(){
     ctx.fillRect(-4,-4,8,8);ctx.fillStyle='#46768c';ctx.fillRect(-11,-3,6,6);ctx.fillRect(5,-3,6,6);
     ctx.restore();
   });
+}
+/* V40 · Renaissance cosmique. Une nouvelle partie, mais les éclats restent. */
+const PRESTIGE_UPGRADES=[
+ {title:'✦ Énergie ancestrale',description:'+18 % de production sur toutes les planètes par niveau'},
+ {title:'⌛ Flux accéléré',description:'Cycles des biomes 3,5 % plus courts par niveau'},
+ {title:'◈ Architectes cosmiques',description:'Biomes 3,5 % moins chers par niveau'},
+ {title:'✧ Héritage de départ',description:'Argent de départ supplémentaire sur chaque nouvelle planète'}
+];
+function rebirthRequirement(){return Math.min(100000,120+100*state.prestige.count)}
+function rebirthProgress(){
+ const worlds={...state.worlds,[state.planet]:{levels:state.levels}};
+ let sum=0,completed=0,visited=0;
+ for(const [id,data] of Object.entries(worlds)){
+  const p=Number(id);
+  if(!Number.isInteger(p)||p<1||p>999||!Array.isArray(data?.levels))continue;
+  const biomes=makeBiomes(p);
+  const levels=biomes.map((b,i)=>Math.max(0,Math.min(b.max,Number(data.levels[i])||0)));
+  if(levels.some(l=>l>0))visited++;
+  sum+=levels.reduce((a,b)=>a+b,0);
+  if(levels.length&&levels.every((l,i)=>l>=biomes[i].max))completed++;
+ }
+ const requirement=rebirthRequirement();
+ const unlocked=sum>=requirement;
+ const gain=unlocked?Math.min(30,Math.floor(sum/requirement)+Math.min(5,Math.floor(completed/2))):0;
+ return {sum,completed,visited,requirement,unlocked,gain};
+}
+const prestigeUpgradeCost=i=>{
+ const level=prestigeLevel(i);
+ return level>=10?Infinity:1+Math.floor(level*(level+1)/2);
+};
+function buyPrestigeUpgrade(i){
+ if(!Number.isInteger(i)||i<0||i>=4)return;
+ const price=prestigeUpgradeCost(i);
+ if(state.prestige.points<price||!Number.isFinite(price))return;
+ state.prestige.points-=price;
+ state.prestige.upgrades[i]++;
+ playSound('claim');save();renderUI();renderRebirth();
+ toast('Amélioration permanente obtenue!','reward');
+}
+let rebirthOpen=false,rebirthConfirmOpen=false;
+function closeRebirthConfirmation(){
+ rebirthConfirmOpen=false;$('rebirth-confirm-overlay').classList.add('hidden');
+ if(rebirthOpen)$('rebirth-trigger').focus();
+}
+function closeRebirth(){
+ if(rebirthConfirmOpen)closeRebirthConfirmation();
+ rebirthOpen=false;$('rebirth-overlay').classList.add('hidden');
+ $('rebirth-open').focus();
+}
+function openRebirth(){
+ closeSideMenu(false);
+ rebirthOpen=true;playSound('open');
+ $('rebirth-overlay').classList.remove('hidden');
+ renderRebirth();
+ $('rebirth-close').focus();
+}
+function renderRebirth(){
+ if(!rebirthOpen)return;
+ const p=state.prestige,progress=rebirthProgress();
+ $('rebirth-count').textContent=String(p.count);
+ $('rebirth-points').textContent=p.points+' ✦';
+ $('rebirth-bonus').textContent='+'+Math.round((prestigeRevenue()-1)*100)+' %';
+ $('rebirth-progress-ratio').textContent=progress.sum.toLocaleString('fr-CA')+' / '+progress.requirement.toLocaleString('fr-CA');
+ $('rebirth-progress-fill').style.width=Math.max(0,Math.min(100,progress.sum/progress.requirement*100))+'%';
+ $('rebirth-progress-label').textContent='Niveaux cumulés · '+progress.visited+' monde(s)';
+ $('rebirth-gain-description').textContent=progress.unlocked?
+ 'Renaissance disponible : +'+progress.gain+' éclat'+(progress.gain>1?'s':'')+' ✦ · '+progress.completed+' planète(s) achevée(s).':
+ 'Encore '+Math.max(0,progress.requirement-progress.sum)+' niveaux cumulés avant de renaître. Le seuil augmente à chaque cycle.';
+ const list=$('rebirth-upgrades');list.replaceChildren();
+ PRESTIGE_UPGRADES.forEach((entry,i)=>{
+  const level=prestigeLevel(i),price=prestigeUpgradeCost(i);
+  const card=document.createElement('article');card.className='rebirth-upgrade';
+  const info=document.createElement('div'),title=document.createElement('strong'),desc=document.createElement('p'),meta=document.createElement('small');
+  title.textContent=entry.title;desc.textContent=entry.description;
+  meta.textContent='Niveau '+level+'/10'+(level<10?' · '+price+' éclat'+(price>1?'s':''):' · maximum');
+  info.append(title,desc,meta);
+  const btn=document.createElement('button');btn.type='button';btn.textContent=level>=10?'MAX':price+' ✦';
+  btn.disabled=level>=10||p.points<price;
+  btn.addEventListener('click',()=>buyPrestigeUpgrade(i));
+  card.append(info,btn);list.appendChild(card);
+ });
+ $('rebirth-trigger').disabled=!progress.unlocked;
+ $('rebirth-trigger').textContent=progress.unlocked?'✵ Renaître · +'+progress.gain+' éclats':'Renaissance verrouillée';
+}
+function requestRebirth(){
+ if(rebirthConfirmOpen||!rebirthOpen)return;
+ const progress=rebirthProgress();
+ if(!progress.unlocked||progress.gain<1)return;
+ rebirthConfirmOpen=true;
+ $('rebirth-confirm-detail').textContent='Tes '+progress.visited+' monde(s) développés, les niveaux, l’argent, les missions, les satellites et les recherches recommenceront à zéro. Tu recevras '+progress.gain+' éclat(s) ✦. Tes renaissances et améliorations permanentes seront conservées. Cette action est irréversible.';
+ $('rebirth-confirm-overlay').classList.remove('hidden');
+ $('rebirth-cancel').focus();
+}
+function commitRebirth(){
+ if(!rebirthConfirmOpen||!rebirthOpen)return;
+ const progress=rebirthProgress();
+ if(!progress.unlocked||progress.gain<1){closeRebirthConfirmation();return}
+ const previous=normalizePrestige(state.prestige);
+ previous.count++;
+ previous.points=Math.min(100000,previous.points+progress.gain);
+ previous.earned=Math.min(100000,previous.earned+progress.gain);
+ // Écraser toutes les anciennes planètes : la progression permanente est à la racine.
+ state=initial();
+ state.prestige=previous;
+ state.exploration=normalizedExploration(null);
+ state.money=prestigeStarter();
+ BIOMES=makeBiomes(1);
+ normalizeProgress();
+ rebirthConfirmOpen=false;rebirthOpen=false;
+ $('rebirth-confirm-overlay').classList.add('hidden');
+ $('rebirth-overlay').classList.add('hidden');
+ closeWorlds();closeDiscovery();closeObjectives();closeAtlas();closeExploration();closeSideMenu(false);
+ lastCosmicDisplay='';lastMissionRender='';
+ refreshBiomeCards();buildPixelMap();drawPlanet();save();renderUI();
+ $('biome-scroll').scrollTop=0;
+ playSound('discovery');
+ toast('✵ Renaissance '+previous.count+' : +'+progress.gain+' éclats permanents','reward');
+}
+$('rebirth-open').addEventListener('click',openRebirth);
+$('rebirth-close').addEventListener('click',closeRebirth);
+$('rebirth-overlay').addEventListener('click',e=>{if(e.target===$('rebirth-overlay'))closeRebirth()});
+$('rebirth-trigger').addEventListener('click',requestRebirth);
+$('rebirth-cancel').addEventListener('click',closeRebirthConfirmation);
+$('rebirth-commit').addEventListener('click',commitRebirth);
+document.addEventListener('keydown',e=>{
+ if(e.key!=='Escape')return;
+ if(rebirthConfirmOpen){e.preventDefault();closeRebirthConfirmation()}
+ else if(rebirthOpen){e.preventDefault();closeRebirth()}
+});
+let lastRebirthBadge=0;
+function updateRebirthBadge(){
+ if(Date.now()-lastRebirthBadge<1200)return;
+ lastRebirthBadge=Date.now();
+ $('rebirth-menu-count').textContent='✵ '+state.prestige.count;
+ $('rebirth-menu-summary').textContent='✦ '+state.prestige.points+' éclat(s) · '+Math.round((prestigeRevenue()-1)*100)+' % de production';
+ if(rebirthOpen&&!rebirthConfirmOpen)renderRebirth();
 }
 /* V39 : navigation centralisée, sans changer les systèmes de gameplay. */
 let sideMenuOpen=false;
