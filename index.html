@@ -1429,7 +1429,63 @@ function switchWorld(num,award=false){
  closeDiscovery();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';
  normalizeProgress();
  if(award&&!stored)state.money+=30*p;
- lastMissionRender='';refreshBiomeCards();buildPixelMap();drawPlanet();renderUI();save();
+ lastMissionRender='';
+/* V39 : navigation centralisée, sans changer les systèmes de gameplay. */
+let sideMenuOpen=false;
+const SIDE_MENU_ACTIONS=['explore-open','objectives-open','atlas-open','planet-log-btn','audio-settings-open','reset'];
+function closeSideMenu(restoreFocus=true){
+ const wasOpen=sideMenuOpen;
+ sideMenuOpen=false;
+ $('side-menu-overlay').classList.add('hidden');
+ $('nav-toggle').setAttribute('aria-expanded','false');
+ $('nav-toggle').setAttribute('aria-label','Ouvrir le menu principal');
+ if(restoreFocus&&wasOpen)$('nav-toggle').focus();
+}
+function openSideMenu(){
+ if(sideMenuOpen)return;
+ sideMenuOpen=true;playSound('open');
+ $('side-menu-overlay').classList.remove('hidden');
+ $('nav-toggle').setAttribute('aria-expanded','true');
+ $('nav-toggle').setAttribute('aria-label','Fermer le menu principal');
+ $('nav-close').focus();
+}
+$('nav-toggle').setAttribute('aria-expanded','false');
+$('nav-toggle').addEventListener('click',()=>sideMenuOpen?closeSideMenu():openSideMenu());
+$('nav-close').addEventListener('click',()=>closeSideMenu());
+$('side-menu-overlay').addEventListener('click',e=>{
+ if(e.target===$('side-menu-overlay'))closeSideMenu();
+});
+SIDE_MENU_ACTIONS.forEach(id=>$(id).addEventListener('click',()=>closeSideMenu(false)));
+document.addEventListener('keydown',e=>{
+ if(!sideMenuOpen)return;
+ if(e.key==='Escape'){e.preventDefault();closeSideMenu();return}
+ if(e.key==='Tab'){
+  const items=Array.from($('side-menu').querySelectorAll('button:not(:disabled)'));
+  if(!items.length)return;
+  const first=items[0],last=items[items.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+ }
+});
+const PLANET_LAYOUT_KEY='biome-planet-layout-expanded-v39';
+let planetExpanded=false;
+try{planetExpanded=localStorage.getItem(PLANET_LAYOUT_KEY)==='true'}catch(e){}
+function updatePlanetLayout(){
+ document.querySelector('.app').classList.toggle('planet-expanded',planetExpanded);
+ $('planet-layout-toggle').setAttribute('aria-pressed',String(planetExpanded));
+ $('planet-layout-toggle').setAttribute('aria-label',planetExpanded?'Réduire la planète pour agrandir la liste des biomes':'Agrandir la planète');
+ $('planet-layout-toggle').textContent=planetExpanded?'↧ Biomes':'⤢ Planète';
+ $('menu-planet-size-label').textContent=planetExpanded?'Planète agrandie · moins de biomes visibles':'Compact · plus de biomes visibles';
+}
+function togglePlanetLayout(){
+ planetExpanded=!planetExpanded;playSound('navigate');
+ try{localStorage.setItem(PLANET_LAYOUT_KEY,String(planetExpanded))}catch(e){}
+ updatePlanetLayout();
+}
+$('planet-layout-toggle').addEventListener('click',togglePlanetLayout);
+$('menu-planet-size').addEventListener('click',()=>{togglePlanetLayout();closeSideMenu(false)});
+updatePlanetLayout();
+refreshBiomeCards();buildPixelMap();drawPlanet();renderUI();save();
  $('biome-scroll').scrollTop=0;closeWorlds();
 }
 $('open-planets').addEventListener('click',()=>{playSound('open');renderWorldList();$('world-overlay').classList.remove('hidden');requestAnimationFrame(()=>showWorldIndex(worldCarouselIndex,false))});
@@ -1821,6 +1877,7 @@ function renderUI(){
  $('relic-find').classList.toggle('hidden',!relicRevealed());
  const readyToExplore=encounterReady||relicRevealed()||!!(state.exploration.expedition&&state.exploration.expedition.end<=Date.now());
  $('explore-indicator').classList.toggle('hidden',!readyToExplore);
+ $('nav-dot').classList.toggle('hidden',!(readyToExplore||signal>=0||state.missions.length<MISSIONS.length&&MISSIONS.some((m,i)=>!state.missions.includes(i)&&missionProgress(m)>=m.target)));
  renderCosmicEvent();
  renderEvolution();renderMissions();
  let minIncome=0;
