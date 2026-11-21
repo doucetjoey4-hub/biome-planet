@@ -1412,7 +1412,7 @@ function buildPixelMap(planet=state.planet,biomes=BIOMES,preview=false){
  // Silhouettes géographiques différentes entre cycles de six planètes.
  const cycle=Math.floor((planet-1)/6),structure=cycle%7;
  const profileSeed=cycle*.879+world*2.31;
- const driftX=.14*Math.sin(profileSeed*1.73),driftY=.13*Math.cos(profileSeed*2.11);
+ const driftX=cycle===0?0:.14*Math.sin(profileSeed*1.73),driftY=cycle===0?0:.13*Math.cos(profileSeed*2.11);
  const ellipse=(x,y,cx,cy,rx,ry)=>1-Math.hypot((x-cx)/rx,(y-cy)/ry);
  const terrainWave=(x,y)=>.17*Math.sin((2.9+structure*.32)*x+2.2*Math.sin(y*2.7+profileSeed))
                          +.13*Math.cos((3.2+structure*.21)*y-1.7*x+profileSeed*1.4);
