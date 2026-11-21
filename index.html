@@ -1608,6 +1608,12 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  position:absolute;inset:0;width:100%;height:100%;display:block;
  pointer-events:none;touch-action:none;z-index:2;
 }
+
+/* V52 · Exploration sans onglets redondants, navigation par menu latéral. */
+.explore-dialog{gap:9px}
+.explore-header{padding-bottom:9px;border-bottom:1px solid #365e77}
+.explore-header h2{font-size:1.45rem!important}
+.explore-content{flex:1;min-height:0}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=45">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -1623,7 +1629,8 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
     <button type="button" class="menu-action menu-action-atelier" id="menu-workshop"><span>🛠</span><span>Atelier orbital <small id="menu-workshop-sub">Fabrique tes satellites, pièce par pièce</small></span><b class="menu-mini-badge hidden" id="menu-workshop-badge"></b></button>
     <button type="button" class="menu-action menu-action-mission" id="menu-expeditions"><span>🚀</span><span>Expéditions <small id="menu-expeditions-sub">Envoyer et récupérer les sondes</small></span><b class="menu-mini-badge hidden" id="menu-expeditions-badge"></b></button>
     <button type="button" class="menu-action menu-action-science" id="menu-science"><span>⚗</span><span>Recherche <small id="menu-science-sub">Débloque des technologies</small></span><b class="menu-mini-badge hidden" id="menu-science-badge"></b></button>
-    <button type="button" class="menu-action explore-open" id="explore-open" aria-haspopup="dialog" aria-controls="explore-overlay"><span>✦</span><span>Centre d’exploration <small id="explore-summary">Nature, galaxies et découvertes</small></span><b class="menu-alert hidden" id="explore-indicator">✦</b></button>
+    <button type="button" class="menu-action explore-open" id="explore-open" aria-haspopup="dialog" aria-controls="explore-overlay"><span>✦</span><span>Monde vivant <small id="explore-summary">Nature et découvertes</small></span><b class="menu-alert hidden" id="explore-indicator">✦</b></button>
+     <button type="button" class="menu-action" id="menu-galaxy" aria-haspopup="dialog" aria-controls="explore-overlay"><span>✧</span><span>Galaxie <small>Explorer les mondes et secteurs</small></span></button>
     <button type="button" class="menu-action" id="objectives-open" aria-haspopup="dialog" aria-controls="objectives-overlay"><span>✧</span><span>Objectifs <small id="menu-objectives-sub">Défis et récompenses</small></span><b id="objectives-badge">0/5</b></button>
     <button type="button" class="menu-action" id="atlas-open"><span>🗺</span><span>Atlas <small>Progression de tes planètes</small></span></button>
     <button type="button" class="menu-action" id="planet-log-btn"><span>◈</span><span>Journal cosmique <small id="planet-extra-text">Découvertes du monde</small></span><b id="planet-log-count">0/5</b></button>
@@ -1664,13 +1671,6 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 <div class="explore-overlay hidden" id="explore-overlay">
  <section class="explore-dialog" role="dialog" aria-modal="true" aria-labelledby="explore-title">
   <div class="explore-header"><div><span class="explore-eyebrow">✦ CENTRE D'EXPLORATION</span><h2 id="explore-title">Explorer l'univers</h2><p id="explore-world-label">Planète 1</p></div><button type="button" id="explore-close" aria-label="Fermer l'exploration">✕</button></div>
-  <nav class="explore-tabs" aria-label="Sections d'exploration">
-   <button type="button" class="explore-tab active" data-explore="satellites">🛠 Atelier</button>
-   <button type="button" class="explore-tab" data-explore="missions">🚀 Expéditions</button>
-   <button type="button" class="explore-tab" data-explore="science">⚗ Recherche</button>
-   <button type="button" class="explore-tab" data-explore="nature">🌱 Monde vivant</button>
-   <button type="button" class="explore-tab" data-explore="galaxy">✦ Galaxie</button>
-  </nav>
   <div id="explore-content" class="explore-content" aria-live="polite"></div>
  </section>
 </div>
@@ -2957,7 +2957,7 @@ function closeExploration(){
  $('explore-overlay').classList.add('hidden');
  $('explore-open').setAttribute('aria-expanded','false');
 }
-function openExploration(tab='satellites'){
+function openExploration(tab='nature'){
  explorationTab=tab;
  playSound('open');
  $('explore-overlay').classList.remove('hidden');
@@ -2966,13 +2966,11 @@ function openExploration(tab='satellites'){
  $('explore-close').focus();
 }
 $('explore-open').setAttribute('aria-expanded','false');
-$('explore-open').addEventListener('click',()=>openExploration());
+$('explore-open').addEventListener('click',()=>{closeSideMenu(false);openExploration('nature')});
+$('menu-galaxy').addEventListener('click',()=>{closeSideMenu(false);openExploration('galaxy')});
 $('explore-close').addEventListener('click',closeExploration);
 $('explore-overlay').addEventListener('click',e=>{if(e.target===$('explore-overlay'))closeExploration()});
 $('explore-overlay').addEventListener('keydown',e=>{if(e.key==='Escape')closeExploration()});
-document.querySelectorAll('.explore-tab').forEach(b=>b.addEventListener('click',()=>{
- explorationTab=b.dataset.explore;playSound('navigate');renderExploration();
-}));
 $('orbital-find').addEventListener('click',claimEncounter);
 $('relic-find').addEventListener('click',findRelic);
 let workshopSelected=0;
@@ -3131,7 +3129,8 @@ function drawWorkshopSatellite(canvas,i,parts,assembled,launched,now=performance
 function renderExploration(){
  if($('explore-overlay').classList.contains('hidden'))return;
  $('explore-world-label').textContent='Planète '+state.planet+' · '+worldName(state.planet);
- document.querySelectorAll('.explore-tab').forEach(b=>b.classList.toggle('active',b.dataset.explore===explorationTab));
+ const sectionTitles={satellites:'Atelier orbital',missions:'Expéditions',science:'Recherche',nature:'Monde vivant',galaxy:'Galaxie'};
+ $('explore-title').textContent=sectionTitles[explorationTab]||'Exploration';
  const container=$('explore-content'),scroll=container.scrollTop,workshopScroll=container.querySelector('.workshop-scroll')?.scrollTop||0;
  document.querySelector('.explore-dialog').classList.toggle('workshop-dialog',explorationTab==='satellites');
  container.classList.toggle('workshop-layout',explorationTab==='satellites');
@@ -4098,7 +4097,7 @@ function updateGameSignals(force=false){
  $('menu-objectives-sub').textContent=missionN?missionN+' récompense'+(missionN>1?'s':'')+' à réclamer':'Défis et récompenses';
  $('objectives-badge').textContent=missionN?String(missionN):state.missions.length+'/'+MISSIONS.length;
  $('planet-log-btn').classList.toggle('game-action-ready',alerts.some(a=>a.type==='journal'));
- $('explore-summary').textContent=alerts.some(a=>a.type==='anomaly'||a.type==='relic')?'Signal sur la planète à examiner':'Nature, galaxies et découvertes';
+ $('explore-summary').textContent=alerts.some(a=>a.type==='anomaly'||a.type==='relic')?'Signal sur la planète à examiner':'Nature et découvertes';
  const misc=alerts.filter(a=>['anomaly','relic'].includes(a.type));
  $('explore-indicator').textContent=misc.length?String(misc.length):'';
  $('explore-indicator').classList.toggle('hidden',misc.length===0);
@@ -4172,7 +4171,7 @@ function bpIcon(name,size=20){
  return '<svg class="bp-line-icon" viewBox="0 0 24 24" width="'+size+'" height="'+size+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(BP_ICON_PATHS[name]||BP_ICON_PATHS.star)+'</svg>';
 }
 function installBpIcons(){
- const m={'menu-workshop':'workshop','menu-expeditions':'rocket','menu-science':'atom','explore-open':'compass','objectives-open':'target','atlas-open':'globe','planet-log-btn':'archive','menu-planet-size':'expand','audio-settings-open':'audio','rebirth-open':'rebirth','reset':'reset'};
+ const m={'menu-workshop':'workshop','menu-expeditions':'rocket','menu-science':'atom','explore-open':'nature','menu-galaxy':'globe','objectives-open':'target','atlas-open':'globe','planet-log-btn':'archive','menu-planet-size':'expand','audio-settings-open':'audio','rebirth-open':'rebirth','reset':'reset'};
  for(const [id,name] of Object.entries(m)){
   const span=$(id)?.querySelector('span');if(span)span.innerHTML=bpIcon(name,21);
  }
