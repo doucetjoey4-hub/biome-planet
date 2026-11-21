@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#101219">
 <title>Biome Planet | Carrousel de planètes</title>
-<style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><style>
 :root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#f5f6fa;background:#101219;font-synthesis:none}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 15%,#202638 0%,#101219 58%);padding:20px 14px 36px}button{font:inherit;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.47}.app{max-width:720px;margin:auto}header{display:flex;align-items:center;justify-content:space-between;gap:12px}h1{margin:0;font-size:1.48rem;letter-spacing:-.04em}.muted{color:#9ba6bb;font-size:.83rem}.tag{border:1px solid #3a455d;background:#222b3e;color:#e0eaff;border-radius:24px;padding:7px 11px;font-size:.75rem;white-space:nowrap}.balance{margin-top:18px;background:#202736;border:1px solid #323c4e;padding:15px;border-radius:16px;display:flex;justify-content:space-between;align-items:center;gap:8px}.balance .amount{font-size:1.8rem;font-weight:750;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.income{color:#86e5ab;font-size:.78rem}.planet-panel{margin:16px 0 19px;border:1px solid #2e394b;border-radius:20px;background:radial-gradient(circle at 50% 46%,#222e3c,#151b27 70%);padding:15px 12px 13px;text-align:center;overflow:hidden}.planet-top{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:6px}.planet-top strong{font-size:.95rem}.planet-holder{position:relative;max-width:355px;aspect-ratio:1;margin:9px auto 1px}canvas{display:block;width:100%;height:100%}.planet-hint{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:max-content;max-width:96%;color:#e8f1ff;background:#151c2be8;border:1px solid #48566a;border-radius:999px;padding:9px 12px;font-size:.75rem;font-weight:700;z-index:2;pointer-events:none;box-shadow:0 5px 18px #0008}.planet-holder canvas{cursor:pointer;touch-action:manipulation}.planet-bottom{display:flex;justify-content:space-between;align-items:center;color:#bac6d5;font-size:.78rem;padding:0 4px}.completion-track{height:7px;background:#30394b;border-radius:99px;margin-top:8px;overflow:hidden}.completion-fill{height:100%;width:0;background:linear-gradient(90deg,#48ad80,#a2e9a6);transition:width .4s}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 10px}.section-title h2{font-size:1.08rem;margin:0}.biomes{display:grid;grid-template-columns:1fr;gap:9px}.biome{background:#1a202d;border:1px solid #323b4c;border-radius:15px;padding:12px}.biome-head{display:flex;align-items:center;gap:9px}.biome-icon{height:40px;width:40px;display:grid;place-items:center;border-radius:12px;font-size:1.45rem;background:#283142}.biome-info{min-width:0;flex:1}.biome-info strong{font-size:.93rem}.biome-info small{display:block;color:#aab5c9;margin-top:3px;font-size:.76rem}.biome-level{color:#cbd6e5;font-size:.73rem;white-space:nowrap}.progress{background:#313a4b;height:8px;border-radius:20px;overflow:hidden;margin:11px 0}.progress>div{height:100%;width:0%;border-radius:20px}.biome-actions{display:flex;justify-content:space-between;align-items:center;gap:9px}.cycle{color:#9eafc2;font-size:.78rem;font-variant-numeric:tabular-nums}.btn{border:0;border-radius:10px;background:#cf3c50;color:white;padding:10px 12px;font-weight:750;font-size:.8rem;max-width:63%;min-width:140px}.btn:active:not(:disabled){transform:scale(.98)}.btn{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.locked{filter:saturate(.6)}.locked .progress{display:none}.next{width:100%;border:0;background:#48bb84;color:#082013;padding:14px;border-radius:13px;font-weight:850;margin:10px 0 0}.hidden{display:none!important}.footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:17px 3px}.linkbtn{color:#a6b6cd;border:1px solid #435069;border-radius:9px;background:transparent;padding:9px 12px;font-size:.76rem}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#e8edf6;color:#131827;border-radius:12px;padding:11px 17px;font-weight:700;z-index:10;box-shadow:0 8px 40px #0006;opacity:0;pointer-events:none;transition:opacity .25s;max-width:90%;text-align:center}.toast.show{opacity:1}@media(min-width:580px){.biomes{grid-template-columns:1fr 1fr}.planet-holder{max-width:370px}}
 
 /* Planet remains visible; only the biome panel scrolls. */
@@ -1568,7 +1568,7 @@ function toast(msg,type='info'){
  el.style.transform='';el.style.transition='';el.style.opacity='';
  el.classList.remove('dismissed');
  $('toast-message').textContent=msg;
- $('toast-icon').textContent=type==='reward'?'✦':type==='success'?'✓':type==='warn'?'!':type==='event'?'☄':'◈';
+ $('toast-icon').innerHTML=bpIcon(type==='reward'?'treasure':type==='success'?'check':type==='warn'?'alert':type==='event'?'lightning':'info',18);
  el.dataset.kind=type;
  el.setAttribute('aria-label',msg);
  el.classList.remove('show');
@@ -3455,7 +3455,7 @@ function updateGameSignals(force=false){
   const b=document.createElement('button');
   b.type='button';b.className='game-activity game-activity-'+a.type;
   b.setAttribute('aria-label',a.title+' : '+a.detail);
-  const icon=document.createElement('span');icon.className='game-activity-icon';icon.textContent=symbols[a.type]||'✦';
+  const icon=document.createElement('span');icon.className='game-activity-icon';icon.innerHTML=bpIcon(({bonus:'treasure',objectives:'target',workshop:'workshop',expeditions:'rocket',science:'atom',anomaly:'signal',relic:'archive',journal:'star',cosmic:'lightning',rebirth:'rebirth',next:'planet'})[a.type]||'star',18);
   const info=document.createElement('span');info.className='game-activity-info';
   const title=document.createElement('strong');title.textContent=a.title;
   const detail=document.createElement('small');detail.textContent=a.detail;
@@ -3475,6 +3475,48 @@ function updateGameSignals(force=false){
 $('menu-workshop').addEventListener('click',()=>{closeSideMenu(false);openExploration('satellites')});
 $('menu-expeditions').addEventListener('click',()=>{closeSideMenu(false);openExploration('missions')});
 $('menu-science').addEventListener('click',()=>{closeSideMenu(false);openExploration('science')});
+/* V43 · Une famille d'icônes filaires, sans dépendance JavaScript ou réseau. */
+const BP_ICON_PATHS={
+ menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+ close:'<path d="m5 5 14 14M19 5 5 19"/>',
+ workshop:'<path d="m5 19 12-12M14 4a4 4 0 0 0 6 6L10 20l-6 1 1-6 10-10"/>',
+ rocket:'<path d="M5 16C6 9 11 5 20 4c-1 9-5 14-12 15l-4 2zM9 15l-3 3M12 9h.01M3 13l-2 6 5-2"/>',
+ atom:'<ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(35 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-35 12 12)"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/>',
+ compass:'<circle cx="12" cy="12" r="9"/><path d="m16 8-3 5-5 3 3-5z"/>',
+ target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/>',
+ globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-6 6-6 12 0 18M12 3c6 6 6 12 0 18"/>',
+ archive:'<path d="M4 7h16v13H4zM3 3h18v4H3zM9 12h6"/>',
+ expand:'<path d="M9 4H4v5M4 4l6 6M15 4h5v5M20 4l-6 6M4 15v5h5M4 20l6-6M20 15v5h-5M20 20l-6-6"/>',
+ audio:'<path d="M4 10v4h4l5 4V6l-5 4zM17 9a5 5 0 0 1 0 6M20 6a9 9 0 0 1 0 12"/>',
+ rebirth:'<circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3"/>',
+ reset:'<path d="M3 7v5h5M4 12a8 8 0 1 1 2 6"/>',
+ planet:'<circle cx="12" cy="12" r="6"/><ellipse cx="12" cy="12" rx="11" ry="4" transform="rotate(-25 12 12)"/>',
+ nature:'<path d="M20 4C10 4 4 9 4 16a5 5 0 0 0 5 5c7 0 11-7 11-17ZM4 20c3-5 7-8 13-11"/>',
+ signal:'<path d="M3 17a13 13 0 0 1 18 0M6 14a9 9 0 0 1 12 0M9 11a5 5 0 0 1 6 0"/><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none"/>',
+ treasure:'<rect x="3" y="9" width="18" height="12" rx="2"/><path d="M3 13h18M8 9V6a4 4 0 0 1 8 0v3M12 13v5"/>',
+ lightning:'<path d="m13 2-9 12h7l-1 8 10-13h-7z"/>',
+ star:'<path d="m12 2 2.7 7.3L22 12l-7.3 2.7L12 22l-2.7-7.3L2 12l7.3-2.7z"/>',
+ check:'<path d="m4 12 5 5 11-11"/>',
+ coin:'<circle cx="12" cy="12" r="9"/><path d="M15 8H9a2 2 0 0 0 0 4h6a2 2 0 0 1 0 4H9M12 5v14"/>',
+ info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v1"/>',
+ alert:'<path d="m12 3 10 18H2zM12 9v5M12 17v1"/>'
+};
+function bpIcon(name,size=20){
+ return '<svg class="bp-line-icon" viewBox="0 0 24 24" width="'+size+'" height="'+size+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(BP_ICON_PATHS[name]||BP_ICON_PATHS.star)+'</svg>';
+}
+function installBpIcons(){
+ const m={'menu-workshop':'workshop','menu-expeditions':'rocket','menu-science':'atom','explore-open':'compass','objectives-open':'target','atlas-open':'globe','planet-log-btn':'archive','menu-planet-size':'expand','audio-settings-open':'audio','rebirth-open':'rebirth','reset':'reset'};
+ for(const [id,name] of Object.entries(m)){
+  const span=$(id)?.querySelector('span');if(span)span.innerHTML=bpIcon(name,21);
+ }
+ const nav=$('nav-toggle').querySelector('span');if(nav)nav.innerHTML=bpIcon('menu',23);
+ for(const id of ['nav-close','explore-close','objectives-close','atlas-close','audio-settings-close','rebirth-close']){
+  if($(id))$(id).innerHTML=bpIcon('close',18);
+ }
+ const meta={satellites:['workshop','Atelier'],missions:['rocket','Expéditions'],science:['atom','Recherche'],nature:['nature','Monde vivant'],galaxy:['globe','Galaxie']};
+ document.querySelectorAll('.explore-tab').forEach(btn=>{const entry=meta[btn.dataset.explore];if(entry)btn.innerHTML=bpIcon(entry[0],17)+'<span>'+entry[1]+'</span>'});
+ const sel=$('open-planets')?.querySelector('.planet-select-text');if(sel)sel.innerHTML=bpIcon('planet',17)+'<span>Planètes</span>';
+}
 /* V39 : navigation centralisée, sans changer les systèmes de gameplay. */
 let sideMenuOpen=false;
 const SIDE_MENU_ACTIONS=['explore-open','objectives-open','atlas-open','planet-log-btn','audio-settings-open','reset'];
@@ -3547,7 +3589,7 @@ function togglePlanetLayout(){
 $('planet-layout-toggle').addEventListener('click',togglePlanetLayout);
 $('menu-planet-size').addEventListener('click',()=>{togglePlanetLayout();closeSideMenu(false)});
 updatePlanetLayout();
-refreshBiomeCards();buildPixelMap();
+refreshBiomeCards();buildPixelMap();installBpIcons();
 let lastTick=performance.now(),lastSave=Date.now(),lastExplorationScan=0,lastExplorePanelRefresh=0,lastUiRender=0,lastWorkshopDraw=0;
 function frame(now){
  const elapsed=Math.min(1000,Math.max(0,now-lastTick));lastTick=now;
