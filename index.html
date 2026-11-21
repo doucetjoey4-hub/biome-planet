@@ -2639,20 +2639,50 @@ function drawCosmicFX(now){
    c.closePath();c.fill();
   }c.restore();
  }else if(e.id===2){
-  c.save();c.translate(w/2,h/2);c.rotate(-.35);
+  // Anneau orbital en perspective : portion arrière cachée par le disque planétaire,
+  // portion avant visible au premier plan, même quand elle croise le globe.
+  const planetBox=$('planet').getBoundingClientRect(),fxBox=fxCanvas.getBoundingClientRect();
+  const scale=w/fxBox.width;
+  const cx=(planetBox.left+planetBox.width/2-fxBox.left)*scale;
+  const cy=(planetBox.top+planetBox.height/2-fxBox.top)*scale;
+  const radius=Math.min(planetBox.width,planetBox.height)*scale*(222/520);
+  const rx=radius*1.38,ry=radius*.48,tilt=-.28;
+  const xOrbit=a=>cx+Math.cos(a)*rx*Math.cos(tilt)-Math.sin(a)*ry*Math.sin(tilt);
+  const yOrbit=a=>cy+Math.cos(a)*rx*Math.sin(tilt)+Math.sin(a)*ry*Math.cos(tilt);
+  const arc=(from,to)=>{
+   c.beginPath();
+   for(let i=0;i<=72;i++){
+    const angle=from+(to-from)*i/72;
+    if(i===0)c.moveTo(xOrbit(angle),yOrbit(angle));
+    else c.lineTo(xOrbit(angle),yOrbit(angle));
+   }
+  };
+  const drawArc=(from,to,color,width,blur=0)=>{
+   c.strokeStyle=color;c.lineWidth=width;c.shadowColor=color;c.shadowBlur=blur;
+   arc(from,to);c.stroke();c.shadowBlur=0;
+  };
+  // Le demi-anneau éloigné est masqué exactement par le contour de la planète.
+  c.save();c.beginPath();c.rect(0,0,w,h);c.arc(cx,cy,radius,0,Math.PI*2,true);c.clip('evenodd');
+  drawArc(Math.PI,Math.PI*2,'rgba(104,196,231,.22)',Math.max(1.5,u*.007),u*.019);
+  drawArc(Math.PI,Math.PI*2,'rgba(148,229,249,.53)',Math.max(1,u*.003));
+  c.restore();
+  // La moitié proche peut passer devant la planète pour donner l'impression d'orbite.
+  drawArc(0,Math.PI,'rgba(75,204,249,.18)',Math.max(5,u*.022),u*.025);
+  drawArc(0,Math.PI,'rgba(130,231,255,.85)',Math.max(2,u*.008),u*.016);
+  drawArc(0,Math.PI,'rgba(231,254,255,.94)',Math.max(1,u*.0025));
+  // Quelques corps célestes suivent le même anneau, disparaissant derrière le globe.
   for(let i=0;i<3;i++){
-   c.strokeStyle=['#88e6ff66','#b6aaff66','#80ffdd55'][i];c.lineWidth=Math.max(1.1,u*.003);
-   c.setLineDash([u*.065,u*.034]);c.lineDashOffset=-t*u*.02*(i%2?-1:1);
-   c.beginPath();c.ellipse(0,0,u*(.36+i*.065),u*(.15+i*.03),0,0,Math.PI*2);c.stroke();
+   const a=(t*.24+i*Math.PI*2/3)%(Math.PI*2);
+   const x=xOrbit(a),y=yOrbit(a);
+   if(a>Math.PI&&Math.hypot(x-cx,y-cy)<radius)continue;
+   const size=Math.max(2,radius*(i===0?.035:.021));
+   const glow=c.createRadialGradient(x,y,0,x,y,size*4);
+   glow.addColorStop(0,'rgba(255,255,255,.95)');
+   glow.addColorStop(.2,'rgba(130,221,255,.75)');
+   glow.addColorStop(1,'rgba(130,221,255,0)');
+   c.fillStyle=glow;c.beginPath();c.arc(x,y,size*4,0,Math.PI*2);c.fill();
+   c.fillStyle='#e8ffff';c.beginPath();c.arc(x,y,size,0,Math.PI*2);c.fill();
   }
-  c.setLineDash([]);
-  for(let i=0;i<3;i++){
-   const a=t*.25+i*2*Math.PI/3,x=Math.cos(a)*u*.42,y=Math.sin(a)*u*.17;
-   const g=c.createRadialGradient(x,y,0,x,y,u*.04);
-   g.addColorStop(0,'#e8ffffdd');g.addColorStop(.25,'#94d9ff88');g.addColorStop(1,'#94d9ff00');
-   c.fillStyle=g;c.beginPath();c.arc(x,y,u*.04,0,2*Math.PI);c.fill();
-   c.fillStyle='#e8ffff';c.beginPath();c.arc(x,y,Math.max(1.5,u*.006),0,2*Math.PI);c.fill();
-  }c.restore();
  }
 }
 
