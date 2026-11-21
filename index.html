@@ -1527,6 +1527,128 @@ function weatherStatus(){
  const variant=(Math.floor(Date.now()/95000)+state.planet)%3;
  return {family,variant,name:WEATHER_NAMES[family][variant]};
 }
+// Un seul centre d'exploration : les nouvelles mécaniques restent organisées.
+let explorationTab='satellites';
+function exploreElement(tag,cl,textValue){
+ const el=document.createElement(tag);
+ if(cl)el.className=cl;
+ if(textValue!==undefined)el.textContent=String(textValue);
+ return el;
+}
+function exploreCard(container,title,desc,detail,buttonLabel,disabled,action){
+ const card=exploreElement('article','explore-card');
+ const info=exploreElement('div','explore-card-info');
+ info.append(exploreElement('strong','',title),exploreElement('p','',desc));
+ if(detail)info.append(exploreElement('small','',detail));
+ card.appendChild(info);
+ if(buttonLabel){
+  const btn=exploreElement('button','',buttonLabel);
+  btn.type='button';btn.disabled=!!disabled;
+  if(action)btn.addEventListener('click',action);
+  card.appendChild(btn);
+ }
+ container.appendChild(card);
+}
+function closeExploration(){
+ $('explore-overlay').classList.add('hidden');
+ $('explore-open').setAttribute('aria-expanded','false');
+}
+function openExploration(tab='satellites'){
+ explorationTab=tab;
+ playSound('open');
+ $('explore-overlay').classList.remove('hidden');
+ $('explore-open').setAttribute('aria-expanded','true');
+ renderExploration();
+ $('explore-close').focus();
+}
+$('explore-open').setAttribute('aria-expanded','false');
+$('explore-open').addEventListener('click',()=>openExploration());
+$('explore-close').addEventListener('click',closeExploration);
+$('explore-overlay').addEventListener('click',e=>{if(e.target===$('explore-overlay'))closeExploration()});
+$('explore-overlay').addEventListener('keydown',e=>{if(e.key==='Escape')closeExploration()});
+document.querySelectorAll('.explore-tab').forEach(b=>b.addEventListener('click',()=>{
+ explorationTab=b.dataset.explore;playSound('navigate');renderExploration();
+}));
+$('orbital-find').addEventListener('click',claimEncounter);
+$('relic-find').addEventListener('click',findRelic);
+function renderExploration(){
+ if($('explore-overlay').classList.contains('hidden'))return;
+ $('explore-world-label').textContent='Planète '+state.planet+' · '+worldName(state.planet);
+ document.querySelectorAll('.explore-tab').forEach(b=>b.classList.toggle('active',b.dataset.explore===explorationTab));
+ const container=$('explore-content'),scroll=container.scrollTop;container.replaceChildren();
+ const paragraph=text=>container.appendChild(exploreElement('p','explore-summary',text));
+ const summary=(a,b)=>{const line=exploreElement('div','explore-statbar');line.append(exploreElement('span','',a),exploreElement('span','',b));container.appendChild(line)};
+ if(explorationTab==='satellites'){
+  paragraph('Construis une petite flotte en orbite. Chaque satellite reste sur cette planète et améliore ses biomes.');
+  summary('Satellites en orbite',state.exploration.satellites.length+' / 3');
+  SATELLITES.forEach((sat,i)=>{
+   const threshold=[12,45,95][i],ready=totalLevels()>=threshold,owned=hasSatellite(i),price=satellitePrice(i);
+   exploreCard(container,sat.icon+' '+sat.name,sat.detail,owned?'✓ En orbite':ready?'Prix : '+moneyFormat(price):'Disponible à '+threshold+' niveaux cumulés',
+    owned?'Installé':ready?'Construire':'Verrouillé',owned||!ready||state.money<price,()=>buySatellite(i));
+  });
+ }else if(explorationTab==='missions'){
+  paragraph('Les sondes explorent automatiquement l’espace. Récupère leur cargaison à leur retour pour obtenir de l’argent et de la recherche.');
+  const exp=state.exploration.expedition;
+  summary('Expéditions réussies',String(state.exploration.expeditionsCompleted));
+  if(exp){
+   const e=EXPLORATIONS[exp.id],remaining=Math.max(0,Math.ceil((exp.end-Date.now())/1000));
+   exploreCard(container,e.icon+' '+e.name,remaining?'Sonde en voyage. Elle revient automatiquement.':'La sonde a terminé sa mission!',
+     remaining?'Retour dans '+Math.floor(remaining/60)+' min '+String(remaining%60).padStart(2,'0')+' s':'Cargaison prête à récupérer',
+     remaining?'En cours':'Récupérer',remaining>0,finishExpedition);
+  }else EXPLORATIONS.forEach((e,i)=>{
+   const seconds=Math.ceil(e.duration*expeditionSpeed());
+   const unlocked=totalLevels()>=15;
+   exploreCard(container,e.icon+' '+e.name,'Expédition de '+Math.floor(seconds/60)+' min '+(seconds%60)+' s',
+    'Récompense : argent + '+e.science+' point'+(e.science>1?'s':'')+' de recherche',
+    unlocked?'Envoyer':'Niveau requis',!unlocked,()=>startExpedition(i));
+  });
+ }else if(explorationTab==='science'){
+  paragraph('Les découvertes, les expéditions et l’étude du vivant donnent des points de recherche. Les technologies fonctionnent sur toutes tes planètes.');
+  summary('⚗ Points disponibles',String(state.science.points));
+  TECHNOLOGIES.forEach((tech,i)=>{
+   const lv=researchLevel(i),cost=scienceCost(i);
+   exploreCard(container,tech.name,tech.detail,'Niveau '+lv+' / 5'+(lv<5?' · Coût : '+cost+' points':''),lv>=5?'MAX':'Améliorer',lv>=5||state.science.points<cost,()=>buyTechnology(i));
+  });
+ }else if(explorationTab==='nature'){
+  const climate=weatherStatus();
+  paragraph('Ton monde évolue : observe sa météo, révèle ses espèces et recherche un monument unique.');
+  summary('☁ Météo actuelle',climate.name);
+  LIFE_LIST.forEach((life,i)=>{
+   const needed=[45,130,265][i],found=state.exploration.life.includes(i),ready=totalLevels()>=needed;
+   const themes=['forestier','aquatique','polaire','minéral','onirique','mycélien'];
+   exploreCard(container,(i===0?'✧ ':i===1?'◈ ':'✺ ')+life[0],
+    life[1]+' Adaptation : '+themes[(state.planet-1)%6]+'.',
+    found?'✓ Étudié · Bonus de recherche reçu':ready?'Observation disponible':'Requis : '+needed+' niveaux cumulés',
+    found?'Découvert':ready?'Étudier':'À découvrir',found||!ready,()=>discoverLife(i));
+  });
+  const relic=MONUMENTS[(state.planet-1)%6],restored=state.exploration.monumentRestored;
+  const revealed=state.exploration.monumentFound,needed=hasSatellite(0)?24:34;
+  exploreCard(container,'⌁ '+relic[0],relic[1],
+   restored?'✓ Restauré · +4 points de recherche obtenus':
+   revealed?'Restauration : '+moneyFormat(monumentPrice())+' · +4 recherche':
+   cover()>=needed?'Un symbole ⌁ est apparu sur la planète. Touche-le pour explorer.':'Indice débloqué à '+needed+' % de progression',
+   restored?'Restauré':revealed?'Restaurer':'Mystère',restored||!revealed||state.money<monumentPrice(),restoreRelic);
+ }else if(explorationTab==='galaxy'){
+  paragraph('Tous les mondes appartiennent à une grande galaxie. Visite les secteurs, puis reviens continuer tes autres planètes sans perdre ta progression.');
+  const visits=Object.entries(state.worlds).filter(([p,w])=>Number(p)>=1&&Number(p)<=999&&w?.levels?.some(v=>v>0));
+  summary('✦ Secteurs visités',String(visits.length+(state.levels.some(n=>n>0)&&!visits.some(([p])=>Number(p)===state.planet)?1:0))+' / 999');
+  const grid=exploreElement('div','explore-grid');
+  const candidates=new Set(Array.from({length:18},(_,i)=>i+1));
+  for(let i=Math.max(1,state.planet-2);i<=Math.min(999,state.planet+3);i++)candidates.add(i);
+  visits.forEach(([p])=>candidates.add(Number(p)));
+  for(const p of [...candidates].sort((a,b)=>a-b)){
+   const world=p===state.planet?state:state.worlds[p];
+   const btn=exploreElement('button','explore-world'+(p===state.planet?' current':''));
+   btn.type='button';
+   btn.append(exploreElement('strong','','✦ '+p),exploreElement('span','',worldName(p)),
+     exploreElement('span','',p===state.planet?'● En cours':world?.levels?.some(v=>v>0)?worldPercent(p,world)+' % · visité':'À découvrir'));
+   btn.addEventListener('click',()=>{if(p!==state.planet)switchWorld(p);else closeExploration()});
+   grid.appendChild(btn);
+  }
+  container.appendChild(grid);
+ }
+ container.scrollTop=scroll;
+}
 function renderUI(){
  $('planet-hint').classList.toggle('hidden',state.levels[0]>0);
  $('money').textContent=moneyFormat(state.money);
@@ -1542,6 +1664,10 @@ function renderUI(){
  $('planet-extra-text').textContent=signal>=0?'✦ Signal inhabituel détecté':found?'✧ '+found+' découverte'+(found>1?'s':'')+' archivée'+(found>1?'s':''):'';
 
  $('next').classList.toggle('hidden',cover()<99.999);
+ $('orbital-find').classList.toggle('hidden',!state.exploration.encounter||state.exploration.encounter.until<=Date.now());
+ $('relic-find').classList.toggle('hidden',!relicRevealed());
+ const readyToExplore=!!state.exploration.encounter||relicRevealed()||!!(state.exploration.expedition&&state.exploration.expedition.end<=Date.now());
+ $('explore-indicator').classList.toggle('hidden',!readyToExplore);
  renderCosmicEvent();
  renderEvolution();renderMissions();
  let minIncome=0;
@@ -1937,7 +2063,7 @@ function drawPlanet(){
   ctx.restore();ctx.beginPath();ctx.arc(c,c,r,0,Math.PI*2);ctx.lineWidth=3;ctx.strokeStyle='#879eab66';ctx.stroke();
 }
 refreshBiomeCards();buildPixelMap();
-let lastTick=performance.now(),lastSave=Date.now(),lastPlanetGlow=0;
+let lastTick=performance.now(),lastSave=Date.now(),lastPlanetGlow=0,lastExplorationScan=0,lastExplorePanelRefresh=0;
 function frame(now){
  const elapsed=Math.min(1000,Math.max(0,now-lastTick));lastTick=now;
  for(let i=0;i<BIOMES.length;i++){
@@ -1945,6 +2071,13 @@ function frame(now){
    const period=cycleTime(i)*1000;
    state.timers[i]+=elapsed;
    if(state.timers[i]>=period){let n=Math.floor(state.timers[i]/period);state.timers[i]%=period;state.money+=revenue(i)*n}
+ }
+ if(now-lastExplorationScan>1100&&!document.hidden){
+   lastExplorationScan=now;eventTick();
+   if(now-lastExplorePanelRefresh>1200&&!$('explore-overlay').classList.contains('hidden')){
+     lastExplorePanelRefresh=now;
+     if(explorationTab==='missions'||explorationTab==='nature')renderExploration();
+   }
  }
  renderUI();
  if(now-lastPlanetGlow>1600&&!document.hidden){lastPlanetGlow=now;drawPlanet()}
