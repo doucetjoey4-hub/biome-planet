@@ -765,6 +765,8 @@ html,body{height:100%;height:100dvh}
 .rebirth-confirm-actions button{flex:1;min-width:0;padding:12px 5px;border-radius:9px;font-size:.72rem;font-weight:800;background:#262b3c;color:#f2efff;border:1px solid #73738f}
 #rebirth-commit{background:#a884cc;color:#21172b;border-color:#d2b3ee}
 @media(max-width:360px){.rebirth-body{padding:10px}.rebirth-stats strong{font-size:.81rem}.rebirth-upgrade{padding:9px}.rebirth-upgrade button{min-width:82px}}
+
+.rebirth-menu-action .rebirth-ready{color:#291d35;background:#eac3ff;box-shadow:0 0 16px #b87eff66}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
@@ -1927,7 +1929,7 @@ function renderUI(){
  $('relic-find').classList.toggle('hidden',!relicRevealed());
  const readyToExplore=encounterReady||relicRevealed()||!!(state.exploration.expedition&&state.exploration.expedition.end<=Date.now());
  $('explore-indicator').classList.toggle('hidden',!readyToExplore);
- $('nav-dot').classList.toggle('hidden',!(readyToExplore||signal>=0||state.missions.length<MISSIONS.length&&MISSIONS.some((m,i)=>!state.missions.includes(i)&&missionProgress(m)>=m.target)));
+ $('nav-dot').classList.toggle('hidden',!(rebirthReady||readyToExplore||signal>=0||state.missions.length<MISSIONS.length&&MISSIONS.some((m,i)=>!state.missions.includes(i)&&missionProgress(m)>=m.target)));
  renderCosmicEvent();
  renderEvolution();renderMissions();
  let minIncome=0;
@@ -2362,6 +2364,14 @@ function drawPlanet(){
   shade.addColorStop(0,'#ffffff10');shade.addColorStop(.55,'#00000000');shade.addColorStop(1,'#00000048');
   ctx.fillStyle=shade;ctx.fillRect(c-r,c-r,2*r,2*r);
   ctx.restore();ctx.beginPath();ctx.arc(c,c,r,0,Math.PI*2);ctx.lineWidth=3;ctx.strokeStyle='#879eab66';ctx.stroke();
+  // Halo subtil débloqué après la première renaissance.
+  if(state.prestige.count>0){
+    ctx.save();
+    ctx.beginPath();ctx.arc(c,c,r+4,0,Math.PI*2);
+    ctx.strokeStyle='#c5a3ff';ctx.globalAlpha=Math.min(.43,.14+state.prestige.count*.018);
+    ctx.lineWidth=2;ctx.shadowColor='#af85ff';ctx.shadowBlur=13;ctx.stroke();
+    ctx.restore();
+  }
   // Satellites animés autour du globe, hors du disque, dessinés en gros pixels.
   const orbitPhase=performance.now()/7500;
   state.exploration.satellites.forEach((id,k)=>{
@@ -2409,6 +2419,8 @@ function buyPrestigeUpgrade(i){
  if(state.prestige.points<price||!Number.isFinite(price))return;
  state.prestige.points-=price;
  state.prestige.upgrades[i]++;
+ // L'argent de départ est également versé si le monde actuel est encore vierge.
+ if(i===3&&state.levels.every(level=>level===0))state.money+=Math.floor(120*Math.pow(1.18,Math.max(0,state.planet-1)));
  playSound('claim');save();renderUI();renderRebirth();
  toast('Amélioration permanente obtenue!','reward');
 }
@@ -2502,12 +2514,15 @@ document.addEventListener('keydown',e=>{
  if(rebirthConfirmOpen){e.preventDefault();closeRebirthConfirmation()}
  else if(rebirthOpen){e.preventDefault();closeRebirth()}
 });
-let lastRebirthBadge=0;
+let lastRebirthBadge=0,rebirthReady=false;
 function updateRebirthBadge(){
  if(Date.now()-lastRebirthBadge<1200)return;
  lastRebirthBadge=Date.now();
- $('rebirth-menu-count').textContent='✵ '+state.prestige.count;
- $('rebirth-menu-summary').textContent='✦ '+state.prestige.points+' éclat(s) · '+Math.round((prestigeRevenue()-1)*100)+' % de production';
+ const p=rebirthProgress();
+ rebirthReady=p.unlocked;
+ $('rebirth-menu-count').textContent=rebirthReady?'✦ +'+p.gain:'✵ '+state.prestige.count;
+ $('rebirth-menu-count').classList.toggle('rebirth-ready',rebirthReady);
+ $('rebirth-menu-summary').textContent=rebirthReady?'Renaissance prête · +'+p.gain+' éclats ✦':'✦ '+state.prestige.points+' éclat(s) · +'+Math.round((prestigeRevenue()-1)*100)+' % de production';
  if(rebirthOpen&&!rebirthConfirmOpen)renderRebirth();
 }
 /* V39 : navigation centralisée, sans changer les systèmes de gameplay. */
