@@ -1,5 +1,5 @@
 /* Biome Planet V20: priorité au réseau pour empêcher les versions périmées. */
-const CACHE = 'biome-planet-v53-exploration-tabs-removed';
+const CACHE = 'biome-planet-v54-centered-close-icons';
 const CORE = ['./index.html','./manifest.webmanifest','./icons/biome-planet-app.svg?v=45'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
