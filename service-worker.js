@@ -1,5 +1,5 @@
 /* Biome Planet V20: priorité au réseau pour empêcher les versions périmées. */
-const CACHE = 'biome-planet-v48-clear-biomes';
+const CACHE = 'biome-planet-v49-cosmic-fx';
 const CORE = ['./index.html','./manifest.webmanifest','./icons/biome-planet-app.svg?v=45'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
