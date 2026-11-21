@@ -1586,6 +1586,20 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 .fx-setting strong{display:block;font-size:.8rem;color:#e7faff}.fx-setting small{display:block;font-size:.67rem;margin-top:3px;color:#a8c8d8}
 .fx-setting button{border:1px solid #73c4d0;border-radius:9px;background:#1a4957;color:#c7fff4;padding:9px;min-width:86px;font-weight:800}
 .fx-setting button[aria-pressed="false"]{background:#172b3a;color:#b2bdc7;border-color:#52687b}
+
+/* V50: Satellite visible while assembly pieces scroll independently. */
+.explore-dialog.workshop-dialog{height:min(92dvh,820px)}
+.explore-content.workshop-layout{display:flex;flex-direction:column;gap:7px;overflow:hidden;min-height:0;flex:1;padding-bottom:4px}
+.workshop-fixed{display:grid;gap:6px;flex:none;min-height:0;border-bottom:1px solid #416980;padding:0 1px 9px;background:#102337}
+.workshop-fixed .workshop-switcher{gap:5px}.workshop-fixed .workshop-switch{min-height:34px;padding:6px 3px}
+.workshop-fixed .workshop-preview{min-height:0;display:grid;place-items:center;overflow:hidden}
+.workshop-fixed .workshop-ship{width:100%;height:clamp(95px,22dvh,188px);max-height:none;aspect-ratio:auto;object-fit:contain}
+.workshop-fixed .workshop-visual-hint{padding:5px 8px;font-size:.65rem}
+.workshop-fixed .workshop-progress{gap:4px}
+.workshop-scroll{display:grid;align-content:start;gap:9px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#5a9bb0 #15293a;padding:3px 3px 16px}
+.workshop-scroll .explore-summary{margin:0}.workshop-scroll .workshop-parts{display:grid;gap:8px}
+@media(max-height:650px){.workshop-fixed{gap:4px;padding-bottom:5px}.workshop-fixed .workshop-ship{height:clamp(72px,17dvh,125px)}.workshop-fixed .workshop-visual-hint{padding:3px 6px}}
+@media(max-height:490px){.workshop-fixed .workshop-ship{height:68px}.workshop-fixed .workshop-visual-hint{display:none}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=45">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -3110,7 +3124,10 @@ function renderExploration(){
  if($('explore-overlay').classList.contains('hidden'))return;
  $('explore-world-label').textContent='Planète '+state.planet+' · '+worldName(state.planet);
  document.querySelectorAll('.explore-tab').forEach(b=>b.classList.toggle('active',b.dataset.explore===explorationTab));
- const container=$('explore-content'),scroll=container.scrollTop;container.replaceChildren();
+ const container=$('explore-content'),scroll=container.scrollTop,workshopScroll=container.querySelector('.workshop-scroll')?.scrollTop||0;
+ document.querySelector('.explore-dialog').classList.toggle('workshop-dialog',explorationTab==='satellites');
+ container.classList.toggle('workshop-layout',explorationTab==='satellites');
+ container.replaceChildren();
  if(explorationTab!=='satellites')workshopPreviewCanvas=null;
  const paragraph=text=>container.appendChild(exploreElement('p','explore-summary',text));
  const summary=(a,b)=>{const line=exploreElement('div','explore-statbar');line.append(exploreElement('span','',a),exploreElement('span','',b));container.appendChild(line)};
@@ -3199,6 +3216,15 @@ function renderExploration(){
   if(state.prestige.blueprints.includes(id)){
    container.appendChild(exploreElement('p','workshop-blueprint','✦ Plan conservé dans les archives de renaissance.'));
   }
+  const fixed=exploreElement('section','workshop-fixed');
+  fixed.setAttribute('aria-label','Satellite et progression toujours visibles');
+  [switcher,heading,preview,stageHint,progress].forEach(node=>fixed.appendChild(node));
+  const partsScroll=exploreElement('div','workshop-scroll');
+  partsScroll.setAttribute('aria-label','Matériaux et pièces à construire');
+  partsScroll.tabIndex=0;
+  while(container.firstChild)partsScroll.appendChild(container.firstChild);
+  container.append(fixed,partsScroll);
+  partsScroll.scrollTop=workshopScroll;
  }else if(explorationTab==='missions'){
   paragraph('Les sondes explorent automatiquement l’espace. Récupère leur cargaison à leur retour pour obtenir de l’argent et de la recherche.');
   const exp=state.exploration.expedition;
