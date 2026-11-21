@@ -979,7 +979,7 @@ function biomeShade(name,tile,planet){
  return clamp(3+Math.round(d*1.2)+Math.round(patch*.35));
 }
 const KEY='biome-planet-save-v10';let state;
-function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],bonuses:[],discoveries:[],missions:[],events:[],eventActive:null,exploration:null,science:{points:0,upgrades:[0,0,0,0]},prestige:{count:0,points:0,earned:0,upgrades:[0,0,0,0]},worlds:{},last:Date.now()}}
+function initial(){return{planet:1,money:0,levels:[0,0,0,0,0,0],timers:[0,0,0,0,0,0],bonuses:[],discoveries:[],missions:[],events:[],eventActive:null,exploration:null,science:{points:0,upgrades:[0,0,0,0]},workshop:{metal:0,crystal:0,circuit:0,fragment:0},prestige:{count:0,points:0,earned:0,upgrades:[0,0,0,0]},worlds:{},last:Date.now()}}
 try{state={...initial(),...JSON.parse(localStorage.getItem(KEY)||'null')}}catch(e){state=initial()}
 if(!Array.isArray(state.levels))state=initial();
 if(!Array.isArray(state.timers))state.timers=state.levels.map(()=>0);
@@ -995,13 +995,43 @@ function normalizePrestige(raw){
  const x=raw&&typeof raw==='object'?raw:{};
  const finiteInt=v=>Number.isFinite(Number(v))?Math.max(0,Math.min(100000,Math.floor(Number(v)))):0;
  return {count:finiteInt(x.count),points:finiteInt(x.points),earned:finiteInt(x.earned),
-  upgrades:Array.from({length:4},(_,i)=>Math.min(10,finiteInt(x.upgrades?.[i])))};
+  upgrades:Array.from({length:4},(_,i)=>Math.min(10,finiteInt(x.upgrades?.[i]))),blueprints:[...new Set(Array.isArray(x.blueprints)?x.blueprints.filter(i=>Number.isInteger(i)&&i>=0&&i<3):[])]};
 }
 state.prestige=normalizePrestige(state.prestige);
-function normalizedExploration(input){
+const WORKSHOP_MATERIALS=['metal','crystal','circuit','fragment'];
+function normalizeWorkshop(raw){
+ const data=raw&&typeof raw==='object'?raw:{};
+ return Object.fromEntries(WORKSHOP_MATERIALS.map(k=>[k,Math.max(0,Math.min(1000000,Math.floor(Number(data[k])||0)))]));
+}
+const hasLegacyWorkshop=!state.workshop;
+state.workshop=normalizeWorkshop(state.workshop);
+if(hasLegacyWorkshop){
+ const sum=Object.values(state.worlds).reduce((n,w)=>n+(Array.isArray(w?.levels)?w.levels.reduce((m,l)=>m+(Number(l)||0),0):0),0);
+ const current=state.levels.reduce((n,l)=>n+(Number(l)||0),0);
+ const progress=Math.max(sum,current);
+ if(progress>0){
+  state.workshop.metal=Math.min(30,4+Math.floor(progress/8));
+  state.workshop.crystal=Math.min(15,1+Math.floor(progress/20));
+  state.workshop.circuit=Math.min(12,Math.floor(progress/25));
+  state.workshop.fragment=Math.min(6,Math.floor(progress/45));
+ }
+}
+function normalizedExploration(input,existingLevels){
+
  const d=input&&typeof input==='object'?input:{};
  return{
   satellites:[...new Set(Array.isArray(d.satellites)?d.satellites.filter(i=>Number.isInteger(i)&&i>=0&&i<3):[])],
+  craftedParts:Array.from({length:3},(_,i)=>{
+    const old=Array.isArray(d.craftedParts?.[i])?d.craftedParts[i]:[];
+    return Array.from({length:4},(_,part)=>!!old[part]||(Array.isArray(d.satellites)&&d.satellites.includes(i)));
+  }),
+  assembledSatellites:[...new Set([
+    ...(Array.isArray(d.assembledSatellites)?d.assembledSatellites:[]),
+    ...(Array.isArray(d.satellites)?d.satellites:[])
+   ].filter(i=>Number.isInteger(i)&&i>=0&&i<3))],
+  materialClaims:Array.isArray(d.materialClaims)
+    ?d.materialClaims.map((n,i)=>Math.max(0,Math.floor(Number(n)||0)))
+    :Array.isArray(existingLevels)?existingLevels.map(l=>Math.max(0,Math.floor(Number(l)||0))):[],
   expedition:d.expedition&&Number.isInteger(d.expedition.id)&&d.expedition.id>=0&&d.expedition.id<3&&Number.isFinite(d.expedition.end)?{id:d.expedition.id,end:d.expedition.end}:null,
   expeditionsCompleted:Math.max(0,Math.floor(Number(d.expeditionsCompleted)||0)),
   life:[...new Set(Array.isArray(d.life)?d.life.filter(i=>Number.isInteger(i)&&i>=0&&i<3):[])],
@@ -1011,7 +1041,7 @@ function normalizedExploration(input){
   nextEncounterAt:Number.isFinite(d.nextEncounterAt)?d.nextEncounterAt:Date.now()+75000
  };
 }
-state.exploration=normalizedExploration(state.exploration);
+state.exploration=normalizedExploration(state.exploration,state.levels);
 
 state.planet=Math.max(1,Math.min(999,Math.floor(Number(state.planet)||1)));
 BIOMES=makeBiomes(state.planet);
@@ -1449,7 +1479,7 @@ function claimBonus(i,type){
  cards[i].querySelector('.bonus-choices').classList.remove('open');
  save();renderUI();
 }
-function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!','warn');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0;playSound('unlock');toast('Nouveau biome : '+BIOMES[i].name,'success')}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++;playUpgradeClick()}save();renderUI();drawPlanet()}
+function buy(i){if(state.levels[i]>=BIOMES[i].max){toast('Ce biome est déjà au niveau maximal!','warn');return}if(state.levels[i]===0){if(i>0&&state.levels[i-1]===0)return;const cost=unlockCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]=1;state.timers[i]=0;playSound('unlock');toast('Nouveau biome : '+BIOMES[i].name,'success')}else{const cost=upgradeCost(i);if(state.money<cost)return;state.money-=cost;state.levels[i]++;playUpgradeClick()}collectBiomeMaterials(i);save();renderUI();drawPlanet()}
 function snapshotWorld(){
  state.worlds[state.planet]={levels:[...state.levels],timers:[...state.timers],bonuses:state.bonuses.map(a=>[...a]),money:state.money,discoveries:[...state.discoveries],missions:[...state.missions],events:[...state.events],eventActive:state.eventActive?{...state.eventActive}:null,exploration:normalizedExploration(state.exploration)};
 }
@@ -1577,7 +1607,7 @@ function switchWorld(num,award=false){
  state.missions=Array.isArray(stored?.missions)?[...stored.missions]:[];
  state.events=Array.isArray(stored?.events)?[...stored.events]:[];
  state.eventActive=stored?.eventActive&&typeof stored.eventActive==='object'?{...stored.eventActive}:null;
- state.exploration=normalizedExploration(stored?.exploration);
+ state.exploration=normalizedExploration(stored?.exploration,stored?.levels);
  closeDiscovery();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';
  normalizeProgress();
  if(award&&!stored)state.money+=30*p;
@@ -1738,14 +1768,88 @@ function buyTechnology(i){
  playSound('claim');save();renderUI();renderExploration();
  toast('Recherche améliorée : '+TECHNOLOGIES[i].name,'success');
 }
-function satellitePrice(i){return Math.round([180,350,580][i]*state.planet*Math.pow(1.19,state.planet-1))}
-function buySatellite(i){
- if(i<0||i>=SATELLITES.length||hasSatellite(i))return;
- if(totalLevels()<[12,45,95][i]){toast('Développe davantage tes biomes','warn');return}
- const price=satellitePrice(i);if(state.money<price){toast('Argent insuffisant pour ce satellite','warn');return}
- state.money-=price;state.exploration.satellites.push(i);
- playSound('unlock');save();renderUI();drawPlanet();renderExploration();
- toast(SATELLITES[i].name+' placé en orbite','success');
+// V41 : Atelier orbital, matériaux universels et fabrication étape par étape.
+const WORKSHOP_PARTS=[
+ {name:'Châssis',icon:'▣',explain:'Armature et coque protectrice'},
+ {name:'Noyau énergétique',icon:'✦',explain:'Alimente les systèmes du satellite'},
+ {name:'Panneaux solaires',icon:'▥',explain:'Capte l’énergie autour de la planète'},
+ {name:'Antenne et propulseur',icon:'⌁',explain:'Communication et mise en orbite'}
+];
+const WORKSHOP_LABELS={metal:'Métal',crystal:'Cristal',circuit:'Circuit',fragment:'Fragment'};
+const WORKSHOP_ICONS={metal:'⬡',crystal:'◆',circuit:'▦',fragment:'✧'};
+const SATELLITE_RECIPES=[
+ [{metal:4},{crystal:2,fragment:1},{metal:3,crystal:1},{circuit:2}],
+ [{metal:6},{crystal:4,fragment:2},{metal:5,crystal:2},{circuit:4}],
+ [{metal:8,circuit:2},{crystal:5,fragment:3},{metal:7,crystal:3},{circuit:6,fragment:1}]
+];
+const satelliteThresholds=[12,45,95];
+function craftParts(i){return state.exploration.craftedParts[i]}
+function isAssembled(i){return state.exploration.assembledSatellites.includes(i)}
+function canPayMaterials(recipe){return WORKSHOP_MATERIALS.every(k=>(state.workshop[k]||0)>=(recipe[k]||0))}
+function addWorkshopMaterials(materials,origin){
+ let changes=[];
+ for(const k of WORKSHOP_MATERIALS){
+  const quantity=Math.max(0,Math.floor(Number(materials[k])||0));
+  if(!quantity)continue;
+  state.workshop[k]=Math.min(1000000,state.workshop[k]+quantity);
+  changes.push('+'+quantity+' '+WORKSHOP_LABELS[k].toLowerCase());
+ }
+ if(changes.length)toast(origin+' : '+changes.join(' · '),'reward');
+}
+function collectBiomeMaterials(i){
+ if(!state.exploration.materialClaims)state.exploration.materialClaims=[];
+ const level=state.levels[i]||0;
+ const last=state.exploration.materialClaims[i]||0;
+ if(level<=last)return;
+ const loot={metal:0,crystal:0,circuit:0,fragment:0};
+ for(let l=last+1;l<=level;l++){
+  if(l===1)loot.metal+=2;
+  if(l%5===0)loot.metal+=2;
+  if(l%10===0)loot.crystal++;
+  if(l%15===0)loot.circuit++;
+  if(l%25===0)loot.fragment++;
+  const name=BIOMES[i].name.toLowerCase();
+  if(l%20===0&&/cristaux|glacier|lagon|récif|océan|lac/.test(name))loot.crystal++;
+  if(l%20===0&&/cavernes|roche|montagne|canyon|obsidienne/.test(name))loot.metal+=2;
+  if(l%30===0&&/forêt|jungle|champignon|brume|mousse/.test(name))loot.circuit++;
+ }
+ state.exploration.materialClaims[i]=level;
+ if(Object.values(loot).some(n=>n>0)){
+  addWorkshopMaterials(loot,'Matériaux du biome');
+  renderExploration();
+ }
+}
+function expeditionMaterials(id){
+ return id===0?{metal:3,circuit:1}:id===1?{metal:4,crystal:2,circuit:2,fragment:1}:{metal:7,crystal:4,circuit:4,fragment:2};
+}
+function craftSatellitePart(i,j){
+ if(!Number.isInteger(i)||!Number.isInteger(j)||i<0||i>2||j<0||j>3||hasSatellite(i))return;
+ if(totalLevels()<satelliteThresholds[i])return;
+ const parts=craftParts(i);
+ if(parts[j])return;
+ const recipe=SATELLITE_RECIPES[i][j];
+ if(!canPayMaterials(recipe)){toast('Il manque des matériaux pour cette pièce','warn');return}
+ for(const k of WORKSHOP_MATERIALS)state.workshop[k]-=recipe[k]||0;
+ parts[j]=true;
+ playSound('claim');save();renderExploration();
+ toast('Pièce fabriquée : '+WORKSHOP_PARTS[j].name,'success');
+}
+function assembleSatellite(i){
+ if(!Number.isInteger(i)||i<0||i>2||hasSatellite(i)||isAssembled(i)||!craftParts(i).every(Boolean))return;
+ state.exploration.assembledSatellites.push(i);
+ playSound('unlock');save();renderExploration();toast('Satellite assemblé! Prêt pour le lancement.','success');
+}
+function launchSatellite(i){
+ if(!Number.isInteger(i)||i<0||i>2||hasSatellite(i)||!isAssembled(i)||!craftParts(i).every(Boolean))return;
+ state.exploration.satellites.push(i);
+ if(!state.prestige.blueprints.includes(i))state.prestige.blueprints.push(i);
+ playSound('discovery');save();renderUI();renderExploration();
+ startLaunchAnimation(i);
+ toast(SATELLITES[i].name+' lancé en orbite!','success');
+}
+let launchVisual=null;
+function startLaunchAnimation(i){
+ launchVisual={id:i,start:performance.now(),duration:2600,planet:state.planet};
 }
 function planetIncome(){
  return BIOMES.reduce((sum,b,i)=>sum+(state.levels[i]?revenue(i)*60/cycleTime(i):0),0);
@@ -1765,6 +1869,7 @@ function finishExpedition(){
  state.exploration.expeditionsCompleted++;
  const reward=Math.max(75*state.planet,Math.round(planetIncome()*e.bonus));
  state.money+=reward;earnResearch(e.science,'Expédition');
+ const loot=expeditionMaterials(exp.id);addWorkshopMaterials(loot,'Expédition');
  playSound('claim');save();renderUI();renderExploration();
  toast('Sonde revenue : +'+moneyFormat(reward)+' · '+e.science+' science','reward');
 }
@@ -1811,6 +1916,7 @@ function claimEncounter(){
  state.exploration.nextEncounterAt=Date.now()+120000+Math.floor(Math.random()*130000);
  const reward=Math.max(38*state.planet,Math.round(planetIncome()*.38));
  state.money+=reward;
+ addWorkshopMaterials(encounter.id===0?{metal:2,fragment:1}:encounter.id===1?{circuit:2,crystal:1}:{crystal:2,fragment:1},'Anomalie');
  if(encounter.id===1)earnResearch(2,'Signal décodé');
  else earnResearch(1,'Anomalie spatiale');
  playSound('event');save();renderUI();drawPlanet();renderExploration();
