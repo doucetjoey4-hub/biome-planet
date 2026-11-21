@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-labelledby="title desc">
+<title id="title">Biome Planet</title><desc id="desc">Planète pixel-art avec anneau orbital cyan et satellite lumineux.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#203a50"/><stop offset=".54" stop-color="#0e2033"/><stop offset="1" stop-color="#071324"/></linearGradient>
+ <radialGradient id="ocean" cx=".32" cy=".22" r=".89"><stop stop-color="#54cde1"/><stop offset=".5" stop-color="#287ba8"/><stop offset="1" stop-color="#194264"/></radialGradient>
+ <linearGradient id="orbit" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8cfff2"/><stop offset=".5" stop-color="#5ec7e7"/><stop offset="1" stop-color="#e4fff9"/></linearGradient>
+ <filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3"/></filter>
+ <clipPath id="planet"><circle cx="96" cy="96" r="53"/></clipPath>
+</defs>
+<rect width="192" height="192" rx="36" fill="url(#bg)"/>
+<path d="M28 26h20M28 26v20M164 146v20h-20" stroke="#6ddbe6" stroke-width="3" opacity=".65" fill="none" stroke-linecap="round"/>
+<g fill="#8dd6e9" opacity=".4"><rect x="37" y="58" width="3" height="3"/><rect x="154" y="48" width="4" height="4"/><rect x="148" y="134" width="3" height="3"/><rect x="44" y="146" width="3" height="3"/></g>
+<ellipse cx="96" cy="96" rx="80" ry="31" transform="rotate(-28 96 96)" fill="none" stroke="#69d6e7" stroke-width="7" opacity=".16" filter="url(#glow)"/>
+<circle cx="96" cy="96" r="57" fill="#57def0" opacity=".10" filter="url(#glow)"/>
+<circle cx="96" cy="96" r="53" fill="url(#ocean)" stroke="#a8ecf6" stroke-width="2"/>
+<g clip-path="url(#planet)">
+ <path d="M43 77 56 59 70 56 85 63 90 77 80 85 84 96 69 104 59 94 45 96Z" fill="#53c59c"/>
+ <path d="M43 77 56 59 70 56 85 63 77 67 64 65 60 76 46 86Z" fill="#87e3b2" opacity=".76"/>
+ <path d="m93 115 16-11 26 6 8 17-13 20-23 9-19-17z" fill="#58c394"/>
+ <path d="m107 118 18-6 11 11-13 16-15 2-8-10z" fill="#87e7ab" opacity=".66"/>
+ <path d="m117 50 20 10 15 20-12 12-15-7-13-17z" fill="#88d3b0" opacity=".55"/>
+ <g fill="#b5f9d5" opacity=".8"><rect x="61" y="79" width="7" height="7"/><rect x="73" y="89" width="5" height="5"/><rect x="113" y="123" width="7" height="7"/><rect x="124" y="135" width="5" height="5"/></g>
+ <path d="M51 88c8-23 19-30 42-33" stroke="#d5fdff" stroke-width="6" fill="none" opacity=".12" stroke-linecap="round"/>
+</g>
+<ellipse cx="96" cy="96" rx="80" ry="31" transform="rotate(-28 96 96)" fill="none" stroke="url(#orbit)" stroke-width="3.7" stroke-linecap="round" stroke-dasharray="165 13 130 13"/>
+<g transform="translate(157 62) rotate(-28)">
+ <rect x="-8" y="-5" width="16" height="10" rx="2" fill="#f6d294" stroke="#fff0c8" stroke-width="2"/>
+ <rect x="-16" y="-5" width="6" height="10" fill="#77dbef"/>
+ <rect x="10" y="-5" width="6" height="10" fill="#77dbef"/>
+ <path d="M0-7V-12" stroke="#f9e9bb" stroke-width="2"/>
+ <circle cx="0" cy="-14" r="3" fill="#f9dca0"/>
+</g>
+<circle cx="157" cy="62" r="10" fill="#fff4c8" opacity=".2" filter="url(#glow)"/>
+</svg>
