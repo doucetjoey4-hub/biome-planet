@@ -2602,6 +2602,7 @@ function renderUI(){
  $('planet-name').textContent='Planète '+worldName(state.planet);
  const percent=Math.round(cover());
  $('land-label').textContent='Progression : '+percent+' %';
+ $('biome-title-index').textContent=state.levels.filter(l=>l>0).length+'/'+BIOMES.length;
  const signal=nextSignal();
  $('anomaly-signal').classList.toggle('hidden',signal<0);
  const found=archiveClaimed().length;
@@ -2618,8 +2619,7 @@ function renderUI(){
   $('orbital-find').setAttribute('aria-label','Collecter : '+(ENCOUNTERS[encounter.id]?.name||'Anomalie'));
  }
  $('relic-find').classList.toggle('hidden',!relicRevealed());
- const readyToExplore=encounterReady||relicRevealed()||!!(state.exploration.expedition&&state.exploration.expedition.end<=Date.now());
- $('explore-indicator').classList.toggle('hidden',!readyToExplore);
+ // V42 : le badge d'exploration montre uniquement des alertes localisées, sans signal générique.
  // Les alertes sont centralisées et mises à jour par le gestionnaire V42.
  renderCosmicEvent();
  renderEvolution();renderMissions();
@@ -3337,7 +3337,12 @@ function openGameSignal(alert){
  if(alert.type==='expeditions'){openExploration('missions');return}
  if(alert.type==='science'){openExploration('science');return}
  if(alert.type==='rebirth'){openRebirth();return}
- if(alert.type==='journal'){$('planet-log-btn').click();return}
+ if(alert.type==='journal'){
+  const signal=nextSignal();
+  if(signal>=0)openDiscovery(signal);
+  else $('planet-log-btn').click();
+  return;
+ }
  if(alert.type==='bonus'){
   const i=Number(alert.target.split(':')[1]);
   if(Number.isInteger(i)&&cards[i]){
