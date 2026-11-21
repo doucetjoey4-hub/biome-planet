@@ -600,12 +600,129 @@ h1{font-size:1.32rem; font-weight:900; letter-spacing:-.03em}
 .explore-world::before{content:'✦';display:block;font-size:1.25rem;color:#71c6da;text-shadow:0 0 14px #51d4ef88;margin-bottom:3px}
 .explore-world.current::before{color:#e4fff3;text-shadow:0 0 18px #6df5c2cc}
 .explore-world:not(:nth-child(3n))::after{content:'';position:absolute;top:26px;left:100%;width:9px;border-top:1px dashed #57859c88;pointer-events:none}
+
+/* V39 • espace de jeu prioritaire : menu latéral et planète redimensionnable. */
+html,body{height:100%;height:100dvh}
+.app{height:100%;height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.balance{flex:none;display:flex;align-items:center;justify-content:space-between;gap:9px;padding:8px 10px!important;margin:5px 0 0!important;border-radius:13px}
+.balance-money{min-width:0;flex:1}
+.balance .muted{font-size:.65rem;line-height:1.3}
+.balance .amount{font-size:clamp(1.22rem,4.1vw,1.55rem)!important;line-height:1.15}
+.balance-actions{display:flex;align-items:center;gap:9px;flex:none}
+.balance .income{text-align:right;white-space:nowrap;font-size:.69rem;line-height:1.35}
+.nav-toggle{width:42px;height:42px;position:relative;display:grid;place-items:center;flex:none;color:#d5faff;background:#193240;border:1px solid #4c9eb0;border-radius:11px;font-size:1.37rem;line-height:1}
+.nav-toggle:active{background:#285365}
+.nav-dot{position:absolute;right:4px;top:4px;width:9px;height:9px;background:#f5db88;border-radius:50%;box-shadow:0 0 8px #f5db88}
+.planet-panel{flex:none;margin:7px 0 7px!important;padding:8px 10px 6px!important;border-radius:15px;overflow:visible}
+.planet-top{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name select" "tag progress";align-items:center;gap:4px 8px}
+.planet-top strong{font-size:.85rem;line-height:1.25;min-width:0}
+.planet-top .muted{font-size:.65rem}
+.planet-top .tag{font-size:.64rem;padding:4px 8px}
+.planet-select-btn{min-height:34px;padding:5px 10px;font-size:.71rem}
+.planet-holder{width:min(100%,25dvh,258px)!important;max-width:none;min-width:0;margin:2px auto 0!important;animation:none}
+.planet-hint{font-size:.64rem;padding:5px 9px;white-space:normal}
+.planet-panel .evolution-line{min-height:18px;padding:2px 0 0;margin:0;gap:6px}
+.evolution-stage{font-size:.65rem}
+.evolution-sub{font-size:.61rem}
+.planet-panel .cosmic-event{margin:3px 0 2px;padding:6px 8px;border-radius:9px}
+.planet-panel .event-caption,.planet-panel .event-body{font-size:.64rem}
+.planet-panel .event-body button{min-height:30px;padding:5px 8px}
+.planet-panel .next{padding:8px;margin:4px 0 0;min-height:34px;font-size:.72rem}
+.section-title{flex:none;margin:0 2px 6px!important;min-height:33px;display:flex;align-items:center;gap:8px}
+.section-title h2{margin:0;font-size:.96rem;flex:1;min-width:0}
+.planet-layout-toggle{flex:none;background:#132735;border:1px solid #3e7383;color:#b7e9f2;border-radius:8px;padding:7px 10px;min-height:33px;font-size:.68rem;font-weight:850}
+.planet-layout-toggle[aria-pressed="true"]{border-color:#73d5d4;color:#e6fff9}
+.biome-scroll{flex:1;min-height:0;overflow-y:auto;padding:0 3px max(12px,env(safe-area-inset-bottom));overscroll-behavior:contain}
+.biomes{grid-template-columns:1fr;gap:7px}
+.biome{padding:9px 10px 8px;border-radius:11px}
+.biome-head{gap:7px}
+.biome-icon{width:32px;height:32px}
+.biome-info strong{font-size:.84rem}
+.biome-info small{font-size:.67rem;line-height:1.35}
+.biome-level{font-size:.7rem}
+.biome-main{margin-top:6px;gap:9px}
+.btn{min-height:43px;min-width:108px;max-width:46%;padding:8px;font-size:.75rem;border-radius:9px}
+.milestone-group{margin-top:4px}
+.milestone-box{min-width:37px;height:22px;font-size:.7rem}
+.milestone-caption{font-size:.61rem}
+.bonus-strip{margin-top:6px;padding-top:5px;min-height:0}
+.bonus-status{font-size:.63rem}
+.bonus-claim{font-size:.68rem;padding:6px 8px}
+.cycle{font-size:.66rem}
+.planet-expanded .planet-holder{width:min(100%,38dvh,365px)!important}
+.planet-expanded .planet-panel{margin-bottom:10px!important}
+.planet-expanded .planet-layout-toggle{color:#d9fff7}
+.side-menu-overlay{position:fixed;inset:0;z-index:145;display:flex;justify-content:flex-end;background:#020710bb;backdrop-filter:blur(5px)}
+.side-menu{width:min(87vw,350px);height:100%;height:100dvh;display:flex;flex-direction:column;border-left:1px solid #548b9c;background:linear-gradient(165deg,#172b3b,#0b1522 68%);box-shadow:-20px 0 55px #000c;color:#eefaff;padding:calc(14px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom))}
+.side-menu-head{flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:3px 5px 13px;border-bottom:1px solid #30495a}
+.side-menu-head span{font-size:.61rem;letter-spacing:.15em;color:#80c2d0;font-weight:900}
+.side-menu-head h2{font-size:1.08rem;margin:5px 0 0}
+.nav-close{min-width:38px;min-height:38px;border-radius:9px;border:1px solid #56788d;background:#193041;color:#ecfaff}
+.side-menu-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:8px 2px}
+.menu-group{display:grid;gap:5px;margin:3px 0 14px}
+.menu-group h3{font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;margin:4px 4px 5px;color:#8fc2d0}
+.menu-action{display:flex;align-items:center;width:100%;min-height:54px;text-align:left;padding:8px 10px;gap:12px;background:#142536;border:1px solid #31536b;border-radius:11px;color:#e8fbff;font-size:.77rem;font-weight:850}
+.menu-action>span:first-child{flex:none;width:28px;text-align:center;font-size:1.14rem;color:#8fe5e8}
+.menu-action>span:nth-child(2){flex:1;min-width:0}
+.menu-action small{display:block;margin-top:4px;color:#9ab9c8;font-size:.65rem;font-weight:550;line-height:1.35}
+.menu-action b{flex:none;border-radius:8px;background:#254553;color:#b8f5f0;font-size:.66rem;padding:5px 7px}
+.menu-action .menu-alert{color:#f5dd96}
+.menu-action:active{background:#235067}
+.menu-danger .menu-action{border-color:#6c414b}
+.menu-danger .menu-action>span:first-child{color:#f6a1a6}
+.side-menu-bottom{flex:none;padding:13px 5px 3px;color:#7eacbc;font-size:.64rem;text-align:center;border-top:1px solid #29465a}
+@media(max-height:760px){
+ .planet-holder{width:min(100%,22dvh,225px)!important}
+ .planet-expanded .planet-holder{width:min(100%,33dvh,335px)!important}
+ .planet-panel{padding:6px 9px 5px!important;margin:5px 0 5px!important}
+ .balance{padding:6px 9px!important}
+ .nav-toggle{width:38px;height:38px}
+ .section-title{margin-bottom:4px!important}
+ .biome{padding:7px 9px}
+ .biome-main{margin-top:4px}
+}
+@media(max-height:570px){
+ .planet-holder{width:min(100%,19dvh,190px)!important}
+ .planet-expanded .planet-holder{width:min(100%,30dvh,295px)!important}
+ .evolution-sub{display:none}
+ .planet-panel{margin:4px 0!important;padding:4px 8px!important}
+ .balance{margin-top:2px!important}
+ .section-title{min-height:30px}
+ .planet-top strong{font-size:.8rem}
+}
+@media(min-width:670px) and (min-height:820px){
+ .planet-holder{width:min(100%,29dvh,320px)!important}
+ .planet-expanded .planet-holder{width:min(100%,40dvh,375px)!important}
+}
+@media(prefers-reduced-motion:reduce){.side-menu-overlay{backdrop-filter:none}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/planet.svg" type="image/svg+xml">
 <meta name="theme-color" content="#101219">
 </head>
-<body><main class="app"><div class="balance"><div><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="income" id="rates">+0 $ / min</div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="orbital-find hidden" id="orbital-find" aria-label="Collecter une anomalie spatiale"><span id="orbital-glyph">✧</span></button><button type="button" class="relic-find hidden" id="relic-find" aria-label="Examiner un site mystérieux">⌁</button><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><div class="planet-extra"><span class="planet-extra-text" id="planet-extra-text"></span><button type="button" class="planet-log-btn" id="planet-log-btn">◈ Journal <span id="planet-log-count"></span></button></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Activer</button></div></div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><button type="button" class="objectives-open" id="objectives-open" aria-haspopup="dialog" aria-controls="objectives-overlay">✧ Objectifs <span id="objectives-badge">0/5</span></button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section><footer class="footer"><div class="footer-quick"><button type="button" class="linkbtn atlas-open" id="atlas-open">🗺 Atlas</button><button type="button" class="linkbtn explore-open" id="explore-open" aria-haspopup="dialog" aria-controls="explore-overlay">🛰 Exploration <span id="explore-indicator" class="hidden">✦</span></button></div><div class="footer-actions"><button type="button" class="linkbtn audio-settings-btn" id="audio-settings-open" aria-label="Réglages audio">♫ Audio</button><button class="linkbtn" id="reset">Recommencer</button></div></footer></div></main><div class="toast" id="toast" aria-live="polite"></div>
+<body><main class="app"><div class="balance"><div class="balance-money"><div class="muted">Ton argent</div><div class="amount" id="money">0 $</div></div><div class="balance-actions"><div class="income" id="rates">+0 $ / min</div><button type="button" class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu principal" aria-controls="side-menu" aria-expanded="false"><span aria-hidden="true">☰</span><span class="nav-dot hidden" id="nav-dot"></span></button></div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">🪐 Planètes</span><span class="planet-chevron" aria-hidden="true"></span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="orbital-find hidden" id="orbital-find" aria-label="Collecter une anomalie spatiale"><span id="orbital-glyph">✧</span></button><button type="button" class="relic-find hidden" id="relic-find" aria-label="Examiner un site mystérieux">⌁</button><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Activer</button></div></div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2>Développer les biomes</h2><button type="button" class="planet-layout-toggle" id="planet-layout-toggle" aria-pressed="false" aria-label="Agrandir la planète">⤢ Planète</button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section></div></main>
+<div class="side-menu-overlay hidden" id="side-menu-overlay">
+ <aside class="side-menu" id="side-menu" role="dialog" aria-modal="true" aria-labelledby="side-menu-title">
+  <div class="side-menu-head"><div><span>BIOME PLANET</span><h2 id="side-menu-title">Centre de contrôle</h2></div><button type="button" id="nav-close" class="nav-close" aria-label="Fermer le menu">✕</button></div>
+  <div class="side-menu-scroll">
+   <section class="menu-group"><h3>Explorer</h3>
+    <button type="button" class="menu-action explore-open" id="explore-open" aria-haspopup="dialog" aria-controls="explore-overlay"><span>🛰</span><span>Exploration <small>Satellites, expéditions et recherche</small></span><b class="menu-alert hidden" id="explore-indicator">✦</b></button>
+    <button type="button" class="menu-action" id="objectives-open" aria-haspopup="dialog" aria-controls="objectives-overlay"><span>✧</span><span>Objectifs <small>Défis et récompenses</small></span><b id="objectives-badge">0/5</b></button>
+    <button type="button" class="menu-action" id="atlas-open"><span>🗺</span><span>Atlas <small>Progression de tes planètes</small></span></button>
+    <button type="button" class="menu-action" id="planet-log-btn"><span>◈</span><span>Journal cosmique <small id="planet-extra-text">Découvertes du monde</small></span><b id="planet-log-count">0/5</b></button>
+   </section>
+   <section class="menu-group"><h3>Affichage et réglages</h3>
+    <button type="button" class="menu-action" id="menu-planet-size"><span>◉</span><span>Affichage planète <small id="menu-planet-size-label">Compact pour les biomes</small></span></button>
+    <button type="button" class="menu-action" id="audio-settings-open" aria-label="Réglages audio"><span>♫</span><span>Audio <small>Musique et effets sonores</small></span></button>
+   </section>
+   <section class="menu-group menu-danger"><h3>Partie</h3>
+    <button type="button" class="menu-action" id="reset"><span>↺</span><span>Recommencer <small>Effacer toute la progression</small></span></button>
+   </section>
+  </div>
+  <div class="side-menu-bottom">✦ Chaque monde garde sa propre progression.</div>
+ </aside>
+</div>
+<div class="toast" id="toast" aria-live="polite"></div>
 <div class="explore-overlay hidden" id="explore-overlay">
  <section class="explore-dialog" role="dialog" aria-modal="true" aria-labelledby="explore-title">
   <div class="explore-header"><div><span class="explore-eyebrow">✦ CENTRE D'EXPLORATION</span><h2 id="explore-title">Explorer l'univers</h2><p id="explore-world-label">Planète 1</p></div><button type="button" id="explore-close" aria-label="Fermer l'exploration">✕</button></div>
