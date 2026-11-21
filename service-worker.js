@@ -1,5 +1,5 @@
 /* Biome Planet V20: priorité au réseau pour empêcher les versions périmées. */
-const CACHE = 'biome-planet-v41-atelier-orbital';
+const CACHE = 'biome-planet-v411-satellite-visible';
 const CORE = ['./index.html','./manifest.webmanifest','./icons/planet.svg'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
