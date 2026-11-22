@@ -1719,10 +1719,6 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 .workshop-inspect>.bp-line-icon{width:15px;height:15px;flex:none}
 .workshop-ship{cursor:pointer}
 .workshop-inspection-name{text-align:center;min-height:13px;color:#8abccb;letter-spacing:.09em;font-size:.59rem;font-weight:800}
-.workshop-progress-steps{display:flex;gap:7px;justify-content:space-between}
-.workshop-progress-steps>span{flex:1;display:grid;place-items:center;height:19px;border:1px solid #34596d;border-radius:5px;background:#12283b;color:#7aabc1;transition:background .25s,border-color .25s}
-.workshop-progress-steps>span.done{background:#1b4b49;border-color:#67d3b9;color:#a4ffe3;box-shadow:0 0 9px #5ff5cd24}
-.workshop-progress-steps svg{height:12px;width:12px}
 .workshop-parts-title{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:5px 2px;color:#d4f9ff;font-size:.7rem}
 .workshop-parts-title strong{display:inline-flex;align-items:center;gap:6px}
 .workshop-parts-title small{font-size:.6rem;letter-spacing:.06em;color:#80b9cf}
@@ -1765,8 +1761,6 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 .workshop-layout .workshop-progress{gap:6px}
 .workshop-layout .workshop-progress-labels{font-size:.68rem;font-weight:750}
 .workshop-layout .workshop-progress-track{height:7px}
-.workshop-layout .workshop-progress-steps>span{height:22px;border-radius:6px}
-.workshop-layout .workshop-progress-steps svg{width:13px;height:13px}
 .workshop-layout .workshop-scroll{display:flex;flex-direction:column;flex:1;min-height:75px;gap:9px;padding:7px 4px 14px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#4d99ad transparent}
 .workshop-layout .workshop-inventory{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .workshop-layout .workshop-inventory-item{min-height:58px;padding:6px 2px;gap:3px;border-radius:10px;background:linear-gradient(165deg,#1a3e54,#0f283b)}
@@ -1793,7 +1787,7 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 .workshop-layout .workshop-help .explore-summary{margin-top:8px;font-size:.64rem;line-height:1.5}
 @media(max-width:365px){.workshop-layout .workshop-switch{font-size:.59rem!important;gap:2px}.workshop-layout .workshop-switch>.bp-line-icon{width:14px;height:14px}.workshop-layout .workshop-part{padding:8px 7px}.workshop-layout .workshop-command-dock{padding:7px;gap:5px}.workshop-layout .workshop-launch{min-width:112px;padding:6px 7px;font-size:.65rem}.workshop-layout .workshop-command-info small{display:none}}
 @media(max-height:720px){.workshop-layout .workshop-preview{height:clamp(170px,31dvh,235px)}.workshop-layout .workshop-switch{min-height:39px!important}.workshop-layout .workshop-hangar-console{padding:6px 8px}.workshop-layout .workshop-project-head{padding:6px 8px}}
-@media(max-height:580px){.workshop-layout .workshop-preview{height:clamp(115px,25dvh,165px)}.workshop-layout .workshop-progress-steps{display:none}.workshop-layout .workshop-command-dock{padding:5px 7px}}
+@media(max-height:580px){.workshop-layout .workshop-preview{height:clamp(115px,25dvh,165px)}.workshop-layout .workshop-command-dock{padding:5px 7px}}
 
 /* V64 | ORBITAL OPERATIONS: interface reconstruite pour lisibilité et espace.
    Le satellite, les modules, les ressources partagent un seul défilement naturel.
@@ -1895,19 +1889,6 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 .workshop-layout .workshop-progress{gap:11px}
 .workshop-layout .workshop-progress-labels{font-size:.8rem;font-weight:800}
 .workshop-layout .workshop-progress-track{height:8px;border-radius:99px}
-.workshop-layout .workshop-progress-steps{gap:10px}
-.workshop-layout .workshop-progress-steps>button{
- flex:1;display:grid;place-items:center;min-height:39px;
- border:1px solid #41687d;border-radius:9px;
- background:#142e40;color:#96b9c9;
- transition:background .2s,border-color .2s,color .2s,transform .15s;
-}
-.workshop-layout .workshop-progress-steps>button.done{
- border-color:#5bb9a9;background:#174643;color:#b4ffe7;
- box-shadow:inset 0 1px #e7fff015
-}
-.workshop-layout .workshop-progress-steps>button:active{transform:scale(.96)}
-.workshop-layout .workshop-progress-steps>button .bp-line-icon{width:17px;height:17px}
 .workshop-layout .workshop-telemetry{
  display:flex;align-items:center;justify-content:space-between;
  gap:10px;margin-top:13px;padding-top:11px;border-top:1px solid #32536a;
@@ -2185,16 +2166,6 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 }
 .workshop-layout .workshop-progress-labels strong{font-size:.7rem;color:#c0f8e9}
 .workshop-layout .workshop-progress-track{height:5px;border-radius:999px}
-.workshop-layout .workshop-progress-steps{display:flex!important;gap:7px}
-.workshop-layout .workshop-progress-steps>button{
- flex:1;display:grid;place-items:center;min-height:30px!important;
- border:1px solid #345a70;border-radius:7px;
- background:#112a3d;color:#719bb4;transition:.18s ease;
-}
-.workshop-layout .workshop-progress-steps>button.done{
- border-color:#61bba7;background:#1c4d4a;color:#a8ffe0;
-}
-.workshop-layout .workshop-progress-steps>button .bp-line-icon{width:15px;height:15px}
 .workshop-layout .workshop-telemetry{
  margin-top:7px;padding-top:7px;gap:8px;
  border-top:1px solid #2b4b62;display:flex;justify-content:space-between;
@@ -2360,7 +2331,6 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  .workshop-layout .workshop-preview{height:clamp(132px,23dvh,205px)!important}
  .workshop-layout .workshop-switch{min-height:42px!important}
  .workshop-layout .workshop-hangar-console{padding:6px 9px}
- .workshop-layout .workshop-progress-steps>button{min-height:25px!important}
  .workshop-layout .workshop-telemetry{display:none}
  .workshop-layout .workshop-command-dock{padding-top:8px!important;padding-bottom:9px!important;gap:5px!important}
  .workshop-layout .workshop-command-info small{display:none}
@@ -2369,7 +2339,6 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 @media(max-height:560px){
  .workshop-layout .workshop-preview{height:clamp(100px,20dvh,135px)!important}
  .workshop-layout .workshop-project-head{padding:5px 9px!important}
- .workshop-layout .workshop-progress-steps{display:none!important}
  .workshop-layout .workshop-hangar-console{padding:5px 8px!important}
  .workshop-layout .workshop-fixed{padding:5px 8px!important}
  .workshop-layout .workshop-fleet-label{display:none}
@@ -2378,7 +2347,6 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 }
 @media(prefers-reduced-motion:reduce){
  .workshop-layout .workshop-part,.workshop-layout .workshop-panel-tab,.workshop-layout .workshop-switch,
- .workshop-layout .workshop-progress-steps>button{transition:none!important}
  .workshop-layout .workshop-preview:after{animation:none!important}
 }
 
@@ -2504,7 +2472,6 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 .workshop-layout .workshop-progress{gap:7px!important}
 .workshop-layout .workshop-progress-labels{font-size:.77rem!important}
 .workshop-layout .workshop-progress-track{height:7px!important}
-.workshop-layout .workshop-progress-steps{display:none!important}
 .workshop-layout .workshop-telemetry{
  display:flex!important;align-items:center;justify-content:space-between;
  gap:10px;margin-top:8px!important;padding-top:7px!important;
@@ -2579,6 +2546,9 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  .workshop-layout .workshop-hangar-console{padding:4px 8px!important}
  .workshop-layout .workshop-command-info{display:none!important}
 }
+/* V69 — les quatre cases de validation de l'atelier sont retirées sans exception. */
+#explore-overlay.workshop-fullscreen .workshop-progress-steps,
+.workshop-layout .workshop-progress-steps{display:none!important;height:0!important;padding:0!important;margin:0!important;border:0!important}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -5605,4 +5575,4 @@ document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=53').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=69').catch(console.warn));}</script></body></html>
