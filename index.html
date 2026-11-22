@@ -1737,6 +1737,63 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 @keyframes workshopReady{50%{box-shadow:0 0 22px #78ffdb57}}
 @media(max-height:650px){.workshop-fixed{padding:4px;gap:3px}.workshop-inspection-name{display:none}.workshop-scene-corner{padding:2px 4px}}
 @media(prefers-reduced-motion:reduce){.workshop-preview:after,.workshop-scene-corner>.bp-line-icon,.workshop-part.craftable:before,.workshop-launch.launch-ready:not(:disabled){animation:none!important}}
+
+/* V63 — nouvelle architecture immersive du hangar orbital. */
+.explore-dialog.workshop-dialog{width:min(100%,700px);height:min(96dvh,960px);max-height:96dvh;padding:9px 10px;gap:7px;border-radius:18px;background:linear-gradient(145deg,#102a3d,#081624 75%);border-color:#578fa7}
+.workshop-dialog .explore-header{padding:1px 2px 7px;align-items:center;min-height:39px}
+.workshop-dialog .explore-eyebrow{display:none}
+.workshop-dialog .explore-header h2{margin:0;font-size:1.16rem!important}
+.workshop-dialog .explore-header p{font-size:.61rem;margin:1px 0}
+.workshop-dialog .explore-header>button{width:35px;height:35px}
+.explore-content.workshop-layout{display:flex;flex-direction:column;gap:7px;padding:0;min-height:0}
+.workshop-layout .workshop-fixed{display:flex;flex-direction:column;gap:6px;flex:none;min-height:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.workshop-fleet-label,.workshop-inventory-label{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:1px 3px;color:#caedf7}
+.workshop-fleet-label strong,.workshop-inventory-label strong{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:850;letter-spacing:.09em}
+.workshop-fleet-label small,.workshop-inventory-label small{color:#82aec3;font-size:.56rem;letter-spacing:.07em}
+.workshop-layout .workshop-switcher{gap:6px}
+.workshop-layout .workshop-switch{min-height:43px!important;padding:6px 3px!important;border-radius:10px!important;font-size:clamp(.6rem,2.35vw,.74rem)!important;background:#113148;border:1px solid #35617a}
+.workshop-layout .workshop-switch.active{color:#f0ffff;border-color:#85dcef;background:linear-gradient(155deg,#24677b,#173b51);box-shadow:inset 0 -2px #8bf7e8,0 0 13px #5bc4e933}
+.workshop-layout .workshop-hangar{overflow:hidden;border:1px solid #4e849c;border-radius:15px;background:radial-gradient(circle at 50% 45%,#224c62,#0d263b 65%,#081929);box-shadow:inset 0 0 30px #47e6ff0d,0 4px 20px #0008}
+.workshop-layout .workshop-project-head{padding:9px 10px 7px;background:linear-gradient(90deg,#17394e,#102a3c);border-bottom:1px solid #2f6078}
+.workshop-layout .workshop-project-head strong{font-size:clamp(.74rem,2.7vw,.94rem)}
+.workshop-layout .workshop-stage{font-size:.55rem;white-space:nowrap;padding:4px 6px;border-radius:12px}
+.workshop-layout .workshop-preview{width:100%;height:clamp(220px,38dvh,340px);min-height:0!important;display:flex;align-items:center;justify-content:center;position:relative;border:0!important;border-radius:0!important;box-shadow:none!important;background:radial-gradient(circle at 50% 50%,#204a62,#0d2a3e 62%,#071828)}
+.workshop-layout .workshop-ship{width:100%;height:100%!important;max-height:none!important;aspect-ratio:auto;object-fit:contain;filter:drop-shadow(0 0 17px #6be2f523)}
+.workshop-layout .workshop-scene-corner{top:8px;right:9px}
+.workshop-layout .workshop-inspect{left:auto;right:9px;bottom:9px;padding:7px 10px;min-height:35px;font-size:.68rem}
+.workshop-layout .workshop-hangar-console{background:linear-gradient(180deg,#102f43,#0c2639);border-top:1px solid #376b83;padding:8px 11px}
+.workshop-layout .workshop-progress{gap:6px}
+.workshop-layout .workshop-progress-labels{font-size:.68rem;font-weight:750}
+.workshop-layout .workshop-progress-track{height:7px}
+.workshop-layout .workshop-progress-steps>span{height:22px;border-radius:6px}
+.workshop-layout .workshop-progress-steps svg{width:13px;height:13px}
+.workshop-layout .workshop-scroll{display:flex;flex-direction:column;flex:1;min-height:75px;gap:9px;padding:7px 4px 14px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#4d99ad transparent}
+.workshop-layout .workshop-inventory{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.workshop-layout .workshop-inventory-item{min-height:58px;padding:6px 2px;gap:3px;border-radius:10px;background:linear-gradient(165deg,#1a3e54,#0f283b)}
+.workshop-layout .workshop-inventory-item span{font-size:.57rem;white-space:nowrap}
+.workshop-layout .workshop-inventory-item strong{font-size:1rem}
+.workshop-layout .workshop-parts-title{padding:6px 2px 3px;border-top:1px solid #2d5266}
+.workshop-layout .workshop-parts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.workshop-layout .workshop-part{flex-direction:column;align-items:stretch;justify-content:space-between;min-width:0;min-height:155px;gap:7px;padding:10px 9px 8px;border-radius:12px;background:linear-gradient(145deg,#193a4e,#10283a);border-color:#3c677e}
+.workshop-layout .workshop-part-info{flex:none}
+.workshop-layout .workshop-part-info strong{font-size:.75rem;line-height:1.25}
+.workshop-layout .workshop-part-info p{font-size:.62rem;line-height:1.4;margin:5px 0 6px}
+.workshop-layout .workshop-part-materials{gap:3px}
+.workshop-layout .workshop-part-materials span{padding:3px 5px;font-size:.57rem}
+.workshop-layout .workshop-part>button{width:100%;min-width:0;min-height:36px;margin-top:auto;padding:7px 5px;border-radius:8px;font-size:.68rem}
+.workshop-layout .workshop-part.inspecting{background:linear-gradient(125deg,#22536a,#143349);border-color:#95e8f2;box-shadow:inset 0 3px #83e9ef,0 0 16px #52cbe838}
+.workshop-layout .workshop-command-dock{flex:none;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:9px;background:linear-gradient(115deg,#163a4c,#0a2638);border:1px solid #51879b;border-radius:12px;box-shadow:0 -5px 15px #0003,inset 0 1px #eaffff14}
+.workshop-layout .workshop-command-info{display:flex;flex-direction:column;gap:3px;min-width:0}
+.workshop-layout .workshop-command-info strong{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;letter-spacing:.035em;color:#c1f7ef}
+.workshop-layout .workshop-command-info small{font-size:.59rem;color:#a7c8d5}
+.workshop-layout .workshop-launch{width:auto;min-width:128px;min-height:45px;margin:0;padding:7px 11px;border-radius:10px;font-size:.71rem}
+.workshop-layout .workshop-help{background:#0d2739;border:1px solid #2d556b;border-radius:9px;padding:8px 10px}
+.workshop-layout .workshop-help summary{display:flex;align-items:center;gap:6px;font-size:.66rem;color:#acd3e3;font-weight:800;cursor:pointer;list-style:none}
+.workshop-layout .workshop-help summary::-webkit-details-marker{display:none}
+.workshop-layout .workshop-help .explore-summary{margin-top:8px;font-size:.64rem;line-height:1.5}
+@media(max-width:365px){.workshop-layout .workshop-switch{font-size:.59rem!important;gap:2px}.workshop-layout .workshop-switch>.bp-line-icon{width:14px;height:14px}.workshop-layout .workshop-part{padding:8px 7px}.workshop-layout .workshop-command-dock{padding:7px;gap:5px}.workshop-layout .workshop-launch{min-width:112px;padding:6px 7px;font-size:.65rem}.workshop-layout .workshop-command-info small{display:none}}
+@media(max-height:720px){.workshop-layout .workshop-preview{height:clamp(170px,31dvh,235px)}.workshop-layout .workshop-switch{min-height:39px!important}.workshop-layout .workshop-hangar-console{padding:6px 8px}.workshop-layout .workshop-project-head{padding:6px 8px}}
+@media(max-height:580px){.workshop-layout .workshop-preview{height:clamp(115px,25dvh,165px)}.workshop-layout .workshop-progress-steps{display:none}.workshop-layout .workshop-command-dock{padding:5px 7px}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -3308,7 +3365,7 @@ function drawWorkshopSatellite(canvas,i,parts,assembled,launched,now=performance
  c.fillRect(176,164,8,12);
  const ax=180,ay=111+(assembled?Math.sin(now/600)*1.4:0);
  // Les silhouettes des quatre modules restent en place en tout temps.
- c.save();c.translate(ax,ay);
+ c.save();c.translate(ax,ay);c.scale(1.08,1.08);
  for(let part=0;part<4;part++)if(!parts[part])workshopPartSprite(c,part,i,true,now);
  c.restore();
  const current=workshopAnim&&workshopAnim.id===i&&workshopAnim.planet===state.planet
@@ -3326,7 +3383,7 @@ function drawWorkshopSatellite(canvas,i,parts,assembled,launched,now=performance
      scale=.72+.28*Math.min(1,easeOut(progress));
      c.globalAlpha=.45+.55*Math.min(1,progress*2);
    }
-   c.translate(px,py);c.scale(scale,scale);
+   c.translate(px,py);c.scale(scale*1.08,scale*1.08);
    workshopPartSprite(c,part,i,false,now);
    c.restore();
  }
@@ -3506,14 +3563,41 @@ function renderExploration(){
   if(state.prestige.blueprints.includes(id)){
    container.appendChild(exploreElement('p','workshop-blueprint','✦ Plan conservé dans les archives de renaissance.'));
   }
+  // V63: Grand hangar central, matériel en tiroir et commande principale ancrée.
   const fixed=exploreElement('section','workshop-fixed');
-  fixed.setAttribute('aria-label','Satellite et progression toujours visibles');
-  [switcher,heading,preview,stageHint,inspectStatus,progress].forEach(node=>fixed.appendChild(node));
+  fixed.setAttribute('aria-label','Hangar de construction orbital');
+  const fleetBar=exploreElement('div','workshop-fleet-label');
+  fleetBar.append(workshopIconLabel(exploreElement('strong',''),'satellite-dish',' FLOTTE ORBITALE',15),
+    exploreElement('small','','CHOISIR UN SATELLITE'));
+  fixed.append(fleetBar,switcher);
+  const hangar=exploreElement('div','workshop-hangar');
+  hangar.append(heading,preview);
+  const console=exploreElement('div','workshop-hangar-console');
+  console.appendChild(progress);hangar.appendChild(console);
+  fixed.appendChild(hangar);
   const partsScroll=exploreElement('div','workshop-scroll');
-  partsScroll.setAttribute('aria-label','Matériaux et pièces à construire');
+  partsScroll.setAttribute('aria-label','Ressources et modules du satellite');
   partsScroll.tabIndex=0;
-  while(container.firstChild)partsScroll.appendChild(container.firstChild);
-  container.append(fixed,partsScroll);
+  const inventoryLabel=exploreElement('div','workshop-inventory-label');
+  inventoryLabel.append(workshopIconLabel(exploreElement('strong',''),'material-metal',' MATÉRIAUX DISPONIBLES',15),
+    exploreElement('small','','INVENTAIRE'));
+  partsScroll.append(inventoryLabel,inventory,partsHeading,partList);
+  const lock=container.querySelector('.workshop-locked');
+  if(lock)partsScroll.appendChild(lock);
+  const blueprint=container.querySelector('.workshop-blueprint');
+  if(blueprint)partsScroll.appendChild(blueprint);
+  const help=exploreElement('details','workshop-help');
+  const helpTitle=workshopIconLabel(exploreElement('summary',''),'info',' Comment récupérer des matériaux',15);
+  help.append(helpTitle,container.querySelector('.explore-summary'));
+  partsScroll.appendChild(help);
+  const dock=exploreElement('div','workshop-command-dock');
+  const dockInfo=exploreElement('div','workshop-command-info');
+  const dockIcon=owned?'check':assembled?'satellite-deploy':completed===4?'satellite-assemble':'satellite-frame';
+  dockInfo.append(workshopIconLabel(exploreElement('strong',''),dockIcon,
+    owned?' SATELLITE ACTIF':assembled?' PRÊT AU LANCEMENT':completed===4?' PRÊT À ASSEMBLER':' CONSTRUCTION EN COURS',16),
+    exploreElement('small','',owned?'En orbite autour de la planète':assembled?'Tous les systèmes sont opérationnels':completed===4?'Quatre modules terminés':completed+'/4 modules prêts'));
+  dock.append(dockInfo,action);
+  container.replaceChildren(fixed,partsScroll,dock);
   partsScroll.scrollTop=workshopScroll;
  }else if(explorationTab==='missions'){
   paragraph('Les sondes explorent automatiquement l’espace. Récupère leur cargaison à leur retour pour obtenir de l’argent et de la recherche.');
