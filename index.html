@@ -1702,6 +1702,41 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 .audio-switches .sound-toggle,.audio-switches .music-toggle{display:inline-flex;align-items:center;justify-content:center;gap:7px}
 .audio-switches .bp-line-icon{width:17px;height:17px;flex:none}
 #orbital-glyph>.bp-line-icon{width:25px;height:25px}
+
+/* V62: interactive, immersive orbital station. */
+.explore-dialog.workshop-dialog{background:linear-gradient(165deg,#173044,#091725 75%);border-color:#64a7b9;box-shadow:0 24px 70px #000e,0 0 22px #4abfe511}
+.workshop-fixed{border:1px solid #39697e;border-radius:14px;padding:7px;background:linear-gradient(170deg,#163449,#0b1d2e);box-shadow:inset 0 1px #b8fbff15}
+.workshop-switch{border-radius:10px!important;transition:border-color .2s,background .2s,box-shadow .2s}
+.workshop-switch.active{box-shadow:inset 0 -2px #8bf2e8,0 0 13px #60d6ed24}
+.workshop-stage{border:1px solid #528e93;border-radius:20px;padding:4px 7px;background:#123d46}
+.workshop-preview{isolation:isolate;border-color:#57a3b8!important;box-shadow:inset 0 0 24px #5eefff15,0 0 16px #52e6f315!important}
+.workshop-preview:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 35%,#a3ecf708 50%,transparent 64%);animation:workshopGlass 7s linear infinite}
+@keyframes workshopGlass{from{transform:translateX(-65%)}to{transform:translateX(95%)}}
+.workshop-scene-corner{position:absolute;z-index:2;right:7px;top:7px;display:flex;align-items:center;gap:4px;padding:3px 6px;border-radius:6px;border:1px solid #4e90aa;background:#071a2ccf;color:#a1fbe3;font-size:.55rem;font-weight:800;letter-spacing:.1em;pointer-events:none}
+.workshop-scene-corner>.bp-line-icon{width:14px;height:14px;animation:workshopRadar 3s ease-in-out infinite}
+@keyframes workshopRadar{50%{opacity:.4;transform:rotate(24deg)}}
+.workshop-inspect{position:absolute;z-index:3;left:8px;bottom:8px;display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:29px;max-width:calc(100% - 16px);padding:4px 8px;border:1px solid #8ed8e0;border-radius:8px;color:#e1faff;background:#0c2b3ce8;font-size:.65rem;font-weight:850;backdrop-filter:blur(5px)}
+.workshop-inspect>.bp-line-icon{width:15px;height:15px;flex:none}
+.workshop-ship{cursor:pointer}
+.workshop-inspection-name{text-align:center;min-height:13px;color:#8abccb;letter-spacing:.09em;font-size:.59rem;font-weight:800}
+.workshop-progress-steps{display:flex;gap:7px;justify-content:space-between}
+.workshop-progress-steps>span{flex:1;display:grid;place-items:center;height:19px;border:1px solid #34596d;border-radius:5px;background:#12283b;color:#7aabc1;transition:background .25s,border-color .25s}
+.workshop-progress-steps>span.done{background:#1b4b49;border-color:#67d3b9;color:#a4ffe3;box-shadow:0 0 9px #5ff5cd24}
+.workshop-progress-steps svg{height:12px;width:12px}
+.workshop-parts-title{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:5px 2px;color:#d4f9ff;font-size:.7rem}
+.workshop-parts-title strong{display:inline-flex;align-items:center;gap:6px}
+.workshop-parts-title small{font-size:.6rem;letter-spacing:.06em;color:#80b9cf}
+.workshop-inventory-item{background:linear-gradient(180deg,#193b51,#0d2234);border-radius:11px}
+.workshop-part{position:relative;border-radius:12px;overflow:hidden;transition:background .2s,border-color .2s,box-shadow .2s}
+.workshop-part:focus-visible{outline:2px solid #a0f1ff;outline-offset:2px}
+.workshop-part.inspecting{border-color:#91ebed;box-shadow:inset 3px 0 #67f2ee,0 0 16px #4ac1e337;background:linear-gradient(110deg,#1e4654,#112a3b)}
+.workshop-part.craftable:not(.built):before{content:"";position:absolute;top:0;left:0;bottom:0;width:3px;background:#8cf3c3;animation:workshopPulse 2s ease-in-out infinite}
+@keyframes workshopPulse{50%{opacity:.4}}
+.workshop-part>button:not(:disabled){box-shadow:0 3px 12px #4bd9ec24}
+.workshop-launch.launch-ready:not(:disabled){animation:workshopReady 2.8s ease-in-out infinite}
+@keyframes workshopReady{50%{box-shadow:0 0 22px #78ffdb57}}
+@media(max-height:650px){.workshop-fixed{padding:4px;gap:3px}.workshop-inspection-name{display:none}.workshop-scene-corner{padding:2px 4px}}
+@media(prefers-reduced-motion:reduce){.workshop-preview:after,.workshop-scene-corner>.bp-line-icon,.workshop-part.craftable:before,.workshop-launch.launch-ready:not(:disabled){animation:none!important}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -3160,6 +3195,7 @@ $('explore-overlay').addEventListener('keydown',e=>{if(e.key==='Escape')closeExp
 $('orbital-find').addEventListener('click',claimEncounter);
 $('relic-find').addEventListener('click',findRelic);
 let workshopSelected=0;
+let workshopInspectPart=-1;
 let workshopPreviewCanvas=null,workshopAnim=null,workshopLastFrame=0;
 const WORKSHOP_PALETTE=['#78e6ff','#ffcf8a','#98ffc9'];
 const easeOutBack=t=>1+2.70158*Math.pow(t-1,3)+1.70158*Math.pow(t-1,2);
@@ -3246,6 +3282,16 @@ function drawWorkshopSatellite(canvas,i,parts,assembled,launched,now=performance
    const sx=20+((j*73+i*29)%320),sy=25+((j*37+i*41)%162);
    c.fillStyle='#3a7891';c.fillRect(sx,sy,2,2);
  }
+ // Scanning beams and particles make the assembly station feel active.
+ c.save();c.beginPath();c.rect(12,36,w-24,h-55);c.clip();
+ const scanY=40+((now/32)%(h-74));
+ const beam=c.createLinearGradient(0,scanY-20,0,scanY+6);
+ beam.addColorStop(0,'rgba(91,220,245,0)');beam.addColorStop(1,'rgba(128,241,255,.12)');
+ c.fillStyle=beam;c.fillRect(12,scanY-20,w-24,26);
+ c.fillStyle='rgba(156,241,255,.24)';c.fillRect(12,scanY,w-24,1);
+ for(let q=0;q<14;q++){const px=18+(q*79+i*41)%(w-36),py=40+((q*37+now*.015*(q%3+1))%(h-68));
+ c.fillStyle=q%3?'#4483a577':'#7bf7d577';c.fillRect(Math.round(px),Math.round(py),q%4===0?2:1,1);}
+ c.restore();
  c.fillStyle='#87b9ca';c.font='bold 10px monospace';c.fillText('STATION D’ASSEMBLAGE  /  '+(i+1).toString().padStart(2,'0'),20,25);
  c.textAlign='right';
  c.fillStyle=launched?'#a1fbd6':assembled?'#f8dda3':theme;
@@ -3298,6 +3344,16 @@ function drawWorkshopSatellite(canvas,i,parts,assembled,launched,now=performance
    }
    c.restore();
  }
+ if(workshopInspectPart>=0&&workshopInspectPart<4){
+   const p=workshopInspectPart,focus=[[180,111],[180,111],[279,111],[180,55]][p];
+   const size=p===2?42:32;
+   c.save();c.strokeStyle=theme;c.lineWidth=2;c.shadowColor=theme;c.shadowBlur=11;
+   c.setLineDash([7,5]);c.lineDashOffset=-now/90;
+   c.strokeRect(focus[0]-size,focus[1]-size,size*2,size*2);
+   c.setLineDash([]);c.shadowBlur=0;c.fillStyle='#b5faff';c.font='bold 10px monospace';
+   c.fillText('0'+(p+1)+' / '+(parts[p]?'INSTALLÉ':'À FABRIQUER'),22,51);
+   c.restore();
+ }
  if(assembled||launched){
    c.save();
    c.globalAlpha=.55+.23*Math.sin(now/450);
@@ -3344,7 +3400,7 @@ function renderExploration(){
     b.appendChild(mark);
    }
    b.type='button';b.setAttribute('aria-pressed',String(workshopSelected===i));
-   b.addEventListener('click',()=>{workshopSelected=i;renderExploration()});
+   b.addEventListener('click',()=>{workshopSelected=i;workshopInspectPart=-1;renderExploration()});
    switcher.appendChild(b);
   });
   container.appendChild(switcher);
@@ -3357,10 +3413,30 @@ function renderExploration(){
   const status=exploreElement('span','workshop-stage',stage);
   heading.append(name,status);container.appendChild(heading);
   const preview=exploreElement('div','workshop-preview');
+  const corner=exploreElement('div','workshop-scene-corner');
+  corner.innerHTML=bpIcon('expedition-radar',14)+'<span>SCAN ACTIF</span>';
+  preview.appendChild(corner);
   const ship=document.createElement('canvas');
   ship.width=360;ship.height=220;ship.className='workshop-ship';
   ship.setAttribute('role','img');ship.setAttribute('aria-label','Satellite en construction, '+completed+' pièces sur quatre');
-  preview.appendChild(ship);container.appendChild(preview);
+  preview.appendChild(ship);
+  const inspect=exploreElement('button','workshop-inspect');
+  inspect.type='button';inspect.setAttribute('aria-label','Inspecter les modules');
+  const selectPart=j=>{
+   workshopInspectPart=j;
+   workshopIconLabel(inspect,PART_ICON_NAMES[j], ' '+WORKSHOP_PARTS[j].name+' · suivant',15);
+   const name=container.querySelector('.workshop-inspection-name');
+   if(name)name.textContent=WORKSHOP_PARTS[j].name.toUpperCase()+(parts[j]?' · INSTALLÉ':' · À FABRIQUER');
+   container.querySelectorAll('.workshop-part').forEach((card,k)=>card.classList.toggle('inspecting',k===j));
+   drawWorkshopSatellite(ship,id,parts,assembled,owned);
+  };
+  workshopIconLabel(inspect,workshopInspectPart<0?'target':PART_ICON_NAMES[workshopInspectPart],
+   workshopInspectPart<0?' Inspecter les modules':' '+WORKSHOP_PARTS[workshopInspectPart].name+' · suivant',15);
+  inspect.addEventListener('click',()=>selectPart((workshopInspectPart+1)%4));
+  ship.addEventListener('click',()=>selectPart((workshopInspectPart+1)%4));
+  ship.tabIndex=0;ship.setAttribute('aria-label','Satellite interactif, toucher pour inspecter chaque module');
+  ship.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectPart((workshopInspectPart+1)%4)}});
+  preview.appendChild(inspect);container.appendChild(preview);
   workshopPreviewCanvas=ship;
   drawWorkshopSatellite(ship,id,parts,assembled,owned);
   const stageHint=exploreElement('div','workshop-visual-hint');
@@ -3370,23 +3446,37 @@ function renderExploration(){
     exploreElement('span','','Une pièce fabriquée apparaît dans l’atelier')
   );
   container.appendChild(stageHint);
+  const inspectStatus=exploreElement('div','workshop-inspection-name',
+   workshopInspectPart<0?'TOUCHE LE SATELLITE POUR INSPECTER':WORKSHOP_PARTS[workshopInspectPart].name.toUpperCase()+(parts[workshopInspectPart]?' · INSTALLÉ':' · À FABRIQUER'));
+  container.appendChild(inspectStatus);
   const percent=Math.round(completed*25);
   const progress=exploreElement('div','workshop-progress');
   const progressLabels=exploreElement('div','workshop-progress-labels');
   progressLabels.append(exploreElement('span','','Assemblage'),exploreElement('strong','',percent+' % · '+completed+'/4 pièces'));
   const track=exploreElement('div','workshop-progress-track');
   const fill=exploreElement('div','workshop-progress-fill');
-  fill.style.width=percent+'%';track.appendChild(fill);progress.append(progressLabels,track);
+  fill.style.width=percent+'%';track.appendChild(fill);
+  const steps=exploreElement('div','workshop-progress-steps');
+  parts.forEach((made,j)=>{const cell=exploreElement('span',made?'done':'');cell.title=WORKSHOP_PARTS[j].name;cell.innerHTML=bpIcon(made?'check':PART_ICON_NAMES[j],12);steps.appendChild(cell)});
+  progress.append(progressLabels,track,steps);
   container.appendChild(progress);
   if(!unlocked&&!owned){
    const unlock=exploreElement('p','workshop-locked','Débloque ce projet à '+satelliteThresholds[id]+' niveaux cumulés. Tu peux déjà récolter ses matériaux.');
    container.appendChild(unlock);
   }
+  const partsHeading=exploreElement('div','workshop-parts-title');
+  partsHeading.append(workshopIconLabel(exploreElement('strong',''),'satellite-assemble',' Modules de construction',17),
+   exploreElement('small','',completed+'/4 INSTALLÉS'));
+  container.appendChild(partsHeading);
   const partList=exploreElement('div','workshop-parts');
   WORKSHOP_PARTS.forEach((part,j)=>{
    const recipe=SATELLITE_RECIPES[id][j],made=parts[j];
    const craftable=!made&&unlocked&&!owned&&canPayMaterials(recipe);
-   const card=exploreElement('article','workshop-part'+(made?' built':craftable?' craftable':''));
+   const card=exploreElement('article','workshop-part'+(made?' built':craftable?' craftable':'')+(workshopInspectPart===j?' inspecting':''));
+   card.tabIndex=0;card.setAttribute('aria-label','Inspecter '+part.name);
+   card.addEventListener('click',e=>{if(!e.target.closest('button'))selectPart(j)});
+   card.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('button')){e.preventDefault();selectPart(j)}});
+
    const partInfo=exploreElement('div','workshop-part-info');
    const heading=workshopIconLabel(exploreElement('strong',''),PART_ICON_NAMES[j],' '+part.name,19);
    if(craftable)heading.appendChild(document.createTextNode(' · PRÊT'));
@@ -3418,7 +3508,7 @@ function renderExploration(){
   }
   const fixed=exploreElement('section','workshop-fixed');
   fixed.setAttribute('aria-label','Satellite et progression toujours visibles');
-  [switcher,heading,preview,stageHint,progress].forEach(node=>fixed.appendChild(node));
+  [switcher,heading,preview,stageHint,inspectStatus,progress].forEach(node=>fixed.appendChild(node));
   const partsScroll=exploreElement('div','workshop-scroll');
   partsScroll.setAttribute('aria-label','Matériaux et pièces à construire');
   partsScroll.tabIndex=0;
