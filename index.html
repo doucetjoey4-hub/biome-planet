@@ -2618,6 +2618,12 @@ function drawCosmicFX(now){
  if(fxCanvas.width!==w||fxCanvas.height!==h){fxCanvas.width=w;fxCanvas.height=h}
  if(e.id!==fxEvent){fxEvent=e.id;fxStars=[]}
  const u=Math.min(w,h),t=now/1000,c=fx;c.clearRect(0,0,w,h);
+ // L'introduction suit l'heure réelle du lancement, même si on quitte puis revient.
+ // Une entrée déjà commencée ne redémarre pas arbitrairement en changeant d'écran.
+ const eventDuration=COSMIC_EVENTS[e.id].seconds*1000;
+ const eventStarted=e.until-eventDuration;
+ const introduction=Math.max(0,Math.min(1,(Date.now()-eventStarted)/2400));
+ const easeIntro=1-Math.pow(1-introduction,3);
  if(e.id===0){
   if(fxStars.length<12&&Math.random()<dt*10)fxStars.push({x:Math.random()*w*1.5,y:Math.random()*h*.5-h*.15,v:u*(.43+Math.random()*.36),len:u*(.07+Math.random()*.08)});
   c.lineCap='round';
@@ -2632,7 +2638,12 @@ function drawCosmicFX(now){
   // Drapés lumineux ondulants et transparents
   c.save();c.globalCompositeOperation='screen';
   for(let i=0;i<4;i++){
-   const base=h*(.12+i*.095),amp=h*(.05+i*.015),rgb=['93,246,170','98,201,255','160,130,255','102,244,216'][i];
+   // Fondu progressif et léger déploiement de chaque bande, décalées entre elles.
+   const bandIntro=Math.max(0,Math.min(1,(introduction-i*.105)/.66));
+   const bandEase=bandIntro*bandIntro*(3-2*bandIntro);
+   if(bandEase<=0)continue;
+   c.globalAlpha=bandEase;
+   const base=h*(.12+i*.095)-h*.028*(1-bandEase),amp=h*(.05+i*.015),rgb=['93,246,170','98,201,255','160,130,255','102,244,216'][i];
    const g=c.createLinearGradient(0,base-amp,0,base+amp*2.5);
    g.addColorStop(0,'rgba('+rgb+',0)');g.addColorStop(.45,'rgba('+rgb+',.23)');g.addColorStop(1,'rgba('+rgb+',0)');
    c.fillStyle=g;c.beginPath();
@@ -2660,19 +2671,36 @@ function drawCosmicFX(now){
    }
   };
   const drawArc=(from,to,color,width,blur=0)=>{
+   if(to<=from)return;
    c.strokeStyle=color;c.lineWidth=width;c.shadowColor=color;c.shadowBlur=blur;
    arc(from,to);c.stroke();c.shadowBlur=0;
   };
+  // Un point lumineux trace l'anneau en un tour complet en 2,4 secondes.
+  const revealAngle=easeIntro*Math.PI*2;
+  const nearEnd=Math.min(Math.PI,revealAngle);
+  const farEnd=Math.min(Math.PI*2,Math.max(Math.PI,revealAngle));
   // Le demi-anneau éloigné est masqué exactement par le contour de la planète.
   c.save();c.beginPath();c.rect(0,0,w,h);c.arc(cx,cy,radius,0,Math.PI*2,true);c.clip('evenodd');
-  drawArc(Math.PI,Math.PI*2,'rgba(104,196,231,.22)',Math.max(1.5,u*.007),u*.019);
-  drawArc(Math.PI,Math.PI*2,'rgba(148,229,249,.53)',Math.max(1,u*.003));
+  drawArc(Math.PI,farEnd,'rgba(104,196,231,.22)',Math.max(1.5,u*.007),u*.019);
+  drawArc(Math.PI,farEnd,'rgba(148,229,249,.53)',Math.max(1,u*.003));
   c.restore();
   // La moitié proche peut passer devant la planète pour donner l'impression d'orbite.
-  drawArc(0,Math.PI,'rgba(75,204,249,.18)',Math.max(5,u*.022),u*.025);
-  drawArc(0,Math.PI,'rgba(130,231,255,.85)',Math.max(2,u*.008),u*.016);
-  drawArc(0,Math.PI,'rgba(231,254,255,.94)',Math.max(1,u*.0025));
-  // Quelques corps célestes suivent le même anneau, disparaissant derrière le globe.
+  drawArc(0,nearEnd,'rgba(75,204,249,.18)',Math.max(5,u*.022),u*.025);
+  drawArc(0,nearEnd,'rgba(130,231,255,.85)',Math.max(2,u*.008),u*.016);
+  drawArc(0,nearEnd,'rgba(231,254,255,.94)',Math.max(1,u*.0025));
+  if(introduction>0&&introduction<1){
+   const headX=xOrbit(revealAngle),headY=yOrbit(revealAngle);
+   // La pointe de construction suit la même règle d'occlusion que l'anneau.
+   if(revealAngle<=Math.PI||Math.hypot(headX-cx,headY-cy)>=radius){
+    const halo=c.createRadialGradient(headX,headY,0,headX,headY,Math.max(4,u*.034));
+    halo.addColorStop(0,'rgba(244,255,255,.9)');
+    halo.addColorStop(.25,'rgba(122,222,255,.65)');
+    halo.addColorStop(1,'rgba(122,222,255,0)');
+    c.fillStyle=halo;c.beginPath();c.arc(headX,headY,Math.max(4,u*.034),0,Math.PI*2);c.fill();
+   }
+  }
+  // Les astres se matérialisent doucement à la fin du tracé de l'anneau.
+  c.save();c.globalAlpha=Math.max(0,Math.min(1,(introduction-.63)/.37));
   for(let i=0;i<3;i++){
    const a=(t*.24+i*Math.PI*2/3)%(Math.PI*2);
    const x=xOrbit(a),y=yOrbit(a);
@@ -2685,6 +2713,7 @@ function drawCosmicFX(now){
    c.fillStyle=glow;c.beginPath();c.arc(x,y,size*4,0,Math.PI*2);c.fill();
    c.fillStyle='#e8ffff';c.beginPath();c.arc(x,y,size,0,Math.PI*2);c.fill();
   }
+  c.restore();
  }
 }
 
