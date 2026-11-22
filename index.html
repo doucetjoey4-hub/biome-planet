@@ -2561,6 +2561,23 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 .planet-select-btn .planet-chevron{display:none!important}
 .planet-select-btn .planet-select-text{display:inline-flex;align-items:center;justify-content:center;gap:7px!important}
 .planet-select-btn .planet-select-text>.bp-line-icon{width:21px!important;height:21px!important;flex:none;color:#89e8f3;filter:drop-shadow(0 0 4px #5fdae833)}
+/* V72: une seule commande compacte pour assembler, déployer ou satellite actif. */
+.workshop-layout .workshop-command-dock{
+ display:block!important;flex:none!important;
+ padding:8px 13px max(9px,env(safe-area-inset-bottom))!important;
+ gap:0!important;min-height:0!important;
+}
+.workshop-layout .workshop-command-info{display:none!important}
+.workshop-layout .workshop-launch{
+ display:flex!important;width:100%!important;min-height:43px!important;
+ padding:9px 14px!important;margin:0!important;
+ font-size:.83rem!important;line-height:1.15!important;
+ border-radius:11px!important;
+}
+@media(max-height:720px){
+ .workshop-layout .workshop-command-dock{padding:6px 10px max(7px,env(safe-area-inset-bottom))!important}
+ .workshop-layout .workshop-launch{min-height:40px!important}
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -4395,13 +4412,8 @@ function renderExploration(){
   partsScroll.append(panelTabs,modulePane,materialPane);
   // Le dock reste fixé sous la baie pour rendre l'action majeure accessible.
   const dock=exploreElement('div','workshop-command-dock');
-  const dockInfo=exploreElement('div','workshop-command-info');
-  const dockIcon=owned?'check':assembled?'satellite-deploy':completed===4?'satellite-assemble':'satellite-frame';
-  dockInfo.append(
-    workshopIconLabel(exploreElement('strong',''),dockIcon,
-      owned?' SATELLITE ACTIF':assembled?' DÉPLOIEMENT POSSIBLE':completed===4?' ASSEMBLAGE POSSIBLE':' ASSEMBLAGE ORBITAL',17),
-    exploreElement('small','',sat.detail));
-  dock.append(dockInfo,action);
+  // Une commande unique, sans titre ni description : même disposition à tous les états.
+  dock.appendChild(action);
   container.replaceChildren(fixed,partsScroll,dock);
   showPanel(workshopPanel);
   partsScroll.scrollTop=workshopScroll;
@@ -5544,4 +5556,4 @@ document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=71').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=72').catch(console.warn));}</script></body></html>
