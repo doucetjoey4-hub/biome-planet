@@ -2755,6 +2755,134 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  .signal-star,.signal-target,.signal-aurora span,.cosmic-signal-emblem{animation:none!important}
  .signal-orbit,.signal-energy-meter>span{transition:none!important}
 }
+
+/* V74 — jeux cosmiques réels sur le globe : aucune carte dans une fenêtre. */
+.planet-panel .planet-stage{position:relative;isolation:isolate}
+.planet-cosmic-play{
+ position:absolute;inset:0;z-index:8;
+ display:flex;align-items:center;justify-content:center;
+ pointer-events:none;overflow:visible;
+}
+.planet-cosmic-object-layer{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.planet-falling-star{
+ position:absolute;z-index:9;width:46px;height:46px;
+ border:0!important;border-radius:50%;
+ padding:0;background:transparent!important;
+ display:grid;place-items:center;cursor:pointer;
+ pointer-events:auto;touch-action:manipulation;
+ filter:drop-shadow(0 0 10px #e4fbff);
+ transform:translate(-50%,-50%);
+}
+.planet-falling-star .falling-core{
+ display:block;position:relative;width:13px;height:13px;
+ border-radius:50%;background:#f7ffff;
+ box-shadow:0 0 6px 3px #fff,0 0 17px 8px #68d5ff,0 0 30px 10px #87bdff70;
+ animation:planetStarPulse .8s ease-in-out infinite alternate;
+}
+.planet-falling-star .falling-core:before,
+.planet-falling-star .falling-core:after{
+ content:"";position:absolute;top:50%;left:50%;
+ background:linear-gradient(90deg,transparent,#eaffff,transparent);
+ transform:translate(-50%,-50%);width:27px;height:2px;border-radius:3px;
+}
+.planet-falling-star .falling-core:after{transform:translate(-50%,-50%) rotate(90deg)}
+.planet-falling-star .falling-tail{
+ position:absolute;left:28px;top:-17px;width:4px;height:72px;
+ transform:rotate(28deg);transform-origin:center;
+ background:linear-gradient(0deg,transparent,#81ceff00 25%,#a9ecffbb 82%,#f8ffff);
+ border-radius:50%;filter:blur(3px);
+}
+.planet-falling-star.collected{
+ animation:planetStarCatch .35s ease-out forwards;pointer-events:none;
+}
+@keyframes planetStarPulse{to{transform:scale(.8);opacity:.8}}
+@keyframes planetStarCatch{to{transform:translate(-50%,-50%) scale(2);opacity:0}}
+.planet-cosmic-interact{
+ position:relative;z-index:9;flex:none;
+ width:min(100%,25dvh,258px);aspect-ratio:1;
+ border-radius:50%;pointer-events:auto;touch-action:none;
+ outline-offset:6px;
+}
+.planet-cosmic-interact.hidden{display:none!important}
+.planet-cosmic-interact.planet-aurora-touch{
+ overflow:hidden;isolation:isolate;
+ border:1px solid #7fedde22;
+ background:radial-gradient(circle at 50% 50%,#45f3d30b,transparent 65%);
+ cursor:crosshair;
+}
+.planet-aurora-ribbon{
+ position:absolute;left:-28%;width:156%;height:27%;top:14%;
+ display:block;transform:rotate(-11deg) skewY(11deg);
+ background:linear-gradient(90deg,transparent,#45ffe169,#6a83ff7d,#a2fce4a6,transparent);
+ filter:blur(7px);opacity:.75;
+ animation:planetLiveAurora 3.1s ease-in-out infinite alternate;
+ pointer-events:none;
+}
+.planet-aurora-ribbon:nth-child(2){
+ top:35%;animation-delay:-1s;transform:rotate(13deg);
+ background:linear-gradient(90deg,transparent,#ae8efb91,#56ffc275,#79c9ffa1,transparent);
+}
+.planet-aurora-ribbon:nth-child(3){top:57%;animation-delay:-2s;opacity:.55}
+@keyframes planetLiveAurora{to{translate:9% -8px;scale:1 1.28}}
+.planet-aurora-touch:after{
+ content:"";position:absolute;bottom:8%;left:10%;height:5px;width:80%;
+ border-radius:99px;background:linear-gradient(90deg,#82c9ff,var(--aurora-charge,#72e4c9),#79e4d4);
+ box-shadow:0 0 13px #69ffd381;
+}
+.planet-orbit-touch{
+ display:grid;place-items:center;
+ cursor:grab;
+}
+.planet-orbit-touch:active{cursor:grabbing}
+.planet-interactive-orbit{
+ position:absolute;inset:16% -10%;height:68%;
+ border:3px solid #8ae8ffb8;border-radius:50%;
+ transform:rotate(var(--orbital-angle,35deg)) scaleY(.56);
+ box-shadow:0 0 18px #5ed6ff69,inset 0 0 11px #6be9ff42;
+ transition:transform .09s linear;pointer-events:none;
+}
+.planet-orbit-mover{
+ position:absolute;top:50%;right:-9px;width:18px;height:18px;
+ border-radius:50%;background:#f5ffff;
+ box-shadow:0 0 10px #fff,0 0 25px #80e9ff;
+ transform:translateY(-50%);
+}
+.planet-orbit-target{
+ position:absolute;width:19px;height:19px;left:13%;top:14%;
+ border-radius:50%;background:#ffedba;
+ border:2px solid #fff8d3;box-shadow:0 0 16px #ffe9a5;
+ animation:planetTargetPulse 1.8s ease-in-out infinite;
+}
+@keyframes planetTargetPulse{50%{opacity:.7;scale:1.22}}
+.planet-orbit-help{
+ position:absolute;bottom:-7%;left:50%;transform:translateX(-50%);
+ background:#0c3046e8;border:1px solid #63bad6;
+ border-radius:8px;padding:4px 9px;color:#d6f9ff;
+ font-weight:850;font-size:.6rem;white-space:nowrap;
+ pointer-events:none;
+}
+.planet-panel .cosmic-event:has(~ .evolution-line) {position:relative}
+.planet-cosmic-direct{
+ border:1px solid #65b6c8!important;
+ background:#143f52!important;color:#dffaff!important;
+ font-weight:800;font-size:.66rem!important;min-height:32px;
+}
+.planet-cosmic-play.cosmic-complete:before{
+ content:"";position:absolute;z-index:10;inset:10%;border-radius:50%;
+ border:4px solid #a7ffe5;box-shadow:0 0 24px #8cffde;
+ animation:planetCosmicSuccess .7s ease-out forwards;pointer-events:none;
+}
+@keyframes planetCosmicSuccess{to{transform:scale(1.3);opacity:0}}
+.planet-expanded .planet-cosmic-interact{width:min(100%,38dvh,365px)}
+@media(max-height:670px){
+ .planet-falling-star{width:42px;height:42px}
+ .planet-cosmic-interact{width:min(100%,25dvh,258px)}
+ .planet-orbit-help{bottom:-4%;font-size:.55rem}
+}
+@media(prefers-reduced-motion:reduce){
+ .planet-falling-star .falling-core,.planet-aurora-ribbon,.planet-orbit-target{animation:none!important}
+ .planet-interactive-orbit{transition:none!important}
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -6007,4 +6135,4 @@ document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=73').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=74').catch(console.warn));}</script></body></html>
