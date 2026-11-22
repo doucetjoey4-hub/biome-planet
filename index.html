@@ -1643,6 +1643,8 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  flex:none;
  transform:none!important;
 }
+/* V56: hide empty bonus row when no milestone reward is ready. */
+.biome .bonus-strip.hidden{display:none!important}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -3408,7 +3410,8 @@ function renderUI(){
    el.classList.toggle('has-bonus',available>0);
    claim.classList.toggle('hidden',available===0);
    claim.textContent=available>0?'🎁 Choisir un bonus'+(available>1?' ('+available+')':''):'';
-   status.textContent=available>0?'Bonus de palier disponible !':(l>=b.max?'Bonus obtenus : '+state.bonuses[i].length+' / '+completedPaliers:'Prochain bonus au niv. '+Math.min(b.max,(completedPaliers+1)*25));
+   el.querySelector('.bonus-strip').classList.toggle('hidden',available===0);
+   status.textContent=available>0?'🎁 Bonus prêt':'';
    if(!available)el.querySelector('.bonus-choices').classList.remove('open');
    // Progression sur le palier EN COURS : exactement 0 au déblocage
    // et à 25/50/75... Les anciens styles d'animation ne peuvent plus
@@ -3426,7 +3429,7 @@ function renderUI(){
      const cash=revenue(i),periodMs=cycleTime(i)*1000,phase=Math.max(0,Math.min(.99999,(state.timers[i]%periodMs)/periodMs));
      minIncome+=60/cycleTime(i)*cash;
      const nextMilestone=(Math.floor(l/25)+1)*25;
-     info.textContent='+'+moneyFormat(cash)+' / cycle · Bonus x'+bonusPalier(l)+(nextMilestone<=b.max?' · x'+bonusPalier(nextMilestone)+' au niv. '+nextMilestone:' · dernier palier');
+     info.textContent='+'+moneyFormat(cash)+' / cycle · x'+bonusPalier(l)+(nextMilestone<=b.max?' · x'+bonusPalier(nextMilestone)+' niv. '+nextMilestone:' · MAX');
      cycle.textContent='↻ '+cycleTime(i).toLocaleString('fr-CA',{maximumFractionDigits:1})+' s · automatique';
      ring.style.strokeDashoffset=(100.53*(1-phase)).toFixed(2);
      const cost=upgradeCost(i);
