@@ -2760,7 +2760,11 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
 <meta name="theme-color" content="#0b192c">
 </head>
-<body><main class="app"><div class="balance"><div class="balance-money"><div class="muted"><span class="hud-finance-mark">◈</span> CRÉDITS COSMIQUES</div><div class="amount" id="money">0 $</div></div><div class="balance-actions"><div class="income" id="rates">+0 $ / min</div><button type="button" class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu principal" aria-controls="side-menu" aria-expanded="false"><span aria-hidden="true">☰</span><span class="nav-dot hidden" id="nav-dot" aria-hidden="true"></span><span class="nav-count hidden" id="nav-count" aria-hidden="true">0</span></button></div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">Planètes</span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-progress-rail" aria-hidden="true"><span id="planet-progress-fill"></span></div><div class="planet-stage"><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="orbital-find hidden" id="orbital-find" aria-label="Collecter une anomalie spatiale"><span id="orbital-glyph">✧</span></button><button type="button" class="relic-find hidden" id="relic-find" aria-label="Examiner un site mystérieux">⌁</button><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><canvas id="cosmic-fx" aria-hidden="true"></canvas></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Activer</button></div></div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2><span class="biome-title-glyph">◈</span> MODULES DE BIOMES <span class="biome-title-index" id="biome-title-index"></span></h2><button type="button" class="planet-layout-toggle" id="planet-layout-toggle" aria-pressed="false" aria-label="Agrandir la planète">⤢ Planète</button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section></div></main>
+<body><main class="app"><div class="balance"><div class="balance-money"><div class="muted"><span class="hud-finance-mark">◈</span> CRÉDITS COSMIQUES</div><div class="amount" id="money">0 $</div></div><div class="balance-actions"><div class="income" id="rates">+0 $ / min</div><button type="button" class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu principal" aria-controls="side-menu" aria-expanded="false"><span aria-hidden="true">☰</span><span class="nav-dot hidden" id="nav-dot" aria-hidden="true"></span><span class="nav-count hidden" id="nav-count" aria-hidden="true">0</span></button></div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">Planètes</span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-progress-rail" aria-hidden="true"><span id="planet-progress-fill"></span></div><div class="planet-stage"><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="orbital-find hidden" id="orbital-find" aria-label="Collecter une anomalie spatiale"><span id="orbital-glyph">✧</span></button><button type="button" class="relic-find hidden" id="relic-find" aria-label="Examiner un site mystérieux">⌁</button><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><canvas id="cosmic-fx" aria-hidden="true"></canvas>
+<div class="planet-cosmic-play hidden" id="planet-cosmic-play" aria-label="Interaction cosmique sur la planète">
+ <div class="planet-cosmic-object-layer" id="planet-cosmic-objects"></div>
+ <div class="planet-cosmic-interact hidden" id="planet-cosmic-interact" tabindex="0"></div>
+</div></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Jouer</button><button type="button" class="planet-cosmic-direct hidden" id="planet-cosmic-direct">Activer directement</button></div></div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2><span class="biome-title-glyph">◈</span> MODULES DE BIOMES <span class="biome-title-index" id="biome-title-index"></span></h2><button type="button" class="planet-layout-toggle" id="planet-layout-toggle" aria-pressed="false" aria-label="Agrandir la planète">⤢ Planète</button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section></div></main>
 <div class="side-menu-overlay hidden" id="side-menu-overlay">
  <aside class="side-menu" id="side-menu" role="dialog" aria-modal="true" aria-labelledby="side-menu-title">
   <div class="side-menu-head"><div class="bp-menu-heading"><div class="bp-menu-brand"><span class="bp-brand-sigil" aria-hidden="true"><img src="./icons/biome-planet-app.svg" alt="" width="42" height="42" decoding="async"></span><span class="bp-brand-wordmark">BIOME <b>PLANET</b><small>ORBITAL COMMAND</small></span></div><h2 id="side-menu-title">Centre de contrôle</h2><p id="menu-world-info">Planète Aube · Exploration en cours</p></div><button type="button" id="nav-close" class="nav-close" aria-label="Fermer le menu">✕</button></div>
@@ -3743,7 +3747,7 @@ function switchWorld(num,award=false){
  state.events=Array.isArray(stored?.events)?[...stored.events]:[];
  state.eventActive=stored?.eventActive&&typeof stored.eventActive==='object'?{...stored.eventActive}:null;
  state.exploration=normalizedExploration(stored?.exploration,stored?.levels);
- closeDiscovery();closeCosmicSignal();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';
+ closeDiscovery();closeCosmicSignal();stopPlanetCosmicGame();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';
  normalizeProgress();
  if(award&&!stored)state.money+=30*p;
  lastMissionRender='';
@@ -3902,6 +3906,130 @@ function drawCosmicFX(now){
  }
 }
 
+// V74 : mini-jeux directement sur la planète, sans cartes ni fenêtre.
+let planetCosmicGame=null;
+function planetCosmicMessage(message){
+ const el=$('event-detail');
+ el.textContent=message;
+}
+function stopPlanetCosmicGame(){
+ planetCosmicGame=null;
+ $('planet-cosmic-play').classList.add('hidden');
+ $('planet-cosmic-play').classList.remove('is-stars','is-aurora','is-alignment');
+ $('planet-cosmic-objects').replaceChildren();
+ $('planet-cosmic-interact').replaceChildren();
+ $('planet-cosmic-interact').classList.add('hidden');
+ $('planet-cosmic-direct').classList.add('hidden');
+ lastCosmicDisplay='';
+}
+function finishPlanetCosmicGame(){
+ const game=planetCosmicGame;
+ if(!game||game.done)return;
+ if(availableCosmicEvent()!==game.id){stopPlanetCosmicGame();return}
+ game.done=true;
+ const layer=$('planet-cosmic-play');
+ layer.classList.add('cosmic-complete');
+ planetCosmicMessage('Réussi ! Le bonus démarre.');
+ // Le bonus utilise la mécanique persistante existante.
+ triggerCosmicEvent();
+ setTimeout(()=>{if(planetCosmicGame===game){layer.classList.remove('cosmic-complete');stopPlanetCosmicGame();renderCosmicEvent()}},850);
+}
+function startPlanetCosmicGame(id){
+ if(availableCosmicEvent()!==id)return;
+ stopPlanetCosmicGame();
+ const game={id,planet:state.planet,done:false,started:performance.now(),caught:0,charge:0,angle:0,drag:false,stars:[]};
+ planetCosmicGame=game;
+ const layer=$('planet-cosmic-play'),objects=$('planet-cosmic-objects'),surface=$('planet-cosmic-interact');
+ layer.classList.remove('hidden','cosmic-complete');
+ layer.classList.add(['is-stars','is-aurora','is-alignment'][id]);
+ $('planet-cosmic-direct').classList.remove('hidden');
+ $('event-trigger').classList.add('hidden');
+ if(id===0){
+  // Les étoiles sont de vrais points qui traversent la scène au fil des images.
+  // Une étoile manquée revient : aucune punition, pas de limite de temps.
+  for(let i=0;i<4;i++){
+   const b=document.createElement('button');b.type='button';b.className='planet-falling-star';
+   b.setAttribute('aria-label','Attraper une étoile filante');
+   b.innerHTML='<span class="falling-tail"></span><span class="falling-core"></span>';
+   const star={node:b,x:28+i*17,y:-30-i*25,speed:17+i*4,phase:i*2};
+   b.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(game.done||b.classList.contains('collected'))return;
+    b.classList.add('collected');game.caught++;
+    planetCosmicMessage('Étoiles attrapées : '+game.caught+' / 3');
+    if(game.caught>=3){finishPlanetCosmicGame();return}
+    setTimeout(()=>{b.classList.remove('collected');star.y=-24;star.x=18+Math.random()*65},380);
+   });
+   game.stars.push(star);objects.appendChild(b);
+  }
+  planetCosmicMessage('Touche 3 vraies étoiles filantes sur la planète · 0 / 3');
+ }else if(id===1){
+  surface.classList.remove('hidden');
+  surface.classList.add('planet-aurora-touch');
+  surface.setAttribute('role','button');
+  surface.setAttribute('aria-label','Glisser sur les aurores au-dessus de la planète');
+  surface.innerHTML='<span class="planet-aurora-ribbon"></span><span class="planet-aurora-ribbon"></span><span class="planet-aurora-ribbon"></span>';
+  const boost=n=>{
+   if(game.done)return;
+   game.charge=Math.min(100,game.charge+n);
+   surface.style.setProperty('--aurora-charge',game.charge+'%');
+   planetCosmicMessage('Charge l’aurore en glissant dessus : '+game.charge+' %');
+   if(game.charge>=100)finishPlanetCosmicGame();
+  };
+  let last=null;
+  surface.onpointerdown=e=>{last=[e.clientX,e.clientY];surface.setPointerCapture?.(e.pointerId);boost(22)};
+  surface.onpointermove=e=>{
+   if(last===null||!surface.hasPointerCapture?.(e.pointerId))return;
+   const move=Math.hypot(e.clientX-last[0],e.clientY-last[1]);
+   if(move>9){last=[e.clientX,e.clientY];boost(Math.min(22,Math.max(4,Math.round(move*.65))))}
+  };
+  surface.onpointerup=surface.onpointercancel=()=>{last=null};
+  surface.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();boost(25)}};
+  planetCosmicMessage('Glisse ton doigt sur les aurores de la planète');
+ }else{
+  surface.classList.remove('hidden');
+  surface.classList.add('planet-orbit-touch');
+  surface.setAttribute('role','slider');
+  surface.setAttribute('aria-label','Tourner l’anneau autour de la planète');
+  surface.setAttribute('aria-valuemin','0');surface.setAttribute('aria-valuemax','100');surface.setAttribute('aria-valuenow','0');
+  surface.innerHTML='<span class="planet-interactive-orbit"><i class="planet-orbit-mover"></i></span><span class="planet-orbit-target"></span><span class="planet-orbit-help">Tourne l’anneau</span>';
+  const spin=value=>{
+   if(game.done)return;
+   game.angle=Math.max(0,Math.min(360,value));
+   surface.style.setProperty('--orbital-angle',game.angle+'deg');
+   surface.setAttribute('aria-valuenow',String(Math.round(game.angle/3.6)));
+   const delta=Math.abs(((game.angle-263+540)%360)-180);
+   planetCosmicMessage(delta<30?'Presque aligné ! Continue.':'Fais glisser autour de la planète pour aligner les astres');
+   if(delta<=12)finishPlanetCosmicGame();
+  };
+  const aim=e=>{
+   const r=surface.getBoundingClientRect();
+   const angle=(Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2))*180/Math.PI+450)%360;
+   spin(angle);
+  };
+  surface.onpointerdown=e=>{game.drag=true;surface.setPointerCapture?.(e.pointerId);aim(e)};
+  surface.onpointermove=e=>{if(game.drag)aim(e)};
+  surface.onpointerup=surface.onpointercancel=()=>{game.drag=false};
+  surface.onkeydown=e=>{if(e.key==='ArrowRight'||e.key==='ArrowUp'||e.key==='ArrowLeft'||e.key==='ArrowDown'){e.preventDefault();spin(game.angle+(e.key==='ArrowRight'||e.key==='ArrowUp'?8:-8))}};
+  spin(35);
+ }
+}
+function updatePlanetCosmicGame(now){
+ const game=planetCosmicGame;
+ if(!game)return;
+ if(game.planet!==state.planet||(!game.done&&availableCosmicEvent()!==game.id)){stopPlanetCosmicGame();return}
+ if(game.id!==0||game.done||document.hidden)return;
+ const elapsed=Math.min(0.05,Math.max(0,(now-(game.lastFrame||now))/1000));game.lastFrame=now;
+ for(const star of game.stars){
+  if(star.node.classList.contains('collected'))continue;
+  star.y+=star.speed*elapsed;
+  star.x-=star.speed*.21*elapsed;
+  if(star.y>108||star.x< -8){star.y=-22-Math.random()*26;star.x=25+Math.random()*75}
+  star.node.style.left=star.x+'%';star.node.style.top=star.y+'%';
+ }
+}
+$('planet-cosmic-direct').addEventListener('click',finishPlanetCosmicGame);
+
 // V73 : interactions cosmiques simples, sans pénalité, avec activation directe.
 let cosmicSignalMode=null,cosmicSignalId=-1,cosmicSignalDone=false;
 function closeCosmicSignal(){
@@ -4030,15 +4158,15 @@ function renderCosmicEvent(){
  const e=COSMIC_EVENTS[active?active.id:ready];
  const left=active?Math.max(0,Math.ceil((active.until-Date.now())/1000)):0;
  const signature=state.planet+'|'+(active?'on':'ready')+'|'+(active?active.id:ready)+'|'+left;
- if(lastCosmicDisplay===signature)return;
+ if(lastCosmicDisplay===signature&&!planetCosmicGame)return;
  lastCosmicDisplay=signature;
  workshopIconLabel($('event-caption'),['star','nature-weather','planet'][active?active.id:ready]||'star',' '+e.name,16);
  $('event-timer').textContent=active?Math.floor(left/60)+':'+String(left%60).padStart(2,'0'):'PRÊT';
- $('event-detail').textContent=active?'BONUS ACTIF · Revenus x'+e.factor:'Touche pour jouer · Revenus x'+e.factor+' pendant '+e.seconds+' s';
- $('event-trigger').classList.toggle('hidden',!!active);
- $('event-trigger').textContent='Découvrir';
+ if(!planetCosmicGame)$('event-detail').textContent=active?'BONUS ACTIF · Revenus x'+e.factor:'Sur la planète · revenus x'+e.factor+' pendant '+e.seconds+' s';
+ $('event-trigger').classList.toggle('hidden',!!active||!!planetCosmicGame);
+ $('event-trigger').textContent='Jouer sur la planète';
 }
-$('event-trigger').addEventListener('click',()=>{const i=availableCosmicEvent();if(i>=0)openCosmicSignal('phenomenon',i)});
+$('event-trigger').addEventListener('click',()=>{const i=availableCosmicEvent();if(i>=0)startPlanetCosmicGame(i)});
 function atlasData(){
  const worlds={...state.worlds,[state.planet]:{...state.worlds[state.planet],levels:state.levels,missions:state.missions,discoveries:state.discoveries,exploration:state.exploration}};
  const entries=Object.entries(worlds).filter(([k,w])=>Number.isInteger(Number(k))&&Number(k)>=1&&Number(k)<=999&&w&&Array.isArray(w.levels)&&w.levels.some(n=>Number(n)>0));
@@ -5856,6 +5984,7 @@ function frame(now){
  if(!document.hidden){
    drawPlanet();
    drawCosmicFX(now);
+   updatePlanetCosmicGame(now);
    if(workshopPreviewCanvas&&explorationTab==='satellites'&&!$('explore-overlay').classList.contains('hidden')&&now-lastWorkshopDraw>=30){
      lastWorkshopDraw=now;
      drawWorkshopSatellite(workshopPreviewCanvas,workshopSelected,craftParts(workshopSelected),isAssembled(workshopSelected),hasSatellite(workshopSelected),now);
