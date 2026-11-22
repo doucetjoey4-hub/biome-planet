@@ -2106,10 +2106,12 @@ function setMusicEnabled(enabled){
 }
 function updateSoundButton(){
  const btn=$('sound-toggle'),music=$('music-toggle');
- workshopIconLabel(btn,soundEnabled?'audio':'ui-audio-off',' Sons',17);
+ if(document.documentElement.dataset.bpIconsReady==='true')workshopIconLabel(btn,soundEnabled?'audio':'ui-audio-off',' Sons',17);
+ else btn.textContent='Sons';
  btn.setAttribute('aria-label',soundEnabled?'Désactiver les effets sonores':'Activer les effets sonores');
  btn.setAttribute('aria-pressed',String(soundEnabled));
- workshopIconLabel(music,'ui-music',musicEnabled?' Musique ✓':' Musique',17);
+ if(document.documentElement.dataset.bpIconsReady==='true')workshopIconLabel(music,'ui-music',musicEnabled?' Musique ✓':' Musique',17);
+ else music.textContent=musicEnabled?'Musique ✓':'Musique';
  music.setAttribute('aria-label',musicEnabled?'Désactiver la musique':'Activer la musique');
  music.setAttribute('aria-pressed',String(musicEnabled));
 }
@@ -4100,7 +4102,7 @@ function renderRebirth(){
  if(!rebirthOpen)return;
  const p=state.prestige,progress=rebirthProgress();
  $('rebirth-count').textContent=String(p.count);
- $('rebirth-points').textContent=p.points+' ✦';
+ workshopIconLabel($('rebirth-points'),'prestige-shard',' '+p.points,17);
  $('rebirth-bonus').textContent='+'+Math.round((prestigeRevenue()-1)*100)+' %';
  $('rebirth-progress-ratio').textContent=progress.sum.toLocaleString('fr-CA')+' / '+progress.requirement.toLocaleString('fr-CA');
  $('rebirth-progress-fill').style.width=Math.max(0,Math.min(100,progress.sum/progress.requirement*100))+'%';
@@ -4409,6 +4411,8 @@ function bpIcon(name,size=20){
  return '<svg class="bp-line-icon" viewBox="0 0 24 24" width="'+size+'" height="'+size+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(BP_ICON_PATHS[name]||BP_ICON_PATHS.star)+'</svg>';
 }
 function installBpIcons(){
+ document.documentElement.dataset.bpIconsReady='true';
+ updateSoundButton();
  const m={'menu-workshop':'workshop','menu-expeditions':'rocket','menu-science':'atom','explore-open':'nature','menu-galaxy':'globe','objectives-open':'target','atlas-open':'globe','planet-log-btn':'archive','menu-planet-size':'expand','audio-settings-open':'audio','rebirth-open':'rebirth','reset':'reset'};
  for(const [id,name] of Object.entries(m)){
   const span=$(id)?.querySelector('span');if(span)span.innerHTML=bpIcon(name,21);
