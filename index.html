@@ -2549,6 +2549,13 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 /* V69 — les quatre cases de validation de l'atelier sont retirées sans exception. */
 #explore-overlay.workshop-fullscreen .workshop-progress-steps,
 .workshop-layout .workshop-progress-steps{display:none!important;height:0!important;padding:0!important;margin:0!important;border:0!important}
+/* V70: Atelier sans fonctions d'inspection inutiles ni badge de scan. */
+.workshop-layout .workshop-scene-corner,
+.workshop-layout .workshop-inspect,
+.workshop-layout .workshop-inspection-name,
+.workshop-layout .workshop-visual-hint{display:none!important}
+.workshop-layout .workshop-preview{cursor:default}
+.workshop-layout .workshop-ship{cursor:default!important}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -4010,7 +4017,6 @@ $('relic-find').addEventListener('click',findRelic);
 let workshopSelected=0;
 let workshopSceneEntered=performance.now();
 let workshopPanel='modules';
-let workshopInspectPart=-1;
 let workshopPreviewCanvas=null,workshopAnim=null,workshopLastFrame=0;
 const WORKSHOP_PALETTE=['#78e6ff','#ffcf8a','#98ffc9'];
 const easeOutBack=t=>1+2.70158*Math.pow(t-1,3)+1.70158*Math.pow(t-1,2);
@@ -4184,16 +4190,6 @@ function drawWorkshopSatellite(canvas,i,parts,assembled,launched,now=performance
    }
    c.restore();
  }
- if(workshopInspectPart>=0&&workshopInspectPart<4){
-   const p=workshopInspectPart,focus=[[180,111],[180,111],[279,111],[180,55]][p];
-   const size=p===2?42:32;
-   c.save();c.strokeStyle=theme;c.lineWidth=2;c.shadowColor=theme;c.shadowBlur=11;
-   c.setLineDash([7,5]);c.lineDashOffset=-now/90;
-   c.strokeRect(focus[0]-size,focus[1]-size,size*2,size*2);
-   c.setLineDash([]);c.shadowBlur=0;c.fillStyle='#b5faff';c.font='bold 10px monospace';
-   c.fillText('0'+(p+1)+' / '+(parts[p]?'INSTALLÉ':'À FABRIQUER'),22,51);
-   c.restore();
- }
  if(assembled||launched){
    c.save();
    c.globalAlpha=.55+.23*Math.sin(now/450);
@@ -4254,7 +4250,7 @@ function renderExploration(){
     b.appendChild(mark);
    }
    b.type='button';b.setAttribute('aria-pressed',String(workshopSelected===i));
-   b.addEventListener('click',()=>{if(workshopSelected===i)return;workshopSelected=i;workshopInspectPart=-1;workshopSceneEntered=performance.now();renderExploration()});
+   b.addEventListener('click',()=>{if(workshopSelected===i)return;workshopSelected=i;workshopSceneEntered=performance.now();renderExploration()});
    switcher.appendChild(b);
   });
   container.appendChild(switcher);
@@ -4267,42 +4263,13 @@ function renderExploration(){
   const status=exploreElement('span','workshop-stage',stage);
   heading.append(name,status);container.appendChild(heading);
   const preview=exploreElement('div','workshop-preview');
-  const corner=exploreElement('div','workshop-scene-corner');
-  corner.innerHTML=bpIcon('expedition-radar',14)+'<span>SCAN ACTIF</span>';
-  preview.appendChild(corner);
   const ship=document.createElement('canvas');
   ship.width=360;ship.height=220;ship.className='workshop-ship';
-  ship.setAttribute('role','img');ship.setAttribute('aria-label','Satellite en construction, '+completed+' pièces sur quatre');
-  preview.appendChild(ship);
-  const inspect=exploreElement('button','workshop-inspect');
-  inspect.type='button';inspect.setAttribute('aria-label','Inspecter les modules');
-  const selectPart=j=>{
-   workshopInspectPart=j;
-   workshopIconLabel(inspect,PART_ICON_NAMES[j], ' '+WORKSHOP_PARTS[j].name+' · suivant',15);
-   const name=container.querySelector('.workshop-inspection-name');
-   if(name)name.textContent=WORKSHOP_PARTS[j].name.toUpperCase()+(parts[j]?' · INSTALLÉ':' · À FABRIQUER');
-   container.querySelectorAll('.workshop-part').forEach((card,k)=>card.classList.toggle('inspecting',k===j));
-   drawWorkshopSatellite(ship,id,parts,assembled,owned);
-  };
-  workshopIconLabel(inspect,workshopInspectPart<0?'target':PART_ICON_NAMES[workshopInspectPart],
-   workshopInspectPart<0?' Inspecter les modules':' '+WORKSHOP_PARTS[workshopInspectPart].name+' · suivant',15);
-  inspect.addEventListener('click',()=>selectPart((workshopInspectPart+1)%4));
-  ship.addEventListener('click',()=>selectPart((workshopInspectPart+1)%4));
-  ship.tabIndex=0;ship.setAttribute('aria-label','Satellite interactif, toucher pour inspecter chaque module');
-  ship.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectPart((workshopInspectPart+1)%4)}});
-  preview.appendChild(inspect);container.appendChild(preview);
+  ship.setAttribute('role','img');
+  ship.setAttribute('aria-label','Satellite en construction, '+completed+' pièces sur quatre');
+  preview.appendChild(ship);container.appendChild(preview);
   workshopPreviewCanvas=ship;
   drawWorkshopSatellite(ship,id,parts,assembled,owned);
-  const stageHint=exploreElement('div','workshop-visual-hint');
-  stageHint.append(
-    workshopIconLabel(exploreElement('span',''),completed===0?'satellite-frame':assembled?'check':'satellite-assemble',
-      completed===0?' Silhouette en attente':completed<4?' '+completed+' pièce'+(completed>1?'s':'')+' installée'+(completed>1?'s':''):assembled?' Assemblage terminé':' Toutes les pièces fabriquées',15),
-    exploreElement('span','','Une pièce fabriquée apparaît dans l’atelier')
-  );
-  container.appendChild(stageHint);
-  const inspectStatus=exploreElement('div','workshop-inspection-name',
-   workshopInspectPart<0?'TOUCHE LE SATELLITE POUR INSPECTER':WORKSHOP_PARTS[workshopInspectPart].name.toUpperCase()+(parts[workshopInspectPart]?' · INSTALLÉ':' · À FABRIQUER'));
-  container.appendChild(inspectStatus);
   const percent=Math.round(completed*25);
   const progress=exploreElement('div','workshop-progress');
   const progressLabels=exploreElement('div','workshop-progress-labels');
@@ -4324,10 +4291,7 @@ function renderExploration(){
   WORKSHOP_PARTS.forEach((part,j)=>{
    const recipe=SATELLITE_RECIPES[id][j],made=parts[j];
    const craftable=!made&&unlocked&&!owned&&canPayMaterials(recipe);
-   const card=exploreElement('article','workshop-part'+(made?' built':craftable?' craftable':'')+(workshopInspectPart===j?' inspecting':''));
-   card.tabIndex=0;card.setAttribute('aria-label','Inspecter '+part.name);
-   card.addEventListener('click',e=>{if(!e.target.closest('button'))selectPart(j)});
-   card.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('button')){e.preventDefault();selectPart(j)}});
+   const card=exploreElement('article','workshop-part'+(made?' built':craftable?' craftable':''));
 
    const partInfo=exploreElement('div','workshop-part-info');
    const heading=workshopIconLabel(exploreElement('strong',''),PART_ICON_NAMES[j],' '+part.name,19);
