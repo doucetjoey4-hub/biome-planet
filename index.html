@@ -3566,7 +3566,7 @@ function switchWorld(num,award=false){
  state.events=Array.isArray(stored?.events)?[...stored.events]:[];
  state.eventActive=stored?.eventActive&&typeof stored.eventActive==='object'?{...stored.eventActive}:null;
  state.exploration=normalizedExploration(stored?.exploration,stored?.levels);
- closeDiscovery();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';
+ closeDiscovery();closeCosmicSignal();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';
  normalizeProgress();
  if(award&&!stored)state.money+=30*p;
  lastMissionRender='';
@@ -3725,6 +3725,107 @@ function drawCosmicFX(now){
  }
 }
 
+// V73 : interactions cosmiques simples, sans pénalité, avec activation directe.
+let cosmicSignalMode=null,cosmicSignalId=-1,cosmicSignalDone=false;
+function closeCosmicSignal(){
+ $('cosmic-signal-overlay').classList.add('hidden');
+ cosmicSignalMode=null;cosmicSignalId=-1;cosmicSignalDone=false;
+}
+function cosmicGameButton(label,onClick,cls){
+ const button=document.createElement('button');button.type='button';
+ button.className=cls;button.textContent=label;button.addEventListener('click',onClick);return button;
+}
+function completeCosmicSignal(){
+ if(cosmicSignalDone)return;
+ const kind=cosmicSignalMode,id=cosmicSignalId;
+ if(kind==='phenomenon'&&availableCosmicEvent()!==id){closeCosmicSignal();return}
+ if(kind==='anomaly'&&state.exploration.encounter?.id!==id){closeCosmicSignal();return}
+ cosmicSignalDone=true;
+ $('cosmic-signal-game').classList.add('complete');
+ $('cosmic-signal-feedback').textContent=kind==='phenomenon'?'Phénomène activé !':'Cargaison récupérée !';
+ $('cosmic-signal-skip').classList.add('hidden');
+ if(kind==='phenomenon')triggerCosmicEvent();else claimEncounter();
+ setTimeout(()=>{if(cosmicSignalDone&&cosmicSignalId===id)closeCosmicSignal()},650);
+}
+function openCosmicSignal(kind,id){
+ if(kind==='phenomenon'&&availableCosmicEvent()!==id)return;
+ if(kind==='anomaly'&&state.exploration.encounter?.id!==id)return;
+ cosmicSignalMode=kind;cosmicSignalId=id;cosmicSignalDone=false;
+ const isEvent=kind==='phenomenon',item=isEvent?COSMIC_EVENTS[id]:ENCOUNTERS[id];
+ const area=$('cosmic-signal-game');area.replaceChildren();area.className='cosmic-signal-game';
+ $('cosmic-signal-category').textContent=isEvent?'PHÉNOMÈNE COSMIQUE':'ANOMALIE';
+ $('cosmic-signal-title').textContent=item.name;
+ $('cosmic-signal-emblem').innerHTML=bpIcon(isEvent?['star','nature-weather','planet'][id]:['star','signal','material-fragment'][id],42);
+ $('cosmic-signal-feedback').textContent='';
+ $('cosmic-signal-skip').classList.remove('hidden');
+ $('cosmic-signal-skip').textContent=isEvent?'Activer directement':'Récupérer directement';
+ $('cosmic-signal-overlay').classList.remove('hidden');
+ if(!isEvent){
+  $('cosmic-signal-guide').textContent='Un objet lumineux est arrivé. Touche-le pour récupérer ses ressources. Il ne disparaîtra pas !';
+  const mats=['2 métaux + 1 fragment','2 circuits + 1 cristal','2 cristaux + 1 fragment'];
+  $('cosmic-signal-prize').textContent='Gain : crédits, '+mats[id]+' et '+(id===1?2:1)+' point'+(id===1?'s':'')+' de recherche';
+  const button=cosmicGameButton('Récupérer l’anomalie',completeCosmicSignal,'signal-target');
+  button.insertAdjacentHTML('afterbegin',bpIcon(['star','signal','material-fragment'][id],32));area.append(button);
+ }else{
+  $('cosmic-signal-prize').textContent='Gain : revenus x'+item.factor+' pendant '+item.seconds+' secondes';
+  if(id===0){
+   $('cosmic-signal-guide').textContent='Attrape 3 étoiles pour démarrer la Pluie d’étoiles.';
+   const stars=document.createElement('div');stars.className='signal-stars';
+   const progress=document.createElement('div');progress.className='signal-game-count';progress.textContent='0 / 3 étoiles';
+   let count=0;
+   for(let i=0;i<3;i++){
+    const button=cosmicGameButton('Étoile '+(i+1),()=>{
+     if(button.disabled||cosmicSignalDone)return;
+     button.disabled=true;button.classList.add('caught');
+     count++;progress.textContent=count+' / 3 étoiles';
+     if(count===3)completeCosmicSignal();
+    },'signal-star');
+    button.innerHTML=bpIcon('star',27)+'<span>Étoile '+(i+1)+'</span>';stars.append(button);
+   }
+   area.append(stars,progress);
+  }else if(id===1){
+   $('cosmic-signal-guide').textContent='Glisse sur les aurores pour les charger. Un simple toucher fonctionne aussi.';
+   const surface=document.createElement('div');surface.className='signal-aurora';
+   surface.tabIndex=0;surface.setAttribute('role','button');surface.setAttribute('aria-label','Charger l’aurore');
+   surface.innerHTML='<span></span><span></span><span></span>';
+   const meter=document.createElement('div');meter.className='signal-energy-meter';
+   const fill=document.createElement('span');meter.append(fill);
+   const label=document.createElement('div');label.className='signal-game-count';label.textContent='Énergie : 0 %';
+   let level=0,last=null;
+   function boost(n){
+    if(cosmicSignalDone)return;
+    level=Math.min(100,level+n);fill.style.width=level+'%';
+    label.textContent='Énergie : '+level+' %';
+    if(level===100)completeCosmicSignal();
+   }
+   surface.addEventListener('pointerdown',e=>{last=e.clientX;surface.setPointerCapture?.(e.pointerId);boost(25)});
+   surface.addEventListener('pointermove',e=>{if(last===null)return;const d=Math.abs(e.clientX-last);if(d>9){last=e.clientX;boost(Math.min(25,Math.round(d)))}})
+   for(const type of ['pointerup','pointercancel'])surface.addEventListener(type,()=>last=null);
+   surface.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();boost(25)}});
+   area.append(surface,meter,label);
+  }else{
+   $('cosmic-signal-guide').textContent='Fais tourner l’anneau pour aligner les deux astres. Le bonus démarre quand ils sont alignés.';
+   const dial=document.createElement('div');dial.className='signal-alignment';
+   dial.innerHTML='<span class="signal-orbit"></span><span class="signal-beacon"></span><span class="signal-center"></span>';
+   const slider=document.createElement('input');slider.className='signal-orbit-slider';
+   slider.type='range';slider.min='0';slider.max='100';slider.value='15';slider.step='1';
+   slider.setAttribute('aria-label','Faire tourner l’anneau cosmique');
+   const label=document.createElement('div');label.className='signal-game-count';label.textContent='Déplace le curseur vers l’étoile';
+   slider.addEventListener('input',()=>{
+    const value=Number(slider.value);
+    dial.style.setProperty('--rotation',value*3.6+'deg');
+    if(Math.abs(value-73)<=7){label.textContent='Alignement réussi !';completeCosmicSignal()}
+   });
+   area.append(dial,slider,label);
+  }
+ }
+ $('cosmic-signal-close').focus();
+}
+$('cosmic-signal-close').addEventListener('click',closeCosmicSignal);
+$('cosmic-signal-skip').addEventListener('click',completeCosmicSignal);
+$('cosmic-signal-overlay').addEventListener('click',e=>{if(e.target===$('cosmic-signal-overlay'))closeCosmicSignal()});
+$('cosmic-signal-overlay').addEventListener('keydown',e=>{if(e.key==='Escape')closeCosmicSignal()});
+
 function totalLevels(){return state.levels.reduce((a,b)=>a+(Number(b)||0),0)}
 function activeCosmicEvent(){const e=state.eventActive;return e&&Number.isInteger(e.id)&&COSMIC_EVENTS[e.id]&&Number(e.until)>Date.now()?e:null}
 function availableCosmicEvent(){
@@ -3756,11 +3857,11 @@ function renderCosmicEvent(){
  lastCosmicDisplay=signature;
  workshopIconLabel($('event-caption'),['star','nature-weather','planet'][active?active.id:ready]||'star',' '+e.name,16);
  $('event-timer').textContent=active?Math.floor(left/60)+':'+String(left%60).padStart(2,'0'):'PRÊT';
- $('event-detail').textContent=active?'Revenus x'+e.factor+' en cours':'Revenus x'+e.factor+' pendant '+e.seconds+' s';
+ $('event-detail').textContent=active?'BONUS ACTIF · Revenus x'+e.factor:'Touche pour jouer · Revenus x'+e.factor+' pendant '+e.seconds+' s';
  $('event-trigger').classList.toggle('hidden',!!active);
- $('event-trigger').textContent='Activer';
+ $('event-trigger').textContent='Découvrir';
 }
-$('event-trigger').addEventListener('click',triggerCosmicEvent);
+$('event-trigger').addEventListener('click',()=>{const i=availableCosmicEvent();if(i>=0)openCosmicSignal('phenomenon',i)});
 function atlasData(){
  const worlds={...state.worlds,[state.planet]:{...state.worlds[state.planet],levels:state.levels,missions:state.missions,discoveries:state.discoveries,exploration:state.exploration}};
  const entries=Object.entries(worlds).filter(([k,w])=>Number.isInteger(Number(k))&&Number(k)>=1&&Number(k)<=999&&w&&Array.isArray(w.levels)&&w.levels.some(n=>Number(n)>0));
@@ -4006,18 +4107,15 @@ function restoreRelic(){
 function eventTick(){
  const e=state.exploration;if(totalLevels()<12)return;
  const now=Date.now();
- if(e.encounter&&e.encounter.until<=now){
-   e.encounter=null;e.nextEncounterAt=now+100000+Math.floor(Math.random()*80000);save();
- }
  if(!e.encounter&&now>=e.nextEncounterAt){
    const id=Math.floor(Math.random()*ENCOUNTERS.length);
-   e.encounter={id,until:now+44000};
+   e.encounter={id,until:now+31536000000};
    save();
  }
 }
 function claimEncounter(){
  const encounter=state.exploration.encounter;
- if(!encounter||Date.now()>=encounter.until)return;
+ if(!encounter)return;
  state.exploration.encounter=null;
  state.exploration.encounterCount++;
  state.exploration.nextEncounterAt=Date.now()+120000+Math.floor(Math.random()*130000);
@@ -4081,7 +4179,7 @@ $('menu-galaxy').addEventListener('click',()=>{closeSideMenu(false);openExplorat
 $('explore-close').addEventListener('click',closeExploration);
 $('explore-overlay').addEventListener('click',e=>{if(e.target===$('explore-overlay'))closeExploration()});
 $('explore-overlay').addEventListener('keydown',e=>{if(e.key==='Escape')closeExploration()});
-$('orbital-find').addEventListener('click',claimEncounter);
+$('orbital-find').addEventListener('click',()=>{const i=state.exploration.encounter?.id;if(Number.isInteger(i))openCosmicSignal('anomaly',i)});
 $('relic-find').addEventListener('click',findRelic);
 let workshopSelected=0;
 let workshopSceneEntered=performance.now();
@@ -4552,11 +4650,11 @@ function renderUI(){
 
  $('next').classList.toggle('hidden',cover()<99.999);
  const encounter=state.exploration.encounter;
- const encounterReady=!!encounter&&encounter.until>Date.now();
+ const encounterReady=!!encounter;
  $('orbital-find').classList.toggle('hidden',!encounterReady);
  if(encounterReady){
   $('orbital-glyph').innerHTML=bpIcon(['star','signal','material-fragment'][encounter.id]||'star',25);
-  $('orbital-find').setAttribute('aria-label','Collecter : '+(ENCOUNTERS[encounter.id]?.name||'Anomalie'));
+  $('orbital-find').setAttribute('aria-label','Récupérer : '+(ENCOUNTERS[encounter.id]?.name||'Anomalie'));
  }
  $('relic-find').classList.toggle('hidden',!relicRevealed());
  // V42 : le badge d'exploration montre uniquement des alertes localisées, sans signal générique.
@@ -5257,7 +5355,7 @@ function getGameSignals(){
  if(exp&&exp.end<=Date.now())add('expeditions','Sonde revenue','Expédition terminée · cargaison à récupérer',1,1);
  const availableTech=TECHNOLOGIES.filter((tech,i)=>researchLevel(i)<5&&techPrerequisite(i)&&state.science.points>=scienceCost(i)).length;
  if(availableTech)add('science','Recherche disponible',availableTech+' technologie'+(availableTech>1?'s':'')+' à améliorer',availableTech,3);
- if(state.exploration.encounter&&state.exploration.encounter.until>Date.now())
+ if(state.exploration.encounter)
   add('anomaly','Anomalie spatiale','Signal actif sur la planète · à collecter',1,0);
  if(relicRevealed())add('relic','Vestige découvert','Monument mystérieux à examiner sur la planète',1,1);
  const signal=nextSignal();
