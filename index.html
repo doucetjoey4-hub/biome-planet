@@ -1687,6 +1687,21 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 .explore-card>button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .explore-card>button>.bp-line-icon{flex:none;width:15px;height:15px}
 .atlas-record>strong>.bp-line-icon,.explore-world>strong>.bp-line-icon{width:17px;height:17px;color:#8bd4ed;flex:none}
+
+/* V61: icônes de renaissance, découvertes et réglages. */
+.rebirth-upgrade strong{display:flex;align-items:center;gap:7px}
+.rebirth-upgrade strong>.bp-line-icon{flex:none;color:#cdb8fb;width:20px;height:20px}
+.rebirth-upgrade button,.rebirth-trigger{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.rebirth-upgrade button>.bp-line-icon{flex:none;width:15px;height:15px}
+.rebirth-trigger>.bp-line-icon{flex:none;width:20px;height:20px}
+.rebirth-confirm-emblem,.discovery-emblem{display:grid;place-items:center}
+.rebirth-confirm-emblem>.bp-line-icon{width:34px;height:34px}
+.discovery-emblem>.bp-line-icon{width:38px;height:38px}
+#planet-hint,#event-caption{display:inline-flex;align-items:center;gap:5px}
+#planet-hint>.bp-line-icon,#event-caption>.bp-line-icon{width:16px;height:16px;flex:none}
+.audio-switches .sound-toggle,.audio-switches .music-toggle{display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.audio-switches .bp-line-icon{width:17px;height:17px;flex:none}
+#orbital-glyph>.bp-line-icon{width:25px;height:25px}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -1736,7 +1751,7 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 </div>
 <div class="rebirth-confirm-overlay hidden" id="rebirth-confirm-overlay">
  <section class="rebirth-confirm" role="alertdialog" aria-modal="true" aria-labelledby="rebirth-confirm-title" aria-describedby="rebirth-confirm-detail">
-  <span class="rebirth-confirm-emblem">✵</span><h2 id="rebirth-confirm-title">Recommencer l'univers?</h2>
+  <span class="rebirth-confirm-emblem" id="rebirth-confirm-emblem"></span><h2 id="rebirth-confirm-title">Recommencer l'univers?</h2>
   <p id="rebirth-confirm-detail"></p>
   <div class="rebirth-confirm-actions"><button type="button" id="rebirth-cancel">Annuler</button><button type="button" id="rebirth-commit">Confirmer la renaissance</button></div>
  </section>
@@ -2091,10 +2106,10 @@ function setMusicEnabled(enabled){
 }
 function updateSoundButton(){
  const btn=$('sound-toggle'),music=$('music-toggle');
- btn.textContent=soundEnabled?'🔊 Sons':'🔇 Sons';
+ workshopIconLabel(btn,soundEnabled?'audio':'ui-audio-off',' Sons',17);
  btn.setAttribute('aria-label',soundEnabled?'Désactiver les effets sonores':'Activer les effets sonores');
  btn.setAttribute('aria-pressed',String(soundEnabled));
- music.textContent=musicEnabled?'♫ Musique ✓':'♫ Musique';
+ workshopIconLabel(music,'ui-music',musicEnabled?' Musique ✓':' Musique',17);
  music.setAttribute('aria-label',musicEnabled?'Désactiver la musique':'Activer la musique');
  music.setAttribute('aria-pressed',String(musicEnabled));
 }
@@ -2210,7 +2225,7 @@ function openDiscovery(index){
  playSound('discovery');
  discoveryMode='claim';discoveryIndex=index;
  const event=COSMIC_ARCHIVES[index];if(!event)return;
- $('discovery-emblem').textContent=event.icon;
+ $('discovery-emblem').innerHTML=bpIcon(['discovery-echo','material-fragment','nature-symbiosis','star','discovery-core'][index]||'star',38);
  $('discovery-title').textContent=event.title;
  $('discovery-description').textContent=event.description;
  $('discovery-reward').textContent='Réclamer la découverte';
@@ -2221,9 +2236,9 @@ function openJournal(){
  playSound('open');
  discoveryMode='journal';discoveryIndex=-1;
  const claimed=archiveClaimed();
- $('discovery-emblem').textContent=claimed.length?'◈':'✧';
+ $('discovery-emblem').innerHTML=bpIcon(claimed.length?'archive':'discovery-echo',38);
  $('discovery-title').textContent='Journal des découvertes';
- $('discovery-description').textContent=claimed.length?claimed.map(i=>COSMIC_ARCHIVES[i]?.icon+' '+COSMIC_ARCHIVES[i]?.title).filter(Boolean).join('  ·  '):'La planète garde encore ses mystères. Continue à développer ses biomes pour en savoir plus.';
+ $('discovery-description').textContent=claimed.length?claimed.map(i=>COSMIC_ARCHIVES[i]?.title).filter(Boolean).join('  ·  '):'La planète garde encore ses mystères. Continue à développer ses biomes pour en savoir plus.';
  $('discovery-reward').textContent=claimed.length+' / '+COSMIC_ARCHIVES.length+' découvertes sur cette planète';
  $('discovery-action').textContent='Retour à la planète';
  $('discovery-overlay').classList.remove('hidden');
@@ -2450,7 +2465,7 @@ function refreshBiomeCards(){
   el.querySelectorAll('.bonus-choice').forEach(btn=>btn.addEventListener('click',()=>claimBonus(i,btn.dataset.bonus)));
   container.appendChild(el);cards.push(el);
  });
- $('planet-hint').textContent='👆 Touche la planète pour ajouter '+BIOMES[0].name.toLowerCase();
+ workshopIconLabel($('planet-hint'),'ui-touch',' Touche la planète pour ajouter '+BIOMES[0].name.toLowerCase(),16);
 }
 
 let holdTimer=null,holdDelay=null,activePointer=null,activeButton=null,lastPointerAction=0;
@@ -2814,7 +2829,7 @@ function renderCosmicEvent(){
  const signature=state.planet+'|'+(active?'on':'ready')+'|'+(active?active.id:ready)+'|'+left;
  if(lastCosmicDisplay===signature)return;
  lastCosmicDisplay=signature;
- $('event-caption').textContent='✦ '+e.name;
+ workshopIconLabel($('event-caption'),['star','nature-weather','planet'][active?active.id:ready]||'star',' '+e.name,16);
  $('event-timer').textContent=active?Math.floor(left/60)+':'+String(left%60).padStart(2,'0'):'PRÊT';
  $('event-detail').textContent=active?'Revenus x'+e.factor+' en cours':'Revenus x'+e.factor+' pendant '+e.seconds+' s';
  $('event-trigger').classList.toggle('hidden',!!active);
@@ -2864,7 +2879,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAtlas()});
 
 // V38 : progression exploratoire persistante, séparée par planète.
 const SATELLITES=[
- {name:'Observatoire orbital',icon:'🛰',detail:'Cartographie des régions : +8 % de production',kind:'revenue'},
+ {name:'Observatoire orbital',icon:'satellite-dish',detail:'Cartographie des régions : +8 % de production',kind:'revenue'},
  {name:'Régulateur climatique',icon:'☀',detail:'Cycles des biomes 5 % plus rapides',kind:'cycle'},
  {name:'Relais de ravitaillement',icon:'◈',detail:'Réduit les coûts des biomes de 5 %',kind:'cost'}
 ];
@@ -2875,9 +2890,9 @@ const TECHNOLOGIES=[
  {name:'Sondes longue portée',detail:'Expéditions 7 % plus courtes par niveau',kind:'expedition'}
 ];
 const EXPLORATIONS=[
- {name:'Reconnaissance locale',duration:75,bonus:.65,science:1,icon:'🛰'},
- {name:'Cartographie profonde',duration:210,bonus:1.8,science:2,icon:'🧭'},
- {name:'Voyage aux confins',duration:480,bonus:4.2,science:4,icon:'🚀'}
+ {name:'Reconnaissance locale',duration:75,bonus:.65,science:1,icon:'expedition-scan'},
+ {name:'Cartographie profonde',duration:210,bonus:1.8,science:2,icon:'expedition-radar'},
+ {name:'Voyage aux confins',duration:480,bonus:4.2,science:4,icon:'expedition-long'}
 ];
 const LIFE_LIST=[
  ['Luciole astrale','Animal lumineux qui se nourrit des premiers écosystèmes.'],
@@ -3499,7 +3514,7 @@ function renderUI(){
  const encounterReady=!!encounter&&encounter.until>Date.now();
  $('orbital-find').classList.toggle('hidden',!encounterReady);
  if(encounterReady){
-  $('orbital-glyph').textContent=ENCOUNTERS[encounter.id]?.icon||'✧';
+  $('orbital-glyph').innerHTML=bpIcon(['star','signal','material-fragment'][encounter.id]||'star',25);
   $('orbital-find').setAttribute('aria-label','Collecter : '+(ENCOUNTERS[encounter.id]?.name||'Anomalie'));
  }
  $('relic-find').classList.toggle('hidden',!relicRevealed());
@@ -4026,10 +4041,10 @@ function drawPlanet(){
 }
 /* V40 · Renaissance cosmique. Une nouvelle partie, mais les éclats restent. */
 const PRESTIGE_UPGRADES=[
- {title:'✦ Énergie ancestrale',description:'+18 % de production sur toutes les planètes par niveau'},
- {title:'⌛ Flux accéléré',description:'Cycles des biomes 3,5 % plus courts par niveau'},
- {title:'◈ Architectes cosmiques',description:'Biomes 3,5 % moins chers par niveau'},
- {title:'✧ Héritage de départ',description:'Argent de départ supplémentaire sur chaque nouvelle planète'}
+ {title:'Énergie ancestrale',description:'+18 % de production sur toutes les planètes par niveau'},
+ {title:'Flux accéléré',description:'Cycles des biomes 3,5 % plus courts par niveau'},
+ {title:'Architectes cosmiques',description:'Biomes 3,5 % moins chers par niveau'},
+ {title:'Héritage de départ',description:'Argent de départ supplémentaire sur chaque nouvelle planète'}
 ];
 function rebirthRequirement(){return Math.min(100000,120+100*state.prestige.count)}
 function rebirthProgress(){
@@ -4098,22 +4113,23 @@ function renderRebirth(){
   const level=prestigeLevel(i),price=prestigeUpgradeCost(i);
   const card=document.createElement('article');card.className='rebirth-upgrade';
   const info=document.createElement('div'),title=document.createElement('strong'),desc=document.createElement('p'),meta=document.createElement('small');
-  title.textContent=entry.title;desc.textContent=entry.description;
+  workshopIconLabel(title,['tech-energy','tech-clock','tech-material','prestige-legacy'][i],' '+entry.title,20);desc.textContent=entry.description;
   meta.textContent='Niveau '+level+'/10'+(level<10?' · '+price+' éclat'+(price>1?'s':''):' · maximum');
   info.append(title,desc,meta);
-  const btn=document.createElement('button');btn.type='button';btn.textContent=level>=10?'MAX':price+' ✦';
+  const btn=document.createElement('button');btn.type='button';workshopIconLabel(btn,level>=10?'check':'prestige-shard',level>=10?' MAX':' '+price,15);
   btn.disabled=level>=10||p.points<price;
   btn.addEventListener('click',()=>buyPrestigeUpgrade(i));
   card.append(info,btn);list.appendChild(card);
  });
  $('rebirth-trigger').disabled=!progress.unlocked;
- $('rebirth-trigger').textContent=progress.unlocked?'✵ Renaître · +'+progress.gain+' éclats':'Renaissance verrouillée';
+ workshopIconLabel($('rebirth-trigger'),progress.unlocked?'prestige-rebirth':'archive',progress.unlocked?' Renaître · +'+progress.gain+' éclats':' Renaissance verrouillée',20);
 }
 function requestRebirth(){
  if(rebirthConfirmOpen||!rebirthOpen)return;
  const progress=rebirthProgress();
  if(!progress.unlocked||progress.gain<1)return;
  rebirthConfirmOpen=true;
+ $('rebirth-confirm-emblem').innerHTML=bpIcon('prestige-rebirth',34);
  $('rebirth-confirm-detail').textContent='Tes '+progress.visited+' monde(s) développés, les niveaux, l’argent, les missions, les satellites et les recherches recommenceront à zéro. Tu recevras '+progress.gain+' éclat(s) ✦. Tes renaissances, améliorations permanentes et plans de satellites découverts seront conservés. Les matériaux de fabrication seront perdus. Cette action est irréversible.';
  $('rebirth-confirm-overlay').classList.remove('hidden');
  $('rebirth-cancel').focus();
@@ -4293,8 +4309,7 @@ function updateGameSignals(force=false){
   empty.textContent='✓ Tous les systèmes sont à jour';
   list.appendChild(empty);return;
  }
- const symbols={bonus:'🎁',objectives:'✧',workshop:'🛠',expeditions:'🚀',science:'⚗',anomaly:'☄',relic:'◈',journal:'✦',cosmic:'☀',rebirth:'✵',next:'🪐'};
- for(const a of alerts.slice(0,8)){
+  for(const a of alerts.slice(0,8)){
   const b=document.createElement('button');
   b.type='button';b.className='game-activity game-activity-'+a.type;
   b.setAttribute('aria-label',a.title+' : '+a.detail);
