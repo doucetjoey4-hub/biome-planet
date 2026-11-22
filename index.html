@@ -3505,6 +3505,7 @@ $('explore-overlay').addEventListener('keydown',e=>{if(e.key==='Escape')closeExp
 $('orbital-find').addEventListener('click',claimEncounter);
 $('relic-find').addEventListener('click',findRelic);
 let workshopSelected=0;
+let workshopPanel='modules';
 let workshopInspectPart=-1;
 let workshopPreviewCanvas=null,workshopAnim=null,workshopLastFrame=0;
 const WORKSHOP_PALETTE=['#78e6ff','#ffcf8a','#98ffc9'];
@@ -3824,12 +3825,13 @@ function renderExploration(){
   if(state.prestige.blueprints.includes(id)){
    container.appendChild(exploreElement('p','workshop-blueprint','✦ Plan conservé dans les archives de renaissance.'));
   }
-  // V63: Grand hangar central, matériel en tiroir et commande principale ancrée.
+  // V65 : véritable cockpit. Le satellite et ses commandes ne quittent jamais
+  // l'écran; seul le contenu de la baie de fabrication défile.
   const fixed=exploreElement('section','workshop-fixed');
-  fixed.setAttribute('aria-label','Hangar de construction orbital');
+  fixed.setAttribute('aria-label','Hangar orbital et visualisation permanente du satellite');
   const fleetBar=exploreElement('div','workshop-fleet-label');
   fleetBar.append(workshopIconLabel(exploreElement('strong',''),'satellite-dish',' FLOTTE ORBITALE',15),
-    exploreElement('small','','CHOISIR UN SATELLITE'));
+    exploreElement('small','','03 PROJETS'));
   fixed.append(fleetBar,switcher);
   const hangar=exploreElement('div','workshop-hangar');
   hangar.append(heading,preview);
@@ -3837,33 +3839,69 @@ function renderExploration(){
   console.appendChild(progress);
   const telemetry=exploreElement('div','workshop-telemetry');
   telemetry.append(
-   workshopIconLabel(exploreElement('span',''),'expedition-radar',' STATION 0'+(id+1),14),
-   exploreElement('span','',owned?'● EN ORBITE':assembled?'● SYNCHRONISATION PRÊTE':completed===4?'● ASSEMBLAGE DISPONIBLE':'● '+completed+' / 4 MODULES'));
+    workshopIconLabel(exploreElement('span',''),'expedition-radar',' STATION 0'+(id+1),14),
+    exploreElement('span','',owned?'EN ORBITE':assembled?'PRÊT AU DÉPLOIEMENT':completed===4?'PRÊT À ASSEMBLER':completed+' MODULES SUR 4'));
   console.appendChild(telemetry);
   hangar.appendChild(console);
+  fixed.appendChild(hangar);
   const partsScroll=exploreElement('div','workshop-scroll');
-  partsScroll.setAttribute('aria-label','Ressources et modules du satellite');
+  partsScroll.setAttribute('aria-label','Baie des modules et des ressources');
   partsScroll.tabIndex=0;
-  const inventoryLabel=exploreElement('div','workshop-inventory-label');
-  inventoryLabel.append(workshopIconLabel(exploreElement('strong',''),'material-metal',' MATÉRIAUX DISPONIBLES',15),
-    exploreElement('small','','INVENTAIRE'));
-  partsScroll.append(hangar,inventoryLabel,inventory,partsHeading,partList);
+  const panelTabs=exploreElement('div','workshop-panel-tabs');
+  panelTabs.setAttribute('role','tablist');
+  const moduleTab=exploreElement('button','workshop-panel-tab'+(workshopPanel==='modules'?' active':''));
+  moduleTab.type='button';moduleTab.setAttribute('role','tab');
+  workshopIconLabel(moduleTab,'satellite-assemble',' Modules',17);
+  const materialTab=exploreElement('button','workshop-panel-tab'+(workshopPanel==='resources'?' active':''));
+  materialTab.type='button';materialTab.setAttribute('role','tab');
+  workshopIconLabel(materialTab,'material-crystal',' Ressources',17);
+  const modulePane=exploreElement('section','workshop-panel-pane');
+  const materialPane=exploreElement('section','workshop-panel-pane');
+  moduleTab.setAttribute('aria-controls','workshop-module-pane');
+  materialTab.setAttribute('aria-controls','workshop-resource-pane');
+  modulePane.id='workshop-module-pane';materialPane.id='workshop-resource-pane';
+  modulePane.setAttribute('role','tabpanel');materialPane.setAttribute('role','tabpanel');
+  const showPanel=mode=>{
+    workshopPanel=mode;
+    moduleTab.classList.toggle('active',mode==='modules');
+    materialTab.classList.toggle('active',mode==='resources');
+    moduleTab.setAttribute('aria-selected',String(mode==='modules'));
+    materialTab.setAttribute('aria-selected',String(mode==='resources'));
+    modulePane.hidden=mode!=='modules';
+    materialPane.hidden=mode!=='resources';
+    partsScroll.scrollTop=0;
+  };
+  moduleTab.addEventListener('click',()=>showPanel('modules'));
+  materialTab.addEventListener('click',()=>showPanel('resources'));
+  panelTabs.append(moduleTab,materialTab);
   const lock=container.querySelector('.workshop-locked');
-  if(lock)partsScroll.appendChild(lock);
   const blueprint=container.querySelector('.workshop-blueprint');
-  if(blueprint)partsScroll.appendChild(blueprint);
+  const moduleIntro=exploreElement('div','workshop-panel-intro');
+  moduleIntro.append(workshopIconLabel(exploreElement('strong',''),'satellite-frame',' Construction du satellite',17),
+    exploreElement('small','',completed+' / 4 PIÈCES'));
+  modulePane.append(moduleIntro,partList);
+  if(lock)modulePane.prepend(lock);
+  if(blueprint)modulePane.append(blueprint);
+  const inventoryLabel=exploreElement('div','workshop-inventory-label');
+  inventoryLabel.append(workshopIconLabel(exploreElement('strong',''),'material-metal',' Réserve de matériaux',17),
+    exploreElement('small','','STOCK EN TEMPS RÉEL'));
+  const materialInfo=exploreElement('p','workshop-material-summary','Ressources utilisées pour fabriquer les modules des trois satellites.');
   const help=exploreElement('details','workshop-help');
-  const helpTitle=workshopIconLabel(exploreElement('summary',''),'info',' Comment récupérer des matériaux',15);
+  const helpTitle=workshopIconLabel(exploreElement('summary',''),'info',' Comment récolter des matériaux',16);
   help.append(helpTitle,container.querySelector('.explore-summary'));
-  partsScroll.appendChild(help);
+  materialPane.append(inventoryLabel,materialInfo,inventory,help);
+  partsScroll.append(panelTabs,modulePane,materialPane);
+  // Le dock reste fixé sous la baie pour rendre l'action majeure accessible.
   const dock=exploreElement('div','workshop-command-dock');
   const dockInfo=exploreElement('div','workshop-command-info');
   const dockIcon=owned?'check':assembled?'satellite-deploy':completed===4?'satellite-assemble':'satellite-frame';
-  dockInfo.append(workshopIconLabel(exploreElement('strong',''),dockIcon,
-    owned?' SATELLITE ACTIF':assembled?' PRÊT AU LANCEMENT':completed===4?' PRÊT À ASSEMBLER':' CONSTRUCTION EN COURS',16),
+  dockInfo.append(
+    workshopIconLabel(exploreElement('strong',''),dockIcon,
+      owned?' SATELLITE ACTIF':assembled?' DÉPLOIEMENT POSSIBLE':completed===4?' ASSEMBLAGE POSSIBLE':' ASSEMBLAGE ORBITAL',17),
     exploreElement('small','',sat.detail));
   dock.append(dockInfo,action);
   container.replaceChildren(fixed,partsScroll,dock);
+  showPanel(workshopPanel);
   partsScroll.scrollTop=workshopScroll;
  }else if(explorationTab==='missions'){
   paragraph('Les sondes explorent automatiquement l’espace. Récupère leur cargaison à leur retour pour obtenir de l’argent et de la recherche.');
