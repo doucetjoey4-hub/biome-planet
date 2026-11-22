@@ -2382,76 +2382,83 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  .workshop-layout .workshop-preview:after{animation:none!important}
 }
 
-/* V66: correction du vrai problème de surface utilisable sur téléphone.
-   Le satellite demeure visible, mais la baie Modules garde un espace réel. */
-.explore-dialog.workshop-dialog{height:100dvh!important;max-height:100dvh!important}
-.explore-content.workshop-layout{height:0!important;flex:1 1 0!important;min-height:0!important}
+/* V67 : scène du satellite à proportions naturelles, sans écraser les modules.
+   Hauteurs pilotées par la scène, pas par une division du flex qui étire le canvas. */
+.explore-dialog.workshop-dialog{
+ height:100dvh!important;max-height:100dvh!important;
+}
+.explore-content.workshop-layout{
+ height:0!important;min-height:0!important;flex:1 1 0!important;
+}
 .workshop-layout .workshop-fixed{
- flex:0 0 auto!important;
- max-height:min(51dvh,395px)!important;
- overflow:hidden!important;
- gap:6px!important;
+ flex:0 0 auto!important;min-height:0!important;max-height:none!important;
+ overflow:visible!important;gap:6px!important;
  padding:7px 12px 8px!important;
 }
 .workshop-layout .workshop-fleet-label{flex:none}
 .workshop-layout .workshop-switcher{flex:none;gap:6px}
-.workshop-layout .workshop-switch{min-height:39px!important;padding:5px 5px!important}
+.workshop-layout .workshop-switch{min-height:41px!important;padding:6px 5px!important}
 .workshop-layout .workshop-hangar{
- flex:1 1 auto!important;
- min-height:0!important;
- display:flex!important;flex-direction:column!important;
- overflow:hidden!important;
+ flex:none!important;min-height:0!important;
+ display:flex!important;flex-direction:column!important;overflow:hidden!important;
 }
 .workshop-layout .workshop-project-head{flex:none;padding:7px 10px 6px!important}
 .workshop-layout .workshop-preview{
- flex:1 1 auto!important;min-height:95px!important;
- height:auto!important;max-height:none!important;
+ flex:none!important;
+ height:clamp(165px,26dvh,245px)!important;
+ min-height:0!important;max-height:none!important;
  overflow:hidden!important;
 }
-.workshop-layout .workshop-ship{height:100%!important}
-.workshop-layout .workshop-hangar-console{flex:none;padding:6px 9px!important}
-.workshop-layout .workshop-progress{gap:4px!important}
-.workshop-layout .workshop-progress-steps>button{min-height:26px!important}
-.workshop-layout .workshop-telemetry{margin-top:5px!important;padding-top:5px!important}
+.workshop-layout .workshop-ship{
+ width:auto!important;height:100%!important;
+ aspect-ratio:360 / 220!important;max-width:100%!important;
+ max-height:100%!important;object-fit:contain!important;
+ image-rendering:auto!important;
+}
+.workshop-layout .workshop-hangar-console{flex:none;padding:6px 10px!important}
+.workshop-layout .workshop-progress{gap:5px!important}
+.workshop-layout .workshop-progress-steps>button{min-height:27px!important}
+.workshop-layout .workshop-telemetry{margin-top:6px!important;padding-top:5px!important}
 .workshop-layout .workshop-scroll{
- flex:1 1 0!important;min-height:175px!important;
+ flex:1 1 0!important;min-height:0!important;
  overflow-y:auto!important;overflow-x:hidden!important;
  padding:0 12px 14px!important;
 }
-.workshop-layout .workshop-panel-tabs{
- flex:none!important;
- padding:9px 0!important;gap:7px!important;
-}
-.workshop-layout .workshop-panel-tab{min-height:40px!important}
-.workshop-layout .workshop-panel-pane{flex:none!important;min-height:170px!important;padding-bottom:20px!important}
+.workshop-layout .workshop-panel-tabs{flex:none!important;padding:10px 0!important;gap:7px!important}
+.workshop-layout .workshop-panel-tab{min-height:42px!important}
+.workshop-layout .workshop-panel-pane{min-height:180px!important;padding-bottom:20px!important}
 .workshop-layout .workshop-parts{padding-bottom:10px!important}
 .workshop-layout .workshop-command-dock{
- flex:0 0 auto!important;
- padding:8px 12px max(9px,env(safe-area-inset-bottom))!important;
+ flex:none!important;padding:8px 12px max(9px,env(safe-area-inset-bottom))!important;
  gap:5px!important;
 }
 .workshop-layout .workshop-command-info small{display:none!important}
 .workshop-layout .workshop-launch{min-height:43px!important}
 @media(min-height:850px){
- .workshop-layout .workshop-fixed{max-height:min(54dvh,455px)!important}
- .workshop-layout .workshop-scroll{min-height:220px!important}
- .workshop-layout .workshop-preview{min-height:135px!important}
+ .workshop-layout .workshop-preview{height:clamp(215px,27dvh,290px)!important}
+ .workshop-layout .workshop-command-info small{display:block!important}
 }
-@media(max-height:700px){
+@media(max-height:730px){
  .workshop-dialog .explore-header{padding:8px 12px!important}
- .workshop-layout .workshop-fixed{max-height:44dvh!important;padding:5px 9px 6px!important}
- .workshop-layout .workshop-fleet-label{display:none!important}
- .workshop-layout .workshop-preview{min-height:75px!important}
- .workshop-layout .workshop-progress-steps{display:none!important}
+ .workshop-layout .workshop-fixed{padding:6px 10px 7px!important;gap:5px!important}
+ .workshop-layout .workshop-preview{height:clamp(150px,24dvh,195px)!important}
+ .workshop-layout .workshop-hangar-console{padding:5px 9px!important}
  .workshop-layout .workshop-telemetry{display:none!important}
- .workshop-layout .workshop-scroll{min-height:160px!important}
+ .workshop-layout .workshop-switch{min-height:39px!important}
 }
-@media(max-height:540px){
- .workshop-layout .workshop-fixed{max-height:39dvh!important}
+@media(max-height:620px){
+ .workshop-layout .workshop-fleet-label{display:none!important}
+ .workshop-layout .workshop-preview{height:clamp(130px,24dvh,165px)!important}
+ .workshop-layout .workshop-progress-steps>button{min-height:24px!important}
+ .workshop-layout .workshop-command-dock{padding-top:6px!important;padding-bottom:7px!important}
+}
+@media(max-height:490px){
+ .workshop-layout .workshop-preview{height:clamp(105px,23dvh,140px)!important}
+ .workshop-layout .workshop-progress-steps{display:none!important}
  .workshop-layout .workshop-project-head{padding:4px 8px!important}
- .workshop-layout .workshop-hangar-console{padding:3px 8px!important}
- .workshop-layout .workshop-preview{min-height:60px!important}
- .workshop-layout .workshop-scroll{min-height:120px!important}
+ .workshop-layout .workshop-hangar-console{padding:4px 8px!important}
+ .workshop-layout .workshop-fixed{padding:4px 8px!important}
+ .workshop-layout .workshop-switch{min-height:34px!important}
 }
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
