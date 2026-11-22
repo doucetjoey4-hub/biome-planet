@@ -1666,6 +1666,20 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 .workshop-part>button .bp-line-icon{width:16px;height:16px;flex:none}
 .workshop-launch .bp-line-icon{width:20px;height:20px;flex:none}
 @media(max-width:390px){.workshop-switch{gap:3px;font-size:.7rem!important}.workshop-switch>.bp-line-icon{width:15px;height:15px}}
+
+/* V60 — icônes vectorielles pour les objectifs et bonus. */
+.mission-name,.mission-reward{display:flex;align-items:center;gap:6px}
+.mission-name>.bp-line-icon{flex:none;color:#84cfe5;width:18px;height:18px}
+.mission-reward>.bp-line-icon{flex:none;color:#93efc5;width:16px;height:16px}
+.mission-completed .mission-reward>.bp-line-icon{color:#74bda8}
+.mission-claim,.bonus-claim{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.mission-claim>.bp-line-icon,.bonus-claim>.bp-line-icon{width:16px;height:16px;flex:none}
+.bonus-status{display:inline-flex;align-items:center;gap:5px}
+.bonus-status>.bp-line-icon{width:15px;height:15px;flex:none}
+.bonus-choice{display:flex;align-items:center;justify-content:center;gap:5px;flex-direction:column}
+.bonus-choice>.bp-line-icon{width:21px;height:21px;flex:none;color:#9cece4}
+.bonus-choice>span{display:block;line-height:1.2}
+.bonus-choice small{display:block;font-size:.62rem;color:#add8df;margin-top:3px}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -2278,16 +2292,19 @@ function renderMissions(force=false){
    item.classList.toggle('mission-ready',!done&&value>=m.target);
    item.classList.toggle('mission-completed',done);
    const info=document.createElement('div');info.className='mission-content';
-   const name=document.createElement('span');name.className='mission-name';name.textContent=m.name;
+   const name=document.createElement('span');name.className='mission-name';
+   name.innerHTML=bpIcon(m.kind==='discovery'?'goal-discovery':m.kind==='biomes'?'goal-biomes':m.kind==='levels'?'goal-levels':'goal-coverage',18);
+   name.appendChild(document.createTextNode(' '+m.name));
    const detail=document.createElement('span');detail.className='mission-detail';detail.textContent=m.text+' · '+Math.min(m.target,value)+' / '+m.target;
    const track=document.createElement('div');track.className='mission-progress';
    const fill=document.createElement('span');fill.style.width=(Math.min(1,value/m.target)*100)+'%';track.appendChild(fill);
    const prize=document.createElement('span');prize.className='mission-reward';
-   prize.textContent=done?'✓ Récompense réclamée':'💰 Récompense : +'+moneyFormat(reward);
+   prize.innerHTML=bpIcon(done?'check':'reward-credits',16);
+   prize.appendChild(document.createTextNode(done?' Récompense réclamée':' +'+moneyFormat(reward)));
    info.append(name,detail,track,prize);item.appendChild(info);
    if(!done&&value>=m.target){
      const claim=document.createElement('button');claim.type='button';claim.className='mission-claim';
-     claim.textContent='Réclamer';
+     claim.innerHTML=bpIcon('reward-credits',16)+'<span>Réclamer</span>';
      claim.setAttribute('aria-label','Réclamer '+moneyFormat(reward)+' pour '+m.name);
      claim.addEventListener('click',()=>claimMission(i));item.appendChild(claim);
    }
@@ -2420,7 +2437,7 @@ function refreshBiomeCards(){
  const container=$('biomes');container.replaceChildren();cards.length=0;
  BIOMES.forEach((b,i)=>{
   const el=document.createElement('div');el.className='biome';
-  el.innerHTML=`<div class="biome-head"><div class="biome-icon biome-icon-art" style="--biome-tone:${b.color}" role="img" aria-label="Icône de ${b.name}">${biomeVisualIcon(b.name,b.color)}</div><div class="biome-info"><strong>${b.name}</strong><small class="info"></small></div><span class="biome-level"></span></div><div class="biome-main"><div class="biome-left"><div class="cycle-info"><span class="cycle"></span><svg class="cycle-wheel" viewBox="0 0 40 40" aria-label="Cycle de revenus"><circle class="cycle-bg" cx="20" cy="20" r="16"></circle><circle class="cycle-fg" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"></circle></svg></div><div class="milestone-group"><div class="milestone-box" title="Nombre de paliers de 25 atteints">×0</div><div class="milestone-bar"><div class="milestone-caption"><span>Palier de 25</span><span class="milestone-count">0/25</span></div><div class="progress"><div></div></div></div></div></div><button type="button" class="btn"></button></div><div class="bonus-strip"><span class="bonus-status">🎁 Prochain bonus au niv. 25</span><button type="button" class="bonus-claim hidden">Débloquer bonus</button></div><div class="bonus-choices"><button type="button" class="bonus-choice" data-bonus="cash">💰<br>+10 %<br>Revenus</button><button type="button" class="bonus-choice" data-bonus="speed">⚡<br>-5 %<br>Temps</button><button type="button" class="bonus-choice" data-bonus="discount">🏷️<br>-4 %<br>Coûts</button></div>`;
+  el.innerHTML=`<div class="biome-head"><div class="biome-icon biome-icon-art" style="--biome-tone:${b.color}" role="img" aria-label="Icône de ${b.name}">${biomeVisualIcon(b.name,b.color)}</div><div class="biome-info"><strong>${b.name}</strong><small class="info"></small></div><span class="biome-level"></span></div><div class="biome-main"><div class="biome-left"><div class="cycle-info"><span class="cycle"></span><svg class="cycle-wheel" viewBox="0 0 40 40" aria-label="Cycle de revenus"><circle class="cycle-bg" cx="20" cy="20" r="16"></circle><circle class="cycle-fg" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"></circle></svg></div><div class="milestone-group"><div class="milestone-box" title="Nombre de paliers de 25 atteints">×0</div><div class="milestone-bar"><div class="milestone-caption"><span>Palier de 25</span><span class="milestone-count">0/25</span></div><div class="progress"><div></div></div></div></div></div><button type="button" class="btn"></button></div><div class="bonus-strip"><span class="bonus-status">🎁 Prochain bonus au niv. 25</span><button type="button" class="bonus-claim hidden">Débloquer bonus</button></div><div class="bonus-choices"><button type="button" class="bonus-choice" data-bonus="cash">${bpIcon('reward-income',21)}<span>+10 %<small>Revenus</small></span></button><button type="button" class="bonus-choice" data-bonus="speed">${bpIcon('reward-cycle',21)}<span>-5 %<small>Temps</small></span></button><button type="button" class="bonus-choice" data-bonus="discount">${bpIcon('reward-cost',21)}<span>-4 %<small>Coûts</small></span></button></div>`;
   setupUpgradeButton(el.querySelector('.btn'),i);
   el.querySelector('.bonus-claim').addEventListener('click',()=>el.querySelector('.bonus-choices').classList.toggle('open'));
   el.querySelectorAll('.bonus-choice').forEach(btn=>btn.addEventListener('click',()=>claimBonus(i,btn.dataset.bonus)));
@@ -2725,20 +2742,30 @@ function drawCosmicFX(now){
   for(let i=0;i<3;i++){
    const a=(t*.24+i*Math.PI*2/3)%(Math.PI*2);
    const x=xOrbit(a),y=yOrbit(a);
-   // L'occultation est progressive au limbe: le point perd son éclat
-   // avant de passer derrière le disque, puis revient en douceur.
-   // La distance projetée au bord sert pour les deux transitions.
-   const distance=Math.hypot(x-cx,y-cy);
-   const fadeWidth=Math.max(5,radius*.17);
-   const fadeStart=radius-fadeWidth*.55;
-   const fadeEnd=radius+fadeWidth*.45;
-   const fadePosition=Math.max(0,Math.min(1,(distance-fadeStart)/(fadeEnd-fadeStart)));
-   const limbVisibility=fadePosition*fadePosition*(3-2*fadePosition);
-   const visibility=a>Math.PI?limbVisibility:1;
-   if(visibility<.005)continue;
+   // Transition orbitale étendue : au lieu de couper brutalement au limbe,
+   // l'astre s'estompe pendant ~2,8 secondes AVANT d'entrer derrière
+   // le globe et retrouve progressivement son éclat APRÈS en être sorti.
+   // L'intervalle caché est calculé sur la vraie géométrie de l'ellipse.
+   const edgeCos=Math.sqrt(Math.max(0,Math.min(1,(radius*radius-ry*ry)/(rx*rx-ry*ry))));
+   const crossing=Math.acos(edgeCos);
+   const entry=Math.PI+crossing,exit=Math.PI*2-crossing;
+   const fadeArc=.68; // ~2,8 secondes à la vitesse orbitale actuelle
+   const smooth=q=>{const v=Math.max(0,Math.min(1,q));return v*v*(3-2*v)};
+   let visibility=1;
+   if(a>=entry-fadeArc&&a<entry)visibility=1-smooth((a-(entry-fadeArc))/fadeArc);
+   else if(a>=entry&&a<=exit)visibility=0;
+   else if(a>exit&&a<=exit+fadeArc)visibility=smooth((a-exit)/fadeArc);
+   if(visibility<=.001)continue;
    c.save();
+   // Un astre sur la partie éloignée ne peut jamais dessiner son halo sur
+   // la surface. L'extérieur du globe est conservé par une découpe réelle.
+   if(a>Math.PI){
+    c.beginPath();c.rect(0,0,w,h);
+    c.arc(cx,cy,radius,0,Math.PI*2,true);
+    c.clip('evenodd');
+   }
    c.globalAlpha*=visibility;
-   const size=Math.max(2,radius*(i===0?.035:.021))*(.84+.16*visibility);
+   const size=Math.max(2,radius*(i===0?.035:.021))*(.74+.26*visibility);
    const glow=c.createRadialGradient(x,y,0,x,y,size*4);
    glow.addColorStop(0,'rgba(255,255,255,.95)');
    glow.addColorStop(.2,'rgba(130,221,255,.75)');
@@ -3486,9 +3513,9 @@ function renderUI(){
    const available=Math.max(0,completedPaliers-state.bonuses[i].length);
    el.classList.toggle('has-bonus',available>0);
    claim.classList.toggle('hidden',available===0);
-   claim.textContent=available>0?'🎁 Choisir un bonus'+(available>1?' ('+available+')':''):'';
+   claim.innerHTML=available>0?bpIcon('reward-bonus',16)+'<span>Choisir un bonus'+(available>1?' ('+available+')':'')+'</span>':'';
    el.querySelector('.bonus-strip').classList.toggle('hidden',available===0);
-   status.textContent=available>0?'🎁 Bonus prêt':'';
+   status.innerHTML=available>0?bpIcon('reward-bonus',15)+'<span>Bonus prêt</span>':'';
    if(!available)el.querySelector('.bonus-choices').classList.remove('open');
    // Progression sur le palier EN COURS : exactement 0 au déblocage
    // et à 25/50/75... Les anciens styles d'animation ne peuvent plus
@@ -4282,6 +4309,17 @@ $('menu-expeditions').addEventListener('click',()=>{closeSideMenu(false);openExp
 $('menu-science').addEventListener('click',()=>{closeSideMenu(false);openExploration('science')});
 /* V43 · Une famille d'icônes filaires, sans dépendance JavaScript ou réseau. */
 const BP_ICON_PATHS={
+ // Objectifs et récompenses, dans le même langage graphique que l'atelier orbital.
+ 'reward-credits':'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5H10a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8.5M12 5.5v13"/><path d="M5 4.5 3 6.5M19 19.5l2-2"/>',
+ 'reward-bonus':'<path d="M4 9h16v12H4zM3 6h18v3H3zM12 6v15"/><path d="M12 6c-5 0-7-4-4-5 2-1 4 2 4 5zm0 0c5 0 7-4 4-5-2-1-4 2-4 5z"/>',
+ 'reward-income':'<path d="M4 19V5M4 19h17M7 15l4-4 3 2 6-7M16 6h4v4"/>',
+ 'reward-cycle':'<path d="M20 11a8 8 0 1 0-2 6M20 5v6h-6"/><path d="M12 7v5l3 2"/>',
+ 'reward-cost':'<path d="M3 5h9l9 9-7 7L3 10z"/><circle cx="8" cy="9" r="1.3"/><path d="m12 17 5-5"/>',
+ 'goal-biomes':'<path d="M12 20v-9M12 14C6 14 5 9 5 5c6 0 7 4 7 9zM12 11c0-5 2-8 8-9 0 5-2 9-8 9zM4 21h16"/>',
+ 'goal-coverage':'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-5 5-5 13 0 18M12 3c5 5 5 13 0 18"/>',
+ 'goal-levels':'<path d="M5 20V14h5v6M10 20V9h5v11M15 20V4h5v16M3 21h19"/>',
+ 'goal-discovery':'<circle cx="10" cy="10" r="6"/><path d="m14.5 14.5 6.5 6.5M10 6v8M6 10h8"/>',
+
  'material-metal':'<path d="M7 3h10l5 9-5 9H7l-5-9zM7 3l5 9 10 0M12 12 7 21"/>',
  'material-crystal':'<path d="M7 3h10l5 7-10 12L2 10zM2 10h20M7 3l-2 7 7 12 7-12-2-7"/>',
  'material-circuit':'<rect x="7" y="7" width="10" height="10" rx="1"/><path d="M10 10h4v4h-4zM3 9h4M3 15h4M17 9h4M17 15h4M9 3v4M15 3v4M9 17v4M15 17v4"/>',
