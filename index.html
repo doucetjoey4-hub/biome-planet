@@ -3595,7 +3595,7 @@ function renderExploration(){
   const dockIcon=owned?'check':assembled?'satellite-deploy':completed===4?'satellite-assemble':'satellite-frame';
   dockInfo.append(workshopIconLabel(exploreElement('strong',''),dockIcon,
     owned?' SATELLITE ACTIF':assembled?' PRÊT AU LANCEMENT':completed===4?' PRÊT À ASSEMBLER':' CONSTRUCTION EN COURS',16),
-    exploreElement('small','',owned?'En orbite autour de la planète':assembled?'Tous les systèmes sont opérationnels':completed===4?'Quatre modules terminés':completed+'/4 modules prêts'));
+    exploreElement('small','',sat.detail));
   dock.append(dockInfo,action);
   container.replaceChildren(fixed,partsScroll,dock);
   partsScroll.scrollTop=workshopScroll;
