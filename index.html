@@ -2704,14 +2704,27 @@ function drawCosmicFX(now){
   for(let i=0;i<3;i++){
    const a=(t*.24+i*Math.PI*2/3)%(Math.PI*2);
    const x=xOrbit(a),y=yOrbit(a);
-   if(a>Math.PI&&Math.hypot(x-cx,y-cy)<radius)continue;
-   const size=Math.max(2,radius*(i===0?.035:.021));
+   // L'occultation est progressive au limbe: le point perd son éclat
+   // avant de passer derrière le disque, puis revient en douceur.
+   // La distance projetée au bord sert pour les deux transitions.
+   const distance=Math.hypot(x-cx,y-cy);
+   const fadeWidth=Math.max(5,radius*.17);
+   const fadeStart=radius-fadeWidth*.55;
+   const fadeEnd=radius+fadeWidth*.45;
+   const fadePosition=Math.max(0,Math.min(1,(distance-fadeStart)/(fadeEnd-fadeStart)));
+   const limbVisibility=fadePosition*fadePosition*(3-2*fadePosition);
+   const visibility=a>Math.PI?limbVisibility:1;
+   if(visibility<.005)continue;
+   c.save();
+   c.globalAlpha*=visibility;
+   const size=Math.max(2,radius*(i===0?.035:.021))*(.84+.16*visibility);
    const glow=c.createRadialGradient(x,y,0,x,y,size*4);
    glow.addColorStop(0,'rgba(255,255,255,.95)');
    glow.addColorStop(.2,'rgba(130,221,255,.75)');
    glow.addColorStop(1,'rgba(130,221,255,0)');
    c.fillStyle=glow;c.beginPath();c.arc(x,y,size*4,0,Math.PI*2);c.fill();
    c.fillStyle='#e8ffff';c.beginPath();c.arc(x,y,size,0,Math.PI*2);c.fill();
+   c.restore();
   }
   c.restore();
  }
