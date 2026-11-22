@@ -1794,6 +1794,259 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 @media(max-width:365px){.workshop-layout .workshop-switch{font-size:.59rem!important;gap:2px}.workshop-layout .workshop-switch>.bp-line-icon{width:14px;height:14px}.workshop-layout .workshop-part{padding:8px 7px}.workshop-layout .workshop-command-dock{padding:7px;gap:5px}.workshop-layout .workshop-launch{min-width:112px;padding:6px 7px;font-size:.65rem}.workshop-layout .workshop-command-info small{display:none}}
 @media(max-height:720px){.workshop-layout .workshop-preview{height:clamp(170px,31dvh,235px)}.workshop-layout .workshop-switch{min-height:39px!important}.workshop-layout .workshop-hangar-console{padding:6px 8px}.workshop-layout .workshop-project-head{padding:6px 8px}}
 @media(max-height:580px){.workshop-layout .workshop-preview{height:clamp(115px,25dvh,165px)}.workshop-layout .workshop-progress-steps{display:none}.workshop-layout .workshop-command-dock{padding:5px 7px}}
+
+/* V64 | ORBITAL OPERATIONS: interface reconstruite pour lisibilité et espace.
+   Le satellite, les modules, les ressources partagent un seul défilement naturel.
+   Seuls le sélecteur de mission et l'action principale restent ancrés. */
+.explore-dialog.workshop-dialog{
+ width:min(100%,740px);height:min(97dvh,1000px);max-height:97dvh;
+ gap:0;padding:0;border-radius:20px 20px 0 0;
+ border:1px solid #406984;
+ background:linear-gradient(155deg,#102434 0%,#081725 72%);
+ box-shadow:0 20px 80px #000e, inset 0 1px #b2ebff0d;
+}
+.workshop-dialog .explore-header{
+ flex:none;padding:17px 20px 15px;min-height:0;
+ background:linear-gradient(105deg,#142e40,#0b1b2c);
+ border-bottom:1px solid #385b71;
+}
+.workshop-dialog .explore-eyebrow{display:block;color:#81bcce;letter-spacing:.14em;font-size:.63rem}
+.workshop-dialog .explore-header h2{font-size:1.55rem!important;letter-spacing:.01em;margin:5px 0 2px}
+.workshop-dialog .explore-header p{font-size:.76rem;color:#a2bece}
+.workshop-dialog .explore-header>button{width:42px;height:42px;border-radius:12px}
+.explore-content.workshop-layout{
+ display:flex;flex-direction:column;gap:0;flex:1;min-height:0;
+ padding:0;overflow:hidden;background:transparent
+}
+.workshop-layout .workshop-fixed{
+ flex:none;display:flex;flex-direction:column;gap:11px;
+ border:0;border-bottom:1px solid #2b4b60;box-shadow:none;
+ border-radius:0;padding:16px 18px 17px;
+ background:linear-gradient(150deg,#122b3d,#0c2233)
+}
+.workshop-layout .workshop-fleet-label{padding:0}
+.workshop-layout .workshop-fleet-label strong{
+ font-size:.76rem;letter-spacing:.1em;color:#d6f4fb;
+}
+.workshop-layout .workshop-fleet-label small{font-size:.65rem;color:#8db9c9}
+.workshop-layout .workshop-switcher{gap:10px}
+.workshop-layout .workshop-switch{
+ min-height:58px!important;display:flex;align-items:center;justify-content:center;
+ gap:8px;border-radius:12px!important;padding:12px 7px!important;
+ font-size:clamp(.68rem,2.5vw,.86rem)!important;font-weight:800;
+ background:#112a3b;border:1px solid #41657a;
+ box-shadow:inset 0 1px #d5f6ff0a;
+}
+.workshop-layout .workshop-switch>.bp-line-icon{width:21px;height:21px}
+.workshop-layout .workshop-switch.active{
+ background:linear-gradient(145deg,#1d5369,#15384e);border-color:#76cada;
+ box-shadow:inset 0 -2px #7fe7e5,0 0 18px #64d6ed12
+}
+.workshop-layout .workshop-scroll{
+ flex:1;min-height:0;display:flex;flex-direction:column;align-content:start;
+ gap:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
+ padding:24px 19px 34px;scrollbar-width:thin;scrollbar-color:#416e81 transparent;
+}
+.workshop-layout .workshop-hangar{
+ flex:none;overflow:hidden;border-radius:18px;
+ background:radial-gradient(ellipse at 50% 48%,#1d4359,#0d2538 66%,#081725);
+ border:1px solid #517b91;
+ box-shadow:0 8px 34px #0007,inset 0 1px #dcffff15;
+ margin-bottom:29px;
+}
+.workshop-layout .workshop-project-head{
+ display:flex;align-items:center;gap:10px;
+ padding:16px 18px 14px;border-bottom:1px solid #31556d;
+ background:linear-gradient(110deg,#183749,#102a3b);
+}
+.workshop-layout .workshop-project-head strong{
+ font-size:clamp(.86rem,2.8vw,1.08rem);line-height:1.25;
+}
+.workshop-layout .workshop-project-head .bp-line-icon{width:22px;height:22px}
+.workshop-layout .workshop-stage{
+ font-size:.65rem;padding:6px 10px;border-radius:99px;line-height:1.2;
+ white-space:normal;max-width:44%;text-align:center;
+ background:#163c45;border:1px solid #609e9d
+}
+.workshop-layout .workshop-preview{
+ height:auto!important;aspect-ratio:360/236;width:100%;
+ min-height:0!important;max-height:none!important;
+ display:flex;align-items:center;justify-content:center;
+ border:0!important;border-radius:0!important;box-shadow:none!important;
+ background:radial-gradient(ellipse at 50% 50%,#1b4259,#0b273c 72%,#071a2a)
+}
+.workshop-layout .workshop-ship{
+ display:block!important;width:100%;height:100%!important;
+ min-height:0;max-height:none!important;aspect-ratio:360/236;
+ object-fit:contain;filter:drop-shadow(0 0 22px #71dcec24)
+}
+.workshop-layout .workshop-inspect{
+ left:14px;right:auto;bottom:13px;padding:9px 14px;
+ min-height:39px;border-radius:10px;font-size:.76rem;
+ border-color:#6ba5b9;background:#102e40e8;
+}
+.workshop-layout .workshop-scene-corner{
+ top:13px;right:14px;padding:7px 9px;font-size:.64rem;letter-spacing:.09em
+}
+.workshop-layout .workshop-hangar-console{
+ padding:17px 18px 15px;background:linear-gradient(180deg,#102c40,#0c2335);
+ border-top:1px solid #335b75
+}
+.workshop-layout .workshop-progress{gap:11px}
+.workshop-layout .workshop-progress-labels{font-size:.8rem;font-weight:800}
+.workshop-layout .workshop-progress-track{height:8px;border-radius:99px}
+.workshop-layout .workshop-progress-steps{gap:10px}
+.workshop-layout .workshop-progress-steps>button{
+ flex:1;display:grid;place-items:center;min-height:39px;
+ border:1px solid #41687d;border-radius:9px;
+ background:#142e40;color:#96b9c9;
+ transition:background .2s,border-color .2s,color .2s,transform .15s;
+}
+.workshop-layout .workshop-progress-steps>button.done{
+ border-color:#5bb9a9;background:#174643;color:#b4ffe7;
+ box-shadow:inset 0 1px #e7fff015
+}
+.workshop-layout .workshop-progress-steps>button:active{transform:scale(.96)}
+.workshop-layout .workshop-progress-steps>button .bp-line-icon{width:17px;height:17px}
+.workshop-layout .workshop-telemetry{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:10px;margin-top:13px;padding-top:11px;border-top:1px solid #32536a;
+ color:#90bfd0;font-size:.64rem;font-weight:800;letter-spacing:.055em
+}
+.workshop-layout .workshop-telemetry span:first-child{display:inline-flex;align-items:center;gap:6px}
+.workshop-layout .workshop-telemetry span:last-child{color:#a8e6da;text-align:right}
+.workshop-layout .workshop-inventory-label{
+ display:flex;align-items:center;justify-content:space-between;
+ padding:0 1px;margin-bottom:14px;
+}
+.workshop-layout .workshop-inventory-label strong{
+ font-size:.82rem;color:#edf9fc;letter-spacing:.05em
+}
+.workshop-layout .workshop-inventory-label small{font-size:.64rem}
+.workshop-layout .workshop-inventory{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;
+ margin-bottom:30px;
+}
+.workshop-layout .workshop-inventory-item{
+ min-height:94px;padding:15px 7px 13px;
+ gap:9px;border-radius:14px;
+ background:linear-gradient(155deg,#19384b,#122b3c);
+ border:1px solid #395d72;box-shadow:inset 0 1px #f4ffff0b
+}
+.workshop-layout .workshop-inventory-item span{
+ font-size:.73rem;line-height:1.2;white-space:normal;
+ color:#b8d8e4;display:flex;align-items:center;justify-content:center;
+ flex-wrap:wrap;gap:6px
+}
+.workshop-layout .workshop-inventory-item span .bp-line-icon{width:20px;height:20px}
+.workshop-layout .workshop-inventory-item strong{font-size:1.32rem;line-height:1.1}
+.workshop-layout .workshop-parts-title{
+ border-top:1px solid #2e5165;
+ padding:25px 2px 17px;gap:12px;margin:0;
+}
+.workshop-layout .workshop-parts-title strong{font-size:.94rem;letter-spacing:.01em;gap:9px}
+.workshop-layout .workshop-parts-title strong svg{width:20px;height:20px}
+.workshop-layout .workshop-parts-title small{font-size:.68rem}
+.workshop-layout .workshop-parts{
+ display:flex;flex-direction:column;gap:13px;margin-bottom:24px
+}
+.workshop-layout .workshop-part{
+ flex-direction:row;align-items:center;justify-content:space-between;
+ gap:15px;padding:20px 17px;min-height:122px;
+ background:linear-gradient(115deg,#183548,#11283a);
+ border:1px solid #365e75;border-radius:14px;
+ box-shadow:inset 0 1px #e1ffff0a;
+}
+.workshop-layout .workshop-part-info{min-width:0;flex:1}
+.workshop-layout .workshop-part-info strong{
+ display:flex!important;gap:9px;font-size:.86rem;line-height:1.35
+}
+.workshop-layout .workshop-part-info strong>.bp-line-icon{width:22px;height:22px}
+.workshop-layout .workshop-part-info p{
+ font-size:.74rem;line-height:1.5;margin:8px 0 11px;color:#b3cbd9
+}
+.workshop-layout .workshop-part-materials{gap:6px;flex-wrap:wrap}
+.workshop-layout .workshop-part-materials span{
+ padding:5px 8px;font-size:.66rem;border-radius:7px;background:#223a4d
+}
+.workshop-layout .workshop-part-materials span>.bp-line-icon{width:15px;height:15px}
+.workshop-layout .workshop-part>button{
+ width:auto;min-width:103px;min-height:46px;
+ padding:10px 13px;margin:0;flex:none;border-radius:10px;
+ font-size:.74rem
+}
+.workshop-layout .workshop-part.inspecting{
+ background:linear-gradient(115deg,#24546a,#153448);
+ border-color:#8edbe9;box-shadow:inset 3px 0 #84ecf0,0 0 18px #47bad126
+}
+.workshop-layout .workshop-locked,.workshop-layout .workshop-blueprint{
+ font-size:.73rem;line-height:1.5;padding:10px 12px;border-radius:9px;
+ border:1px solid #34556a;background:#10283a;margin-bottom:14px
+}
+.workshop-layout .workshop-help{
+ border:1px solid #2e5367;border-radius:12px;padding:14px 16px;
+ margin:0 0 10px;background:#0e2535
+}
+.workshop-layout .workshop-help summary{
+ font-size:.77rem;min-height:28px;color:#b5dbe6;gap:9px
+}
+.workshop-layout .workshop-help .explore-summary{
+ margin-top:13px;font-size:.73rem;line-height:1.65;color:#aac9d7
+}
+.workshop-layout .workshop-command-dock{
+ flex:none;display:flex;flex-direction:column;gap:12px;
+ padding:17px 20px max(18px,env(safe-area-inset-bottom));
+ background:linear-gradient(130deg,#152e40,#0a2030);
+ border:0;border-top:1px solid #486e83;border-radius:0;
+ box-shadow:0 -8px 23px #0007
+}
+.workshop-layout .workshop-command-info{display:flex;flex-direction:column;gap:6px}
+.workshop-layout .workshop-command-info strong{font-size:.77rem;letter-spacing:.04em;gap:8px}
+.workshop-layout .workshop-command-info strong svg{width:19px;height:19px}
+.workshop-layout .workshop-command-info small{font-size:.72rem;line-height:1.35;color:#a5c3d1}
+.workshop-layout .workshop-launch{
+ width:100%;min-width:0;min-height:53px;margin:0;
+ border-radius:12px;padding:12px 15px;font-size:.89rem;
+ font-weight:900;letter-spacing:.025em
+}
+.workshop-layout .workshop-launch>.bp-line-icon{width:22px;height:22px}
+@media(min-width:650px) and (min-height:750px){
+ .workshop-layout .workshop-parts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .workshop-layout .workshop-part{flex-direction:column;align-items:stretch;min-height:170px}
+ .workshop-layout .workshop-part>button{width:100%;margin-top:auto}
+}
+@media(max-width:440px){
+ .workshop-dialog .explore-header{padding:14px 15px}
+ .workshop-layout .workshop-fixed{padding:13px 13px 14px}
+ .workshop-layout .workshop-switcher{gap:6px}
+ .workshop-layout .workshop-switch{min-height:53px!important;padding:10px 5px!important;gap:4px;font-size:.67rem!important}
+ .workshop-layout .workshop-switch>.bp-line-icon{width:18px;height:18px}
+ .workshop-layout .workshop-scroll{padding:18px 13px 26px}
+ .workshop-layout .workshop-project-head{padding:13px 12px}
+ .workshop-layout .workshop-project-head strong{font-size:.84rem}
+ .workshop-layout .workshop-stage{font-size:.58rem;padding:5px 7px}
+ .workshop-layout .workshop-hangar-console{padding:14px 13px}
+ .workshop-layout .workshop-inventory{gap:6px}
+ .workshop-layout .workshop-inventory-item{min-height:81px;padding:12px 3px;gap:6px}
+ .workshop-layout .workshop-inventory-item span{font-size:.65rem}
+ .workshop-layout .workshop-inventory-item strong{font-size:1.1rem}
+ .workshop-layout .workshop-part{padding:16px 12px;gap:8px;min-height:118px}
+ .workshop-layout .workshop-part-info strong{font-size:.78rem}
+ .workshop-layout .workshop-part-info p{font-size:.68rem;margin:6px 0 8px}
+ .workshop-layout .workshop-part-materials span{font-size:.59rem;padding:4px 5px}
+ .workshop-layout .workshop-part>button{min-width:85px;min-height:42px;font-size:.68rem;padding:8px 7px}
+ .workshop-layout .workshop-command-dock{padding:12px 14px max(14px,env(safe-area-inset-bottom));gap:9px}
+ .workshop-layout .workshop-command-info small{font-size:.67rem}
+}
+@media(max-height:690px){
+ .workshop-layout .workshop-fixed{padding-top:10px;padding-bottom:11px;gap:8px}
+ .workshop-layout .workshop-switch{min-height:48px!important}
+ .workshop-layout .workshop-command-dock{padding-top:10px;padding-bottom:10px;gap:7px}
+ .workshop-layout .workshop-launch{min-height:45px}
+}
+@media(prefers-reduced-motion:reduce){
+ .workshop-layout .workshop-switch,.workshop-layout .workshop-part,.workshop-layout .workshop-progress-steps>button{transition:none!important}
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -3514,7 +3767,15 @@ function renderExploration(){
   const fill=exploreElement('div','workshop-progress-fill');
   fill.style.width=percent+'%';track.appendChild(fill);
   const steps=exploreElement('div','workshop-progress-steps');
-  parts.forEach((made,j)=>{const cell=exploreElement('span',made?'done':'');cell.title=WORKSHOP_PARTS[j].name;cell.innerHTML=bpIcon(made?'check':PART_ICON_NAMES[j],12);steps.appendChild(cell)});
+  parts.forEach((made,j)=>{
+   const cell=exploreElement('button',made?'done':'');
+   cell.type='button';
+   cell.title='Inspecter : '+WORKSHOP_PARTS[j].name;
+   cell.setAttribute('aria-label','Inspecter '+WORKSHOP_PARTS[j].name+(made?' (installé)':' (à fabriquer)'));
+   cell.innerHTML=bpIcon(made?'check':PART_ICON_NAMES[j],15);
+   cell.addEventListener('click',()=>selectPart(j));
+   steps.appendChild(cell);
+  });
   progress.append(progressLabels,track,steps);
   container.appendChild(progress);
   if(!unlocked&&!owned){
@@ -3573,15 +3834,20 @@ function renderExploration(){
   const hangar=exploreElement('div','workshop-hangar');
   hangar.append(heading,preview);
   const console=exploreElement('div','workshop-hangar-console');
-  console.appendChild(progress);hangar.appendChild(console);
-  fixed.appendChild(hangar);
+  console.appendChild(progress);
+  const telemetry=exploreElement('div','workshop-telemetry');
+  telemetry.append(
+   workshopIconLabel(exploreElement('span',''),'expedition-radar',' STATION 0'+(id+1),14),
+   exploreElement('span','',owned?'● EN ORBITE':assembled?'● SYNCHRONISATION PRÊTE':completed===4?'● ASSEMBLAGE DISPONIBLE':'● '+completed+' / 4 MODULES'));
+  console.appendChild(telemetry);
+  hangar.appendChild(console);
   const partsScroll=exploreElement('div','workshop-scroll');
   partsScroll.setAttribute('aria-label','Ressources et modules du satellite');
   partsScroll.tabIndex=0;
   const inventoryLabel=exploreElement('div','workshop-inventory-label');
   inventoryLabel.append(workshopIconLabel(exploreElement('strong',''),'material-metal',' MATÉRIAUX DISPONIBLES',15),
     exploreElement('small','','INVENTAIRE'));
-  partsScroll.append(inventoryLabel,inventory,partsHeading,partList);
+  partsScroll.append(hangar,inventoryLabel,inventory,partsHeading,partList);
   const lock=container.querySelector('.workshop-locked');
   if(lock)partsScroll.appendChild(lock);
   const blueprint=container.querySelector('.workshop-blueprint');
