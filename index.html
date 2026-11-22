@@ -2826,7 +2826,7 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 @keyframes planetLiveAurora{to{translate:9% -8px;scale:1 1.28}}
 .planet-aurora-touch:after{
  content:"";position:absolute;bottom:8%;left:10%;height:5px;width:80%;
- border-radius:99px;background:linear-gradient(90deg,#82c9ff,var(--aurora-charge,#72e4c9),#79e4d4);
+ border-radius:99px;background:linear-gradient(90deg,#82c9ff,#79e4d4);width:var(--aurora-charge,0%);
  box-shadow:0 0 13px #69ffd381;
 }
 .planet-orbit-touch{
@@ -2848,7 +2848,7 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  transform:translateY(-50%);
 }
 .planet-orbit-target{
- position:absolute;width:19px;height:19px;left:13%;top:14%;
+ position:absolute;width:19px;height:19px;left:16%;top:24%;
  border-radius:50%;background:#ffedba;
  border:2px solid #fff8d3;box-shadow:0 0 16px #ffe9a5;
  animation:planetTargetPulse 1.8s ease-in-out infinite;
@@ -4126,9 +4126,9 @@ function startPlanetCosmicGame(id){
    game.angle=Math.max(0,Math.min(360,value));
    surface.style.setProperty('--orbital-angle',game.angle+'deg');
    surface.setAttribute('aria-valuenow',String(Math.round(game.angle/3.6)));
-   const delta=Math.abs(((game.angle-263+540)%360)-180);
+   const delta=Math.abs(((game.angle-225+540)%360)-180);
    planetCosmicMessage(delta<30?'Presque aligné ! Continue.':'Fais glisser autour de la planète pour aligner les astres');
-   if(delta<=12)finishPlanetCosmicGame();
+   if(delta<=14)finishPlanetCosmicGame();
   };
   const aim=e=>{
    const r=surface.getBoundingClientRect();
