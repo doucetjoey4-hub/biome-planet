@@ -2578,6 +2578,183 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  .workshop-layout .workshop-command-dock{padding:6px 10px max(7px,env(safe-area-inset-bottom))!important}
  .workshop-layout .workshop-launch{min-height:40px!important}
 }
+
+/* V73 — SIGNAUX COSMIQUES : gestes guidés, touches tactiles et résultat lisible. */
+.cosmic-signal-overlay{
+ position:fixed;inset:0;z-index:180;
+ display:flex;align-items:center;justify-content:center;
+ padding:max(16px,env(safe-area-inset-top)) 17px max(16px,env(safe-area-inset-bottom));
+ background:#020b18e8;backdrop-filter:blur(11px);
+}
+.cosmic-signal-dialog{
+ width:min(100%,435px);max-height:93dvh;overflow-y:auto;
+ border:1px solid #588da7;border-radius:23px;padding:19px 21px 22px;
+ background:radial-gradient(circle at 50% 18%,#234c60,#132b42 42%,#091c2c 100%);
+ box-shadow:0 24px 80px #000e,inset 0 1px #d3fbff22;
+ text-align:center;color:#e7f8ff;
+}
+.cosmic-signal-head{
+ display:flex;align-items:center;justify-content:space-between;
+ font-size:.66rem;font-weight:900;letter-spacing:.14em;color:#9bece5;
+}
+.cosmic-signal-head button{
+ display:grid;place-items:center;min-width:37px;min-height:37px;
+ border:1px solid #5b8299;border-radius:11px;background:#16374b;color:#edfaff;
+ font-size:1.05rem;
+}
+.cosmic-signal-emblem{
+ display:grid;place-items:center;width:85px;height:85px;
+ margin:5px auto 8px;border-radius:50%;
+ background:radial-gradient(circle,#34748c80,#0a263c77 68%);
+ color:#a4faff;filter:drop-shadow(0 0 13px #5fe2ff66);
+ animation:signalEmblemFloat 3s ease-in-out infinite;
+}
+.cosmic-signal-emblem svg{width:45px!important;height:45px!important}
+@keyframes signalEmblemFloat{50%{transform:translateY(-5px)}}
+.cosmic-signal-dialog h2{margin:8px 0 9px;font-size:1.35rem;line-height:1.2}
+.cosmic-signal-dialog>p#cosmic-signal-guide{
+ font-size:.87rem;line-height:1.55;color:#c4dfec;margin:0 auto 14px;max-width:34ch;
+}
+.cosmic-signal-prize{
+ border:1px solid #4e9c8d;background:linear-gradient(110deg,#19423e,#123a40);
+ border-radius:12px;padding:12px 13px;font-weight:800;font-size:.81rem;
+ color:#baffdf;line-height:1.5;text-align:left;
+}
+.cosmic-signal-prize:before{content:"RÉCOMPENSE  ·  ";font-size:.68rem;letter-spacing:.05em;opacity:.8}
+.cosmic-signal-game{
+ margin:16px 0 7px;padding:12px 10px 15px;border:1px solid #375f76;
+ background:radial-gradient(ellipse at 50% 45%,#1a4562,#0c273e 72%);
+ border-radius:16px;min-height:150px;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;
+}
+.cosmic-signal-game.complete{
+ border-color:#8aeccc;box-shadow:inset 0 0 29px #5dffd330;
+}
+.cosmic-signal-feedback{
+ margin:4px auto 11px;color:#a2e0e9;font-size:.78rem;min-height:17px;line-height:1.35;
+}
+.cosmic-signal-skip{
+ width:100%;min-height:45px;border:1px solid #5a8097;
+ background:#122e42;border-radius:11px;
+ color:#d8f3ff;font-size:.83rem;font-weight:800;
+}
+.cosmic-signal-skip:active{background:#1c4c62}
+.signal-game-count{font-size:.8rem;font-weight:900;color:#b8f9e8}
+.signal-target{
+ min-height:116px;min-width:170px;padding:15px 22px;
+ display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;
+ background:radial-gradient(circle,#316d89,#153c5e 69%);
+ border:2px solid #8fdaef;border-radius:18px;
+ color:#f3ffff;font-size:.83rem;font-weight:900;
+ box-shadow:0 0 30px #72dcf941,inset 0 1px #efffff25;
+ animation:signalTargetFloat 3s ease-in-out infinite;
+}
+.signal-target .bp-line-icon{width:34px;height:34px}
+@keyframes signalTargetFloat{50%{transform:translateY(-8px)}}
+.signal-stars{display:flex;align-items:center;justify-content:center;gap:13px;width:100%;flex-wrap:wrap}
+.signal-star{
+ width:calc((100% - 28px)/3);max-width:100px;min-width:65px;
+ min-height:92px;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;gap:9px;
+ border-radius:15px;border:1px solid #92c7e8;background:linear-gradient(155deg,#245274,#1b3456);
+ color:#d9f5ff;box-shadow:0 0 18px #8cd4ff26;
+ font-size:.64rem;font-weight:850;animation:signalStarDance 3s ease-in-out infinite;
+}
+.signal-star:nth-child(2){animation-delay:-.7s}
+.signal-star:nth-child(3){animation-delay:-1.3s}
+.signal-star .bp-line-icon{color:#e7d5a5;filter:drop-shadow(0 0 9px #fff6b977)}
+.signal-star.caught{opacity:.26;transform:scale(.8);animation:none}
+@keyframes signalStarDance{50%{transform:translateY(-8px) rotate(5deg)}}
+.signal-aurora{
+ width:100%;height:140px;border:1px solid #5c9fb1;border-radius:13px;
+ position:relative;overflow:hidden;touch-action:none;cursor:grab;
+ background:linear-gradient(155deg,#102544,#163a50 40%,#09233e);
+}
+.signal-aurora span{position:absolute;left:-35%;top:22%;width:170%;height:38%;
+ filter:blur(9px);opacity:.82;transform:rotate(-12deg) skewY(13deg);
+ animation:signalAuroraWave 3.2s ease-in-out infinite alternate;
+ background:linear-gradient(90deg,transparent,#4ce9c4aa,#7a78ff8c,#8bdcf6d9,transparent);
+}
+.signal-aurora span:nth-child(2){top:41%;animation-delay:-1.4s;opacity:.6;transform:rotate(9deg);background:linear-gradient(90deg,transparent,#a46efacc,#4ee3a3b0,#b9c4ff88,transparent)}
+.signal-aurora span:nth-child(3){top:58%;animation-delay:-2s;opacity:.4}
+@keyframes signalAuroraWave{from{translate:-4% -6px;scale:1 .8}to{translate:6% 7px;scale:1 1.15}}
+.signal-energy-meter{height:12px;border-radius:99px;width:100%;background:#18394a;border:1px solid #568da5;overflow:hidden}
+.signal-energy-meter>span{
+ display:block;width:0%;height:100%;border-radius:99px;
+ background:linear-gradient(90deg,#83bdff,#76f1bd);transition:width .17s;
+ box-shadow:0 0 14px #77ffdf;
+}
+.signal-alignment{
+ width:152px;height:152px;margin:0 auto 2px;
+ position:relative;display:grid;place-items:center;
+ background:radial-gradient(circle,#25556d,#122d47 62%,transparent 72%);
+ border-radius:50%;
+}
+.signal-alignment:before,.signal-alignment:after{
+ content:"";position:absolute;border-radius:50%;
+ border:1px solid #8eddec4c;inset:13px;
+}
+.signal-alignment:after{inset:28px;border-style:dashed;opacity:.5}
+.signal-orbit{
+ position:absolute;width:142px;height:60px;
+ border:4px solid #8bf3ee;border-radius:50%;
+ transform:rotate(calc(var(--rotation,54deg) - 35deg));
+ box-shadow:0 0 18px #6efce64a,inset 0 0 13px #5bffeb22;
+ transition:transform .12s linear;
+}
+.signal-beacon{
+ position:absolute;top:22px;right:20px;width:13px;height:13px;
+ border-radius:50%;background:#fff8af;box-shadow:0 0 14px #fff3a6;
+}
+.signal-center{
+ width:55px;height:55px;border-radius:50%;
+ background:radial-gradient(circle at 35% 30%,#c6f7f0,#39798f 42%,#163b60 85%);
+ border:2px solid #9ad6e7;box-shadow:0 0 18px #6ddaff65;
+ z-index:1;
+}
+.signal-orbit-slider{width:100%;height:32px;accent-color:#7be9dc;cursor:pointer}
+.discovery-hold{display:grid;gap:6px;margin:12px 0 0}
+.discovery-hold-track{height:7px;border-radius:99px;background:#243d4c;overflow:hidden}
+.discovery-hold-track span{display:block;width:0%;height:100%;background:linear-gradient(90deg,#7fb8f9,#78f7cc)}
+.discovery-primary.holding~.discovery-skip{opacity:.7}
+.discovery-primary.holding{box-shadow:0 0 21px #9aeccc59}
+.discovery-hold:has(+.discovery-primary.holding) .discovery-hold-track span{transition:width .95s linear}
+.discovery-hold small{color:#afc9d8;font-size:.68rem;line-height:1.4}
+.discovery-skip{
+ width:100%;min-height:36px;margin-top:9px;border:0;background:none;
+ color:#a2dded;text-decoration:underline;text-underline-offset:4px;font-size:.76rem;font-weight:700;
+}
+.orbital-find:after{
+ content:"RÉCUPÉRER";position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%);
+ border-radius:5px;background:#0a2b3ae8;padding:3px 6px;
+ border:1px solid #6dbaa9;font-size:.54rem;letter-spacing:.06em;
+ font-weight:900;color:#cbfff5;white-space:nowrap;pointer-events:none;
+}
+.anomaly-signal:after{
+ content:"DÉCOUVRIR";position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%);
+ background:#231f3ddf;border:1px solid #a89ff7;border-radius:5px;
+ color:#e7ddff;padding:3px 6px;font-size:.52rem;font-weight:850;
+ letter-spacing:.06em;white-space:nowrap;pointer-events:none;
+}
+.planet-panel .cosmic-event{
+ border:1px solid #688fa4;border-radius:11px;
+ background:linear-gradient(110deg,#142e43,#1d2b4b);padding:9px 11px;
+}
+.planet-panel .cosmic-event .event-body{gap:9px;align-items:center}
+.planet-panel #event-trigger{min-height:37px;font-size:.72rem;border-radius:8px;font-weight:850}
+@media(max-height:650px){
+ .cosmic-signal-dialog{padding:11px 14px 13px;border-radius:18px}
+ .cosmic-signal-emblem{width:52px;height:52px;margin:1px auto 4px}
+ .cosmic-signal-emblem svg{width:33px!important;height:33px!important}
+ .cosmic-signal-dialog h2{font-size:1.12rem}
+ .cosmic-signal-game{min-height:110px;padding:8px;margin:9px 0 5px}
+ .signal-aurora{height:95px}.signal-alignment{width:110px;height:110px}
+ .signal-star{min-height:70px}
+}
+@media(prefers-reduced-motion:reduce){
+ .signal-star,.signal-target,.signal-aurora span,.cosmic-signal-emblem{animation:none!important}
+ .signal-orbit,.signal-energy-meter>span{transition:none!important}
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -5701,4 +5878,4 @@ document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=72').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=73').catch(console.warn));}</script></body></html>
