@@ -1680,6 +1680,13 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 .bonus-choice>.bp-line-icon{width:21px;height:21px;flex:none;color:#9cece4}
 .bonus-choice>span{display:block;line-height:1.2}
 .bonus-choice small{display:block;font-size:.62rem;color:#add8df;margin-top:3px}
+
+/* V61: icônes spatiales dans les panneaux d'exploration. */
+.explore-card-info>strong,.atlas-record>strong,.explore-world>strong{display:flex;align-items:center;gap:7px}
+.explore-card-info>strong>.bp-line-icon{color:#94e1f5;flex:none;width:19px;height:19px}
+.explore-card>button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.explore-card>button>.bp-line-icon{flex:none;width:15px;height:15px}
+.atlas-record>strong>.bp-line-icon,.explore-world>strong>.bp-line-icon{width:17px;height:17px;color:#8bd4ed;flex:none}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -2839,7 +2846,7 @@ function openAtlas(){
  for(const [id,w] of entries){
    const p=Number(id),b=makeBiomes(p);
    const row=document.createElement('div');row.className='atlas-record';
-   const title=document.createElement('strong');title.textContent='🪐 Planète '+p+' · '+worldName(p);
+   const title=document.createElement('strong');workshopIconLabel(title,'planet',' Planète '+p+' · '+worldName(p),17);
    const detail=document.createElement('span');
    const maxLevel=b.reduce((n,x)=>n+x.max,0);
    const levels=w.levels.reduce((n,x)=>n+(Number(x)||0),0);
@@ -3095,14 +3102,18 @@ function exploreElement(tag,cl,textValue){
  if(textValue!==undefined)el.textContent=String(textValue);
  return el;
 }
-function exploreCard(container,title,desc,detail,buttonLabel,disabled,action){
+function exploreCard(container,title,desc,detail,buttonLabel,disabled,action,iconName){
  const card=exploreElement('article','explore-card');
  const info=exploreElement('div','explore-card-info');
- info.append(exploreElement('strong','',title),exploreElement('p','',desc));
+ const titleEl=exploreElement('strong','',title);
+ if(iconName)workshopIconLabel(titleEl,iconName,' '+title,19);
+ info.append(titleEl,exploreElement('p','',desc));
  if(detail)info.append(exploreElement('small','',detail));
  card.appendChild(info);
  if(buttonLabel){
   const btn=exploreElement('button','',buttonLabel);
+  const actionIcon=/Récupérer|Réclamer/.test(buttonLabel)?'reward-credits':/Envoyer|Lancer/.test(buttonLabel)?'satellite-deploy':/Améliorer/.test(buttonLabel)?'tech-energy':/Étudier|Découvrir/.test(buttonLabel)?'goal-discovery':/Restaurer/.test(buttonLabel)?'nature-monument':null;
+  if(actionIcon)workshopIconLabel(btn,actionIcon,' '+buttonLabel,15);
   btn.type='button';btn.disabled=!!disabled;
   if(!disabled&&['Récupérer','Étudier','Améliorer','Réclamer'].some(t=>buttonLabel.includes(t)))card.classList.add('explore-ready');
   if(action)btn.addEventListener('click',action);
@@ -3403,52 +3414,52 @@ function renderExploration(){
   summary('Expéditions réussies',String(state.exploration.expeditionsCompleted));
   if(exp){
    const e=EXPLORATIONS[exp.id],remaining=Math.max(0,Math.ceil((exp.end-Date.now())/1000));
-   exploreCard(container,e.icon+' '+e.name,remaining?'Sonde en voyage. Elle revient automatiquement.':'La sonde a terminé sa mission!',
+   exploreCard(container,e.name,remaining?'Sonde en voyage. Elle revient automatiquement.':'La sonde a terminé sa mission!',
      remaining?'Retour dans '+Math.floor(remaining/60)+' min '+String(remaining%60).padStart(2,'0')+' s':
         'À réclamer : +'+moneyFormat(Math.max(75*state.planet,Math.round(planetIncome()*e.bonus)))+' et '+e.science+' recherche',
-     remaining?'En cours':'Récupérer',remaining>0,finishExpedition);
+     remaining?'En cours':'Récupérer',remaining>0,finishExpedition,['expedition-scan','expedition-radar','expedition-long'][exp.id]);
   }else EXPLORATIONS.forEach((e,i)=>{
    const seconds=Math.ceil(e.duration*expeditionSpeed());
    const unlocked=totalLevels()>=15;
-   exploreCard(container,e.icon+' '+e.name,'Expédition de '+Math.floor(seconds/60)+' min '+(seconds%60)+' s',
+   exploreCard(container,e.name,'Expédition de '+Math.floor(seconds/60)+' min '+(seconds%60)+' s',
     'Estimation : +'+moneyFormat(Math.max(75*state.planet,Math.round(planetIncome()*e.bonus)))+' et '+e.science+' point'+(e.science>1?'s':'')+' de recherche',
-    unlocked?'Envoyer':'Niveau requis',!unlocked,()=>startExpedition(i));
+    unlocked?'Envoyer':'Niveau requis',!unlocked,()=>startExpedition(i),['expedition-scan','expedition-radar','expedition-long'][i]);
   });
  }else if(explorationTab==='science'){
   paragraph('Les découvertes, les expéditions et l’étude du vivant donnent des points de recherche. Les technologies fonctionnent sur toutes tes planètes.');
-  summary('⚗ Points disponibles',String(state.science.points));
+  summary('Points de recherche',String(state.science.points));
   const tree=exploreElement('div','explore-tree');container.appendChild(tree);
   TECHNOLOGIES.forEach((tech,i)=>{
    const lv=researchLevel(i),cost=scienceCost(i),prereq=techPrerequisite(i);
-   exploreCard(tree,(i===0?'✦ ':i===1?'⌛ ':i===2?'◈ ':'🚀 ')+tech.name,
+   exploreCard(tree,tech.name,
       tech.detail+' · '+techPrerequisiteText(i),
       'Niveau '+lv+' / 5'+(lv<5?' · Coût : '+cost+' points':''),
       lv>=5?'MAX':!prereq?'Verrouillé':'Améliorer',
-      lv>=5||!prereq||state.science.points<cost,()=>buyTechnology(i));
+      lv>=5||!prereq||state.science.points<cost,()=>buyTechnology(i),['tech-energy','tech-clock','tech-material','tech-probe'][i]);
   });
  }else if(explorationTab==='nature'){
   const climate=weatherStatus();
   paragraph('Ton monde évolue : observe sa météo, révèle ses espèces et recherche un monument unique.');
-  summary('☁ Météo actuelle',climate.name);
+  summary('Météo actuelle',climate.name);
   LIFE_LIST.forEach((life,i)=>{
    const needed=[45,130,265][i],found=state.exploration.life.includes(i),ready=totalLevels()>=needed;
    const themes=['forestier','aquatique','polaire','minéral','onirique','mycélien'];
-   exploreCard(container,(i===0?'✧ ':i===1?'◈ ':'✺ ')+life[0],
+   exploreCard(container,life[0],
     life[1]+' Adaptation : '+themes[(state.planet-1)%6]+'.',
     found?'✓ Étudié · Bonus de recherche reçu':ready?'Observation disponible':'Requis : '+needed+' niveaux cumulés',
-    found?'Découvert':ready?'Étudier':'À découvrir',found||!ready,()=>discoverLife(i));
+    found?'Découvert':ready?'Étudier':'À découvrir',found||!ready,()=>discoverLife(i),['nature-creature','nature-life','nature-symbiosis'][i]);
   });
   const relic=MONUMENTS[(state.planet-1)%6],restored=state.exploration.monumentRestored;
   const revealed=state.exploration.monumentFound,needed=hasSatellite(0)?24:34;
-  exploreCard(container,'⌁ '+relic[0],relic[1],
+  exploreCard(container,relic[0],relic[1],
    restored?'✓ Restauré · +4 points de recherche obtenus':
    revealed?'Restauration : '+moneyFormat(monumentPrice())+' · +4 recherche':
    cover()>=needed?'Un symbole ⌁ est apparu sur la planète. Touche-le pour explorer.':'Indice débloqué à '+needed+' % de progression',
-   restored?'Restauré':revealed?'Restaurer':'Mystère',restored||!revealed||state.money<monumentPrice(),restoreRelic);
+   restored?'Restauré':revealed?'Restaurer':'Mystère',restored||!revealed||state.money<monumentPrice(),restoreRelic,'nature-monument');
  }else if(explorationTab==='galaxy'){
   paragraph('Tous les mondes appartiennent à une grande galaxie. Visite les secteurs, puis reviens continuer tes autres planètes sans perdre ta progression.');
   const visits=Object.entries(state.worlds).filter(([p,w])=>Number(p)>=1&&Number(p)<=999&&w?.levels?.some(v=>v>0));
-  summary('✦ Secteurs visités',String(visits.length+(state.levels.some(n=>n>0)&&!visits.some(([p])=>Number(p)===state.planet)?1:0))+' / 999');
+  summary('Secteurs visités',String(visits.length+(state.levels.some(n=>n>0)&&!visits.some(([p])=>Number(p)===state.planet)?1:0))+' / 999');
   const grid=exploreElement('div','explore-grid');
   const candidates=new Set(Array.from({length:18},(_,i)=>i+1));
   for(let i=Math.max(1,state.planet-2);i<=Math.min(999,state.planet+3);i++)candidates.add(i);
@@ -3457,7 +3468,7 @@ function renderExploration(){
    const world=p===state.planet?state:state.worlds[p];
    const btn=exploreElement('button','explore-world'+(p===state.planet?' current':''));
    btn.type='button';
-   btn.append(exploreElement('strong','','✦ '+p),exploreElement('span','',worldName(p)),
+   btn.append(workshopIconLabel(exploreElement('strong',''),'planet',' '+p,16),exploreElement('span','',worldName(p)),
      exploreElement('span','',p===state.planet?'● En cours':world?.levels?.some(v=>v>0)?worldPercent(p,world)+' % · visité':'À découvrir'));
    btn.addEventListener('click',()=>{if(p!==state.planet)switchWorld(p);else closeExploration()});
    grid.appendChild(btn);
@@ -4309,6 +4320,27 @@ $('menu-expeditions').addEventListener('click',()=>{closeSideMenu(false);openExp
 $('menu-science').addEventListener('click',()=>{closeSideMenu(false);openExploration('science')});
 /* V43 · Une famille d'icônes filaires, sans dépendance JavaScript ou réseau. */
 const BP_ICON_PATHS={
+ 'tech-energy':'<path d="m13 2-8 12h7l-1 8 9-13h-7z"/>',
+ 'tech-clock':'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 3"/>',
+ 'tech-material':'<path d="m12 2 9 5v10l-9 5-9-5V7zM3 7l9 5 9-5M12 12v10"/>',
+ 'tech-probe':'<rect x="9" y="8" width="6" height="8" rx="1"/><path d="M3 9h6M15 9h6M3 15h6M15 15h6M12 3v5M12 16v5"/>',
+ 'nature-weather':'<path d="M6 18a4 4 0 0 1-1-7 6 6 0 0 1 11-2 4.5 4.5 0 0 1 2 9zM7 21l-1 1M13 20l-1 2"/>',
+ 'nature-life':'<path d="M12 21V10M12 14C6 14 4 10 4 5c7 0 8 4 8 9zM12 11c0-5 3-8 8-9 0 5-2 9-8 9z"/>',
+ 'nature-creature':'<path d="M6 18c-3-2-3-7 0-9l3-2 3 2 3-2 3 2c3 2 3 7 0 9-2 2-10 2-12 0z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/>',
+ 'nature-symbiosis':'<circle cx="8" cy="12" r="5"/><circle cx="16" cy="12" r="5"/><path d="M8 12h8M12 4v16"/>',
+ 'nature-monument':'<path d="M6 21h12M8 17h8l-1-12H9zM5 17h14v4H5zM12 2v3M10 9h4M10 13h4"/>',
+ 'prestige-legacy':'<path d="M4 9l4 3 4-8 4 8 4-3-2 10H6zM6 21h12"/>',
+ 'prestige-shard':'<path d="m12 2 6 8-6 12-6-12zM6 10h12M12 2v20"/>',
+ 'prestige-rebirth':'<path d="M20 9A8 8 0 1 0 19 16M20 3v6h-6M12 7v10M8 13l4 4 4-4"/>',
+ 'expedition-scan':'<circle cx="12" cy="12" r="9"/><path d="m12 12 6-5M12 12l-3 5M3 12h3M18 12h3M12 3v3M12 18v3"/>',
+ 'expedition-radar':'<path d="M3 19h18M5 16a8 8 0 0 1 14 0M8 16a5 5 0 0 1 8 0M12 16v3M12 4v4"/>',
+ 'expedition-long':'<path d="m5 19 3-7 8-8 4-1-1 4-8 8zM8 12l4 4M6 18l-3 3M16 4l4 4"/>',
+ 'discovery-echo':'<circle cx="12" cy="12" r="2"/><path d="M7 8a6 6 0 0 0 0 8M17 8a6 6 0 0 1 0 8M4 5a10 10 0 0 0 0 14M20 5a10 10 0 0 1 0 14"/>',
+ 'discovery-core':'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>',
+ 'ui-audio-off':'<path d="M4 10v4h4l5 4V6l-5 4zM18 9l4 6M22 9l-4 6"/>',
+ 'ui-music':'<path d="M9 17V5l11-2v12M9 8l11-2"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+ 'ui-touch':'<path d="M9 13V5a2 2 0 0 1 4 0v6M13 10a2 2 0 0 1 4 0v2M17 11a2 2 0 0 1 4 0v6c0 3-2 5-5 5H9l-5-8a2 2 0 0 1 3-2l2 2"/>',
+
  // Objectifs et récompenses, dans le même langage graphique que l'atelier orbital.
  'reward-credits':'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5H10a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8.5M12 5.5v13"/><path d="M5 4.5 3 6.5M19 19.5l2-2"/>',
  'reward-bonus':'<path d="M4 9h16v12H4zM3 6h18v3H3zM12 6v15"/><path d="M12 6c-5 0-7-4-4-5 2-1 4 2 4 5zm0 0c5 0 7-4 4-5-2-1-4 2-4 5z"/>',
