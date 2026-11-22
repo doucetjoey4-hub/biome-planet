@@ -2664,6 +2664,18 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
   </section>
  </section>
 </div>
+<div class="cosmic-signal-overlay hidden" id="cosmic-signal-overlay">
+ <section class="cosmic-signal-dialog" role="dialog" aria-modal="true" aria-labelledby="cosmic-signal-title">
+  <div class="cosmic-signal-head"><span id="cosmic-signal-category">SIGNAL COSMIQUE</span><button type="button" id="cosmic-signal-close" aria-label="Fermer">✕</button></div>
+  <div class="cosmic-signal-emblem" id="cosmic-signal-emblem" aria-hidden="true"></div>
+  <h2 id="cosmic-signal-title">Signal cosmique</h2>
+  <p id="cosmic-signal-guide"></p>
+  <div class="cosmic-signal-prize" id="cosmic-signal-prize"></div>
+  <div class="cosmic-signal-game" id="cosmic-signal-game" aria-live="polite"></div>
+  <p class="cosmic-signal-feedback" id="cosmic-signal-feedback" aria-live="polite"></p>
+  <button type="button" class="cosmic-signal-skip" id="cosmic-signal-skip">Activer directement</button>
+ </section>
+</div>
 <div class="discovery-overlay hidden" id="discovery-overlay">
   <section class="discovery-dialog" role="dialog" aria-modal="true" aria-labelledby="discovery-title">
     <div class="discovery-head"><span>◈ ARCHIVES COSMIQUES</span><button type="button" id="discovery-close" aria-label="Fermer">✕</button></div>
@@ -2671,7 +2683,12 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
     <h2 id="discovery-title"></h2>
     <p id="discovery-description"></p>
     <div class="discovery-reward" id="discovery-reward"></div>
+    <div class="discovery-hold hidden" id="discovery-hold">
+      <div class="discovery-hold-track"><span id="discovery-hold-fill"></span></div>
+      <small>Maintiens le bouton pendant une seconde pour révéler le secret.</small>
+    </div>
     <button type="button" class="discovery-primary" id="discovery-action">Continuer</button>
+    <button type="button" class="discovery-skip hidden" id="discovery-skip">Révéler directement</button>
   </section>
 </div>
 <div class="world-overlay hidden" id="world-overlay">
@@ -3098,22 +3115,27 @@ function nextSignal(){
  const pct=cover(),claimed=archiveClaimed();
  return COSMIC_ARCHIVES.findIndex((v,i)=>pct+1e-6>=v.at&&!claimed.includes(i));
 }
-function closeDiscovery(){$('discovery-overlay').classList.add('hidden');}
+function closeDiscovery(){cancelDiscoveryHold();$('discovery-overlay').classList.add('hidden');}
 function openDiscovery(index){
  playSound('discovery');
  discoveryMode='claim';discoveryIndex=index;
  const event=COSMIC_ARCHIVES[index];if(!event)return;
+ $('discovery-hold').classList.remove('hidden');
+ $('discovery-skip').classList.remove('hidden');
+ $('discovery-hold-fill').style.width='0%';
  $('discovery-emblem').innerHTML=bpIcon(['discovery-echo','material-fragment','nature-symbiosis','star','discovery-core'][index]||'star',38);
  $('discovery-title').textContent=event.title;
  $('discovery-description').textContent=event.description;
- $('discovery-reward').textContent='Réclamer la découverte';
- $('discovery-action').textContent='Révéler le secret';
+ $('discovery-reward').textContent='Récompense : crédits, recherche et +2 % de revenus permanents';
+ $('discovery-action').textContent='Maintiens pour révéler';
  $('discovery-overlay').classList.remove('hidden');
 }
 function openJournal(){
  playSound('open');
  discoveryMode='journal';discoveryIndex=-1;
  const claimed=archiveClaimed();
+ $('discovery-hold').classList.add('hidden');
+ $('discovery-skip').classList.add('hidden');
  $('discovery-emblem').innerHTML=bpIcon(claimed.length?'archive':'discovery-echo',38);
  $('discovery-title').textContent='Journal des découvertes';
  $('discovery-description').textContent=claimed.length?claimed.map(i=>COSMIC_ARCHIVES[i]?.title).filter(Boolean).join('  ·  '):'La planète garde encore ses mystères. Continue à développer ses biomes pour en savoir plus.';
@@ -3135,12 +3157,37 @@ function claimDiscovery(){
  save();drawPlanet();renderUI();
  $('discovery-reward').textContent='+'+moneyFormat(reward)+'  ·  '+COSMIC_ARCHIVES[i].perk+'  ·  +2 % de revenus permanents';
  $('discovery-action').textContent='Continuer l’exploration';
+ $('discovery-hold').classList.add('hidden');
+ $('discovery-skip').classList.add('hidden');
  discoveryMode='journal';discoveryIndex=-1;
 }
 $('anomaly-signal').addEventListener('click',()=>{const i=nextSignal();if(i>=0)openDiscovery(i)});
 $('planet-log-btn').addEventListener('click',openJournal);
 $('discovery-close').addEventListener('click',closeDiscovery);
-$('discovery-action').addEventListener('click',claimDiscovery);
+// Geste tactile optionnel : appui long, ou révélation directe.
+let discoveryHoldTimer=null,discoveryHeld=false;
+function cancelDiscoveryHold(){
+ clearTimeout(discoveryHoldTimer);discoveryHoldTimer=null;
+ $('discovery-hold-fill').style.width='0%';
+ $('discovery-action').classList.remove('holding');
+}
+const revealButton=$('discovery-action');
+revealButton.addEventListener('pointerdown',e=>{
+ if(discoveryMode!=='claim')return;
+ if(e.pointerType==='mouse'&&e.button!==0)return;
+ discoveryHeld=false;cancelDiscoveryHold();
+ revealButton.classList.add('holding');$('discovery-hold-fill').style.width='100%';
+ discoveryHoldTimer=setTimeout(()=>{
+  discoveryHeld=true;cancelDiscoveryHold();claimDiscovery();
+ },950);
+});
+['pointerup','pointercancel','pointerleave'].forEach(type=>revealButton.addEventListener(type,cancelDiscoveryHold));
+revealButton.addEventListener('click',()=>{
+ if(discoveryHeld){discoveryHeld=false;return}
+ if(discoveryMode!=='claim')claimDiscovery();
+});
+revealButton.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&discoveryMode==='claim'){e.preventDefault();cancelDiscoveryHold();claimDiscovery()}});
+$('discovery-skip').addEventListener('click',()=>{cancelDiscoveryHold();claimDiscovery()});
 $('discovery-overlay').addEventListener('click',e=>{if(e.target===$('discovery-overlay'))closeDiscovery()});
 
 // Petits défis propres à chaque planète, indépendants des archives cosmiques.
