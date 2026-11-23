@@ -3281,7 +3281,7 @@ const prestigeCost=()=>Math.pow(.965,prestigeLevel(2));
 const prestigeStarter=()=>Math.floor(120*prestigeLevel(3)*Math.pow(1.18,Math.max(0,state.planet-1)));
 const multiplier=()=>Math.pow(1.16,state.planet-1);
 const bonusCount=(i,type)=>(state.bonuses[i]||[]).filter(v=>v===type).length;
-const cycleTime=i=>BIOMES[i].time*Math.pow(.95,bonusCount(i,'speed'))*researchCycle()*satelliteCycle()*prestigeCycle()*artifactCycleFactor()*artifactPowerCycleFactor();
+const cycleTime=i=>BIOMES[i].time*Math.pow(.95,bonusCount(i,'speed'))*researchCycle()*satelliteCycle()*prestigeCycle()*artifactCycleFactor()*artifactPowerCycleFactor()*(activeCosmicEvent()?.id===1?.75:1);
 const upgradeCost=i=>Math.max(1,Math.floor(BIOMES[i].cost*Math.pow(1.075,state.levels[i])*Math.pow(1.20,state.planet-1)*Math.pow(.96,bonusCount(i,'discount'))*researchCost()*satelliteCost()*prestigeCost()*artifactCostFactor()));
 const unlockCost=i=>i===0?0:Math.floor(BIOMES[i].cost*Math.pow(1.20,state.planet-1)*researchCost()*satelliteCost()*prestigeCost()*artifactCostFactor());
 // Les paliers de 25 niveaux doublent le revenu de chaque cycle :
@@ -3600,11 +3600,11 @@ function activateArtifactPower(){
 }
 
 const COSMIC_ARCHIVES=[
- {at:8,icon:'✦',title:'Premier écho',description:'Un faible signal traverse la surface de ce monde. Il semble réagir aux premiers territoires révélés.',perk:'Une nouvelle énergie parcourt la planète.'},
- {at:22,icon:'◈',title:'Le fragment enfoui',description:'Dans les couches anciennes de la planète, une structure inconnue s’est réveillée.',perk:'Une impulsion venue des profondeurs.'},
- {at:40,icon:'✺',title:'La mémoire du monde',description:'Les différents territoires se répondent. Leur équilibre libère une résonance inattendue.',perk:'La planète conserve une trace de ton exploration.'},
- {at:62,icon:'✧',title:'La pulsation stellaire',description:'Une vibration diffuse se propage jusque dans les régions les plus reculées.',perk:'Un courant rare traverse les biomes.'},
- {at:85,icon:'✵',title:'Le cœur planétaire',description:'Sous la croûte désormais florissante, une force silencieuse rayonne depuis le centre.',perk:'Le monde révèle sa dernière signature.'}
+ {at:8,icon:'✦',title:'Premier écho',description:'Un signal provient du noyau. Sa fréquence correspond au premier morceau d’un artéfact ancien.',perk:'Premier indice du mystère planétaire.'},
+ {at:22,icon:'◈',title:'Le fragment enfoui',description:'Un cristal sous les biomes renferme le second morceau du code ancien. Il semble réagir au signal initial.',perk:'Deuxième indice du mystère planétaire.'},
+ {at:40,icon:'✺',title:'La mémoire du monde',description:'La planète révèle une carte oubliée. Elle indique que plusieurs forces cosmiques alimentent un même cœur.',perk:'Troisième indice du mystère planétaire.'},
+ {at:62,icon:'✧',title:'La pulsation stellaire',description:'Les étoiles transmettent une pulsation régulière au cœur enfoui. L’artéfact attend encore sa dernière clé.',perk:'Quatrième indice du mystère planétaire.'},
+ {at:85,icon:'✵',title:'Le cœur planétaire',description:'Le dernier message est clair : réunis les trois anomalies, les trois phénomènes et le vestige restauré pour éveiller l’artéfact.',perk:'Cinquième indice du mystère planétaire.'}
 ];
 let discoveryMode='journal',discoveryIndex=-1;
 const archiveClaimed=()=>Array.isArray(state.discoveries)?state.discoveries:[];
@@ -3624,7 +3624,7 @@ function openDiscovery(index){
  $('discovery-emblem').innerHTML=bpIcon(['discovery-echo','material-fragment','nature-symbiosis','star','discovery-core'][index]||'star',38);
  $('discovery-title').textContent=event.title;
  $('discovery-description').textContent=event.description;
- $('discovery-reward').textContent='Récompense : crédits, recherche et +2 % de revenus permanents';
+ $('discovery-reward').textContent='Indice '+(index+1)+'/5 pour '+currentArtifact().name+' · crédits, recherche et +2 % de revenus';
  $('discovery-action').textContent='Maintiens pour révéler';
  $('discovery-overlay').classList.remove('hidden');
 }
@@ -4151,9 +4151,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWorlds();else i
 // Phénomènes cosmiques à débloquer une fois chacun, par monde.
 // L'heure de fin est persistante pour empêcher de rallonger un bonus en changeant de planète.
 const COSMIC_EVENTS=[
- {levels:20,name:'Pluie d’étoiles',desc:'Production augmentée pendant 90 secondes',seconds:90,factor:1.35},
- {levels:75,name:'Aurore magnétique',desc:'Production augmentée pendant 120 secondes',seconds:120,factor:1.5},
- {levels:160,name:'Alignement céleste',desc:'Production augmentée pendant 150 secondes',seconds:150,factor:1.7}
+ {levels:20,name:'Pluie d’étoiles',desc:'Récolte des fragments rares + revenus pendant 90 secondes',seconds:90,factor:1.35},
+ {levels:75,name:'Aurore magnétique',desc:'Cycles accélérés + revenus pendant 120 secondes',seconds:120,factor:1.5},
+ {levels:160,name:'Alignement céleste',desc:'Décode une énergie ancienne + revenus pendant 150 secondes',seconds:150,factor:1.7}
 ];
 
 const FX_PREF='biome-planet-cosmic-fx-v49';
@@ -4574,7 +4574,7 @@ function renderCosmicEvent(){
  lastCosmicDisplay=signature;
  workshopIconLabel($('event-caption'),['star','nature-weather','planet'][active?active.id:ready]||'star',' '+e.name,16);
  $('event-timer').textContent=active?Math.floor(left/60)+':'+String(left%60).padStart(2,'0'):'PRÊT';
- if(!planetCosmicGame)$('event-detail').textContent=active?'BONUS ACTIF · Revenus x'+e.factor:'Sur la planète · revenus x'+e.factor+' pendant '+e.seconds+' s';
+ if(!planetCosmicGame)$('event-detail').textContent=active?'BONUS ACTIF · '+e.desc:'Sur la planète · '+e.desc;
  $('event-trigger').classList.toggle('hidden',!!active||!!planetCosmicGame);
  $('event-trigger').textContent='Jouer sur la planète';
 }
@@ -5355,8 +5355,26 @@ function renderExploration(){
  }
  container.scrollTop=scroll;
 }
+function renderArtifactHud(){
+ const e=state.exploration,p=artifactProgress(),art=currentArtifact();
+ const title=$('artifact-hud-title'),sub=$('artifact-hud-sub'),count=$('artifact-hud-count');
+ if(title)title.textContent=e.artifactAwakened?'ARTÉFACT ÉVEILLÉ':'MYSTÈRE PLANÉTAIRE';
+ if(sub)sub.textContent=e.artifactAwakened?art.name+' · '+art.passive:'Retrouve les 12 éléments de '+art.name;
+ if(count)count.textContent=p.total+'/12';
+ $('artifact-hud').classList.toggle('awakened',e.artifactAwakened);
+ const button=$('artifact-power');
+ button.classList.toggle('hidden',!e.artifactAwakened);
+ if(e.artifactAwakened){
+  const left=artifactPowerRemaining();
+  button.disabled=left>0;
+  button.textContent=left>0?'✦ '+art.power+' · '+Math.floor(left/60)+':'+String(left%60).padStart(2,'0'):'✦ '+art.power+' · ACTIVER';
+  button.title=art.powerText;
+ }
+}
+
 function renderUI(){
  $('planet-hint').classList.toggle('hidden',state.levels[0]>0);
+ renderArtifactHud();
  $('money').textContent=moneyFormat(state.money);
  updateRebirthBadge();
  $('planet-tag').textContent='Planète '+state.planet+' · '+BIOMES.length+' biomes';
@@ -6016,7 +6034,7 @@ function commitRebirth(){
  rebirthConfirmOpen=false;rebirthOpen=false;
  $('rebirth-confirm-overlay').classList.add('hidden');
  $('rebirth-overlay').classList.add('hidden');
- closeWorlds();closeDiscovery();closeObjectives();closeAtlas();closeExploration();closeSideMenu(false);
+ closeWorlds();closeDiscovery();closeArtifactAwakening();stopPlanetCosmicGame();closeObjectives();closeAtlas();closeExploration();closeSideMenu(false);
  lastCosmicDisplay='';lastMissionRender='';
  refreshBiomeCards();buildPixelMap();drawPlanet();save();renderUI();
  $('biome-scroll').scrollTop=0;
@@ -6415,7 +6433,7 @@ function frame(now){
 canvas.addEventListener('click',()=>{const nextIndex=state.levels.findIndex(l=>l===0);if(nextIndex<0){toast('Tous les biomes sont déjà débloqués!');return}if(nextIndex>0&&state.money<unlockCost(nextIndex)){toast('Il te faut '+moneyFormat(unlockCost(nextIndex))+' pour ajouter '+BIOMES[nextIndex].name);return}buy(nextIndex)});
 $('next').addEventListener('click',()=>{if(cover()<99.999)return;playSound('discovery');switchWorld(state.planet+1,true);toast('Nouvelle planète découverte!','success')});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDiscovery()});
-$('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();launchVisual=null;state.exploration=normalizedExploration(null);BIOMES=makeBiomes(state.planet);normalizeProgress();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';lastMissionRender='';refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
+$('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();launchVisual=null;closeArtifactAwakening();stopPlanetCosmicGame();state.exploration=normalizedExploration(null);BIOMES=makeBiomes(state.planet);normalizeProgress();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';lastMissionRender='';refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
 // Offline earnings capped at 4 hours; preserve partial production progress.
 const offline=Math.min(40*60*1000,Math.max(0,Date.now()-(Number(state.last)||Date.now())));if(offline>5000){let earned=0;BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+offline,cycles=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);earned+=cycles*revenue(i)});state.money+=earned;if(earned>0)setTimeout(()=>toast('Pendant ton absence : +'+moneyFormat(earned)),500)}
 window.addEventListener('pagehide',()=>{state.last=Date.now();save()});document.addEventListener('visibilitychange',()=>{if(document.hidden){state.last=Date.now();save()}else{let dt=Math.min(40*60*1000,Math.max(0,Date.now()-(state.last||Date.now())));BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+dt,n=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);state.money+=n*revenue(i)});lastTick=performance.now();state.last=Date.now();save()}});
