@@ -1,5 +1,5 @@
 /* Biome Planet V20: priorité au réseau pour empêcher les versions périmées. */
-const CACHE = 'biome-planet-v78-complete-planetary-artifacts';
+const CACHE = 'biome-planet-v79-artifact-on-real-planet';
 const CORE = ['./index.html','./manifest.webmanifest','./icons/biome-planet-app.svg?v=45'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
