@@ -4647,10 +4647,12 @@ function nextSignal(){
  return COSMIC_ARCHIVES.findIndex((v,i)=>pct+1e-6>=v.at&&!claimed.includes(i));
 }
 function closeDiscovery(){
+ const finalPending=discoveryMode==='archive-final'&&artifactProgress().complete&&!state.exploration.artifactAwakened;
  cancelDiscoveryHold();
  $('discovery-overlay').classList.add('hidden');
  $('archive-decoder').classList.add('hidden');
  $('archive-final-scene').classList.add('hidden');
+ if(finalPending)setTimeout(()=>{if(!state.exploration.artifactAwakened)checkArtifactAwakening()},250);
 }
 function openDiscovery(index){
  const event=COSMIC_ARCHIVES[index];if(!event||nextSignal()!==index)return;
