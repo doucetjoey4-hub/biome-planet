@@ -3295,7 +3295,7 @@ body.cosmic-intro-playing{overflow:hidden}
 <div class="cosmic-intro-overlay hidden" id="cosmic-intro-overlay" role="dialog" aria-modal="true" aria-labelledby="cosmic-intro-title">
  <div class="cosmic-intro-stars" aria-hidden="true"></div>
  <section class="cosmic-intro-layout">
-  <div class="cosmic-intro-overline">✦ BIOME PLANET · PROLOGUE ✦</div>
+  <div class="cosmic-intro-overline">✦ TRANSMISSION 0001 · ORIGINE INCONNUE ✦</div>
   <div class="cosmic-intro-illustration" aria-hidden="true">
    <div class="cosmic-intro-orbit"></div>
    <canvas id="cosmic-intro-planet" width="520" height="520"></canvas>
@@ -3303,9 +3303,11 @@ body.cosmic-intro-playing{overflow:hidden}
    <div class="cosmic-intro-core"></div><div class="cosmic-intro-echo"></div>
   </div>
   <div class="cosmic-intro-dialog">
+   <div class="cosmic-intro-signal"><span class="cosmic-intro-signal-led"></span><span id="cosmic-intro-signal-text">BALAYAGE DU VIDE...</span></div>
    <span class="cosmic-intro-step-label" id="cosmic-intro-step-label">CHAPITRE 01 / 04</span>
    <h2 id="cosmic-intro-title">Un mystère dort sous la planète</h2>
-   <p id="cosmic-intro-description">Sous chaque monde se cache un artéfact ancien.</p>
+   <p id="cosmic-intro-description" aria-live="polite">Un signal traverse le vide...</p>
+   <p id="cosmic-intro-detail" class="cosmic-intro-detail"></p>
    <div class="cosmic-intro-progress" id="cosmic-intro-progress"></div>
    <div class="cosmic-intro-actions">
     <button type="button" id="cosmic-intro-skip" class="cosmic-intro-skip">Passer</button>
@@ -6920,21 +6922,38 @@ restoreControlCenter();
 // V81 : prologue en quatre scènes et flash avant le gameplay.
 const COSMIC_INTRO_KEY='biome-planet-cosmic-intro-v1';
 const COSMIC_INTRO_STEPS=[
- {title:'Un mystère dort sous la planète',description:'Sous chaque monde se cache un artéfact ancien. Ses fragments sont dispersés dans la planète.'},
- {title:'Retrouve les 12 éléments',description:'Découvre 3 anomalies, 3 phénomènes cosmiques, 5 secrets et 1 vestige ancien.'},
- {title:'Chaque découverte nourrit la planète',description:'Les éléments retrouvés rejoignent son cœur pour reconstruire petit à petit son pouvoir.'},
- {title:'Réveille son pouvoir',description:'Éveille l’artéfact pour obtenir un bonus permanent et un pouvoir spécial à utiliser pendant ton exploration.'}
+ {title:'Quelque chose nous appelle',description:'Depuis des milliers d’années… un signal traverse le vide.',detail:'Personne ne sait d’où il vient.',signal:'SIGNAL FAIBLE · ORIGINE INCONNUE'},
+ {title:'Une présence sous la surface',description:'Le signal ne vient pas des étoiles…',detail:'Il vient de cette planète.',signal:'SOURCE LOCALISÉE · SOUS LA SURFACE'},
+ {title:'Les douze signatures',description:'Douze signatures ont été détectées. Elles semblent appartenir à quelque chose de beaucoup plus ancien.',detail:'3 anomalies · 3 phénomènes · 5 secrets · 1 vestige',signal:'12 SIGNATURES · ANALYSE INCOMPLÈTE'},
+ {title:'Le cœur endormi',description:'Chaque découverte réveille une partie du monde.',detail:'Que se passera-t-il lorsque toutes les signatures seront réunies ?',signal:'RÉSONANCE INCONNUE · CŒUR EN SOMMEIL'},
+ {title:'La transmission interrompue',description:'« Ils ne sont pas perdus… »',detail:'« Ils attendent d’être retrouvés. »',signal:'TRANSMISSION INCONNUE · SIGNAL INTERROMPU'}
 ];
 let cosmicIntroStep=0,cosmicIntroRunning=false,cosmicIntroTransitioning=false;
+let cosmicIntroTypingTimer=null,cosmicIntroSoundTime=0;
 function cosmicIntroMarkSeen(){try{localStorage.setItem(COSMIC_INTRO_KEY,'1')}catch(e){}}
 function cosmicIntroAlreadySeen(){try{return localStorage.getItem(COSMIC_INTRO_KEY)==='1'}catch(e){return false}}
+function stopCosmicIntroTyping(){if(cosmicIntroTypingTimer!==null){clearInterval(cosmicIntroTypingTimer);cosmicIntroTypingTimer=null}}
+function typeCosmicIntroText(node,message,instant=false){
+ stopCosmicIntroTyping();
+ if(instant){node.textContent=message;return}
+ const points=Array.from(message);let at=0;
+ node.textContent='';
+ cosmicIntroTypingTimer=setInterval(()=>{
+  at=Math.min(points.length,at+2);
+  node.textContent=points.slice(0,at).join('');
+  if(at>=points.length)stopCosmicIntroTyping();
+ },26);
+}
 function renderCosmicIntro(){
  const step=COSMIC_INTRO_STEPS[cosmicIntroStep],root=$('cosmic-intro-overlay');
  root.dataset.scene=String(cosmicIntroStep+1);
- $('cosmic-intro-step-label').textContent='CHAPITRE '+String(cosmicIntroStep+1).padStart(2,'0')+' / 04';
+ $('cosmic-intro-step-label').textContent='TRANSMISSION '+String(cosmicIntroStep+1).padStart(2,'0')+' / 05';
  $('cosmic-intro-title').textContent=step.title;
- $('cosmic-intro-description').textContent=step.description;
- $('cosmic-intro-next').innerHTML=cosmicIntroStep===3?'Commencer l’exploration <span aria-hidden="true">✦</span>':'Suivant <span aria-hidden="true">›</span>';
+ const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ typeCosmicIntroText($('cosmic-intro-description'),step.description,reduced);
+ $('cosmic-intro-detail').textContent=step.detail;
+ $('cosmic-intro-signal-text').textContent=step.signal;
+ $('cosmic-intro-next').innerHTML=cosmicIntroStep===COSMIC_INTRO_STEPS.length-1?'Commencer l’exploration <span aria-hidden="true">✦</span>':'Suivant <span aria-hidden="true">›</span>';
  $('cosmic-intro-progress').replaceChildren();
  for(let i=0;i<COSMIC_INTRO_STEPS.length;i++){
   const mark=document.createElement('span');mark.className='cosmic-intro-dot'+(i===cosmicIntroStep?' current':i<cosmicIntroStep?' passed':'');
@@ -6957,6 +6976,7 @@ function startCosmicIntro(replay=false){
  if(cosmicIntroRunning||cosmicIntroTransitioning)return;
  if(!replay&&cosmicIntroAlreadySeen())return;
  cosmicIntroStep=0;cosmicIntroRunning=true;
+ stopCosmicIntroTyping();
  $('cosmic-intro-overlay').classList.remove('hidden');
  document.body.classList.add('cosmic-intro-playing');
  renderCosmicIntro();
@@ -6965,6 +6985,7 @@ function startCosmicIntro(replay=false){
 function closeCosmicIntro(withFlash=false){
  if(!cosmicIntroRunning||cosmicIntroTransitioning)return;
  cosmicIntroTransitioning=true;cosmicIntroMarkSeen();
+ stopCosmicIntroTyping();
  if(!withFlash){
   cosmicIntroRunning=false;cosmicIntroTransitioning=false;
   document.body.classList.remove('cosmic-intro-playing');
@@ -6989,13 +7010,13 @@ function closeCosmicIntro(withFlash=false){
 $('cosmic-intro-skip').addEventListener('click',()=>closeCosmicIntro(false));
 $('cosmic-intro-next').addEventListener('click',()=>{
  if(cosmicIntroTransitioning)return;
- if(cosmicIntroStep<3){cosmicIntroStep++;renderCosmicIntro()}
+ if(cosmicIntroStep<COSMIC_INTRO_STEPS.length-1){cosmicIntroStep++;renderCosmicIntro()}
  else closeCosmicIntro(true);
 });
 $('cosmic-intro-overlay').addEventListener('keydown',e=>{
  if(e.key==='Escape'){e.preventDefault();closeCosmicIntro(false)}
  if(e.key==='ArrowLeft'&&cosmicIntroStep>0){cosmicIntroStep--;renderCosmicIntro()}
- if(e.key==='ArrowRight'&&cosmicIntroStep<3){cosmicIntroStep++;renderCosmicIntro()}
+ if(e.key==='ArrowRight'&&cosmicIntroStep<COSMIC_INTRO_STEPS.length-1){cosmicIntroStep++;renderCosmicIntro()}
 });
 
 let lastTick=performance.now(),lastSave=Date.now(),lastExplorationScan=0,lastExplorePanelRefresh=0,lastUiRender=0,lastWorkshopDraw=0;
@@ -7047,4 +7068,4 @@ document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 if(!cosmicIntroAlreadySeen())requestAnimationFrame(()=>startCosmicIntro());
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=81').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=82').catch(console.warn));}</script></body></html>
