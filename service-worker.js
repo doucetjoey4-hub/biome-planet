@@ -1,5 +1,5 @@
 /* Biome Planet V20: priorité au réseau pour empêcher les versions périmées. */
-const CACHE = 'biome-planet-v74-live-planet-cosmic-play';
+const CACHE = 'biome-planet-v75-matched-shooting-stars';
 const CORE = ['./index.html','./manifest.webmanifest','./icons/biome-planet-app.svg?v=45'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
