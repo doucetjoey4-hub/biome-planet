@@ -3284,7 +3284,7 @@ body.cosmic-intro-playing{overflow:hidden}
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
 <meta name="theme-color" content="#0b192c">
 </head>
-<body><main class="app"><div class="balance"><div class="balance-money"><div class="muted"><span class="hud-finance-mark">◈</span> CRÉDITS COSMIQUES</div><div class="amount" id="money">0 $</div></div><div class="balance-actions"><div class="income" id="rates">+0 $ / min</div><button type="button" class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu principal" aria-controls="side-menu" aria-expanded="false"><span aria-hidden="true">☰</span><span class="nav-dot hidden" id="nav-dot" aria-hidden="true"></span><span class="nav-count hidden" id="nav-count" aria-hidden="true">0</span></button></div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">Planètes</span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-progress-rail" aria-hidden="true"><span id="planet-progress-fill"></span></div><div class="planet-stage"><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><div id="artifact-awakening-live" class="artifact-awakening-live hidden" aria-hidden="true"><canvas id="artifact-awakening-live-fx" width="520" height="520"></canvas><div id="artifact-awakening-live-runes" class="artifact-awakening-live-runes"></div><div class="artifact-awakening-live-label">ÉVEIL DU CŒUR PLANÉTAIRE</div></div><button type="button" class="orbital-find hidden" id="orbital-find" aria-label="Collecter une anomalie spatiale"><span id="orbital-glyph">✧</span></button><button type="button" class="relic-find hidden" id="relic-find" aria-label="Examiner un site mystérieux">⌁</button><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><canvas id="cosmic-fx" aria-hidden="true"></canvas>
+<body><main class="app"><div class="balance"><div class="balance-money"><div class="muted"><span class="hud-finance-mark">◈</span> CRÉDITS COSMIQUES</div><div class="amount" id="money">0 $</div></div><div class="balance-actions"><div class="income" id="rates">+0 $ / min</div><button type="button" class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu principal" aria-controls="side-menu" aria-expanded="false"><span aria-hidden="true">☰</span><span class="nav-dot hidden" id="nav-dot" aria-hidden="true"></span><span class="nav-count hidden" id="nav-count" aria-hidden="true">0</span></button></div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">Planètes</span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-progress-rail" aria-hidden="true"><span id="planet-progress-fill"></span></div><div class="planet-stage"><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><div class="planet-milestone hidden" id="planet-milestone" aria-live="polite"><span class="planet-milestone-ring"></span><span class="planet-milestone-sigil" id="planet-milestone-sigil">✧</span><div class="planet-milestone-message"><small id="planet-milestone-label">TRANSMISSION RETROUVÉE</small><strong id="planet-milestone-title">La planète répond</strong><span id="planet-milestone-text"></span></div></div><div id="artifact-awakening-live" class="artifact-awakening-live hidden" aria-hidden="true"><canvas id="artifact-awakening-live-fx" width="520" height="520"></canvas><div id="artifact-awakening-live-runes" class="artifact-awakening-live-runes"></div><div class="artifact-awakening-live-label">ÉVEIL DU CŒUR PLANÉTAIRE</div></div><button type="button" class="orbital-find hidden" id="orbital-find" aria-label="Collecter une anomalie spatiale"><span id="orbital-glyph">✧</span></button><button type="button" class="relic-find hidden" id="relic-find" aria-label="Examiner un site mystérieux">⌁</button><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><canvas id="cosmic-fx" aria-hidden="true"></canvas>
 <div class="planet-cosmic-play hidden" id="planet-cosmic-play" aria-label="Interaction cosmique sur la planète">
  <div class="planet-cosmic-object-layer" id="planet-cosmic-objects"></div>
  <div class="planet-cosmic-interact hidden" id="planet-cosmic-interact" tabindex="0"></div>
@@ -3610,6 +3610,7 @@ function normalizedExploration(input,existingLevels){
   artifactCelebrated:!!d.artifactCelebrated,
   artifactPowerCooldown:Math.max(0,Number(d.artifactPowerCooldown)||0),
   artifactPowerUntil:Math.max(0,Number(d.artifactPowerUntil)||0),
+  milestoneScenes:[...new Set(Array.isArray(d.milestoneScenes)?d.milestoneScenes.filter(n=>[3,6,9].includes(n)):[])],
   nextEncounterAt:Number.isFinite(d.nextEncounterAt)?d.nextEncounterAt:Date.now()+75000
  };
 }
@@ -4043,6 +4044,47 @@ function artifactPowerFactor(){return artifactActivePower()&&['burst','surge'].i
 function artifactCycleFactor(){return artifactBonus('speed')?.90:1}
 function artifactPowerCycleFactor(){return artifactActivePower()&&currentArtifact().powerKind==='haste'?.50:1}
 function artifactCostFactor(){return artifactBonus('discount')?.92:1}
+// Micro-cutscenes persistantes : jouées uniquement lorsqu'un seuil vient d'être franchi.
+const PLANET_MILESTONE_STORIES={
+ 3:{label:'ÉCHO 01 / 03 · RÉSONANCE',title:'La planète a répondu',text:'Quelque chose s’est réveillé sous la surface…',sigil:'✧'},
+ 6:{label:'ÉCHO 02 / 03 · SOURCE INCONNUE',title:'Le signal se renforce',text:'Des lignes d’énergie anciennes commencent à se rejoindre.',sigil:'◈'},
+ 9:{label:'ÉCHO 03 / 03 · TRANSMISSION',title:'Nous sommes toujours là',text:'« Ils attendent… » · Le dernier message reste incomplet.',sigil:'✦'}
+};
+let planetMilestoneTimer=null;
+function closePlanetMilestone(){
+ if(planetMilestoneTimer!==null){clearTimeout(planetMilestoneTimer);planetMilestoneTimer=null}
+ const layer=$('planet-milestone');
+ if(layer){layer.classList.add('hidden');layer.classList.remove('playing')}
+}
+function showPlanetMilestone(count,planet){
+ if(planet!==state.planet||cosmicIntroRunning||liveArtifactRitual)return;
+ const scene=PLANET_MILESTONE_STORIES[count],layer=$('planet-milestone');
+ if(!scene||!layer)return;
+ closePlanetMilestone();
+ $('planet-milestone-label').textContent=scene.label;
+ $('planet-milestone-title').textContent=scene.title;
+ $('planet-milestone-text').textContent=scene.text;
+ $('planet-milestone-sigil').textContent=scene.sigil;
+ layer.classList.remove('hidden');
+ void layer.offsetWidth;
+ layer.classList.add('playing');
+ const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ planetMilestoneTimer=setTimeout(closePlanetMilestone,reduced?2600:4900);
+}
+function maybeShowPlanetMilestone(previous){
+ const e=state.exploration,now=artifactProgress().total;
+ const count=[3,6,9].find(n=>previous<n&&now>=n&&!e.milestoneScenes.includes(n));
+ if(!count)return;
+ e.milestoneScenes.push(count);
+ save();
+ const planet=state.planet;
+ setTimeout(()=>{
+  if(planet!==state.planet)return;
+  if(!$('discovery-overlay').classList.contains('hidden'))closeDiscovery();
+  showPlanetMilestone(count,planet);
+ },480);
+}
+
 function checkArtifactAwakening(){
  const e=state.exploration;
  if(!e||e.artifactAwakened||!artifactProgress().complete)return false;
@@ -4219,6 +4261,7 @@ function claimDiscovery(){
  // Gain proportionné à la production réelle, jamais de prix négatifs.
  const production=BIOMES.reduce((n,b,k)=>n+(state.levels[k]>0?revenue(k)*60/Math.max(.5,cycleTime(k)):0),0);
  const reward=Math.max(30*state.planet,Math.round(production*.55));
+ const before=artifactProgress().total;
  state.money+=reward;
  state.discoveries.push(i);
  earnResearch(1,'Découverte cosmique');
@@ -4230,6 +4273,7 @@ function claimDiscovery(){
  $('discovery-skip').classList.add('hidden');
  discoveryMode='journal';discoveryIndex=-1;
  checkArtifactAwakening();
+ maybeShowPlanetMilestone(before);
 }
 $('anomaly-signal').addEventListener('click',()=>{const i=nextSignal();if(i>=0)openDiscovery(i)});
 $('planet-log-btn').addEventListener('click',openJournal);
@@ -4624,7 +4668,7 @@ function switchWorld(num,award=false){
  const p=Math.floor(Number(num));
  if(!Number.isFinite(p)||p<1||p>999)return;
  if(p===state.planet){closeWorlds();return}
- stopHold();closeArtifactAwakening();launchVisual=null;workshopAnim=null;workshopPreviewCanvas=null;save();playSound('navigate');
+ stopHold();closePlanetMilestone();closeArtifactAwakening();launchVisual=null;workshopAnim=null;workshopPreviewCanvas=null;save();playSound('navigate');
  const stored=state.worlds[p];
  state.planet=p;BIOMES=makeBiomes(p);
  state.levels=stored?.levels?[...stored.levels]:BIOMES.map(()=>0);
@@ -5049,6 +5093,7 @@ function availableCosmicEvent(){
 function triggerCosmicEvent(){
  const i=availableCosmicEvent();if(i<0)return;
  const event=COSMIC_EVENTS[i];
+ const before=artifactProgress().total;
  state.events.push(i); // Chaque phénomène rejoint la collection de cette planète.
  state.eventActive={id:i,until:Date.now()+event.seconds*1000};
  // Les phénomènes ne sont plus simplement des multiplicateurs identiques.
@@ -5062,7 +5107,7 @@ function triggerCosmicEvent(){
   }
  }
  playSound('event');
- save();renderCosmicEvent();renderUI();checkArtifactAwakening();toast('✦ '+event.name+' · phénomène '+artifactProgress().counts[1]+'/3 de l’artéfact','event');
+ save();renderCosmicEvent();renderUI();checkArtifactAwakening();maybeShowPlanetMilestone(before);toast('✦ '+event.name+' · phénomène '+artifactProgress().counts[1]+'/3 de l’artéfact','event');
 }
 function cosmicMultiplier(){
  const active=activeCosmicEvent();
@@ -5323,11 +5368,12 @@ function findRelic(){
 function monumentPrice(){return Math.max(260*state.planet,Math.round(planetIncome()*.95))}
 function restoreRelic(){
  if(!state.exploration.monumentFound||state.exploration.monumentRestored||state.money<monumentPrice())return;
- const price=monumentPrice();
+ const price=monumentPrice(),before=artifactProgress().total;
  state.money-=price;state.exploration.monumentRestored=true;
  earnResearch(4,'Monument restauré');playSound('claim');
  save();renderUI();renderExploration();drawPlanet();
  checkArtifactAwakening();
+ maybeShowPlanetMilestone(before);
  toast(relicName()+' restauré · clé de l’artéfact obtenue !','success');
 }
 function eventTick(){
@@ -5344,6 +5390,7 @@ function eventTick(){
 function claimEncounter(){
  const encounter=state.exploration.encounter;
  if(!encounter)return;
+ const before=artifactProgress().total;
  state.exploration.encounter=null;
  state.exploration.encounterCount++;
  if(!state.exploration.encounterTypes.includes(encounter.id))state.exploration.encounterTypes.push(encounter.id);
@@ -5356,6 +5403,7 @@ function claimEncounter(){
  else earnResearch(1,'Anomalie spatiale');
  playSound('event');save();renderUI();drawPlanet();renderExploration();
  checkArtifactAwakening();
+ maybeShowPlanetMilestone(before);
  toast('Anomalie '+artifactProgress().counts[0]+'/3 ajoutée à l’artéfact · +'+moneyFormat(reward),'reward');
 }
 function weatherStatus(){
@@ -7056,7 +7104,7 @@ function frame(now){
 canvas.addEventListener('click',()=>{const nextIndex=state.levels.findIndex(l=>l===0);if(nextIndex<0){toast('Tous les biomes sont déjà débloqués!');return}if(nextIndex>0&&state.money<unlockCost(nextIndex)){toast('Il te faut '+moneyFormat(unlockCost(nextIndex))+' pour ajouter '+BIOMES[nextIndex].name);return}buy(nextIndex)});
 $('next').addEventListener('click',()=>{if(cover()<99.999)return;playSound('discovery');switchWorld(state.planet+1,true);toast('Nouvelle planète découverte!','success')});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDiscovery()});
-$('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();launchVisual=null;closeArtifactAwakening();stopPlanetCosmicGame();state.exploration=normalizedExploration(null);BIOMES=makeBiomes(state.planet);normalizeProgress();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';lastMissionRender='';refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
+$('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();launchVisual=null;closePlanetMilestone();closeArtifactAwakening();stopPlanetCosmicGame();state.exploration=normalizedExploration(null);BIOMES=makeBiomes(state.planet);normalizeProgress();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';lastMissionRender='';refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
 // Offline earnings capped at 4 hours; preserve partial production progress.
 const offline=Math.min(40*60*1000,Math.max(0,Date.now()-(Number(state.last)||Date.now())));if(offline>5000){let earned=0;BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+offline,cycles=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);earned+=cycles*revenue(i)});state.money+=earned;if(earned>0)setTimeout(()=>toast('Pendant ton absence : +'+moneyFormat(earned)),500)}
 window.addEventListener('pagehide',()=>{state.last=Date.now();save()});document.addEventListener('visibilitychange',()=>{if(document.hidden){state.last=Date.now();save()}else{let dt=Math.min(40*60*1000,Math.max(0,Date.now()-(state.last||Date.now())));BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+dt,n=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);state.money+=n*revenue(i)});lastTick=performance.now();state.last=Date.now();save()}});
