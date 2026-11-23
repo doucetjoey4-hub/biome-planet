@@ -4079,14 +4079,18 @@ function startPlanetCosmicGame(id){
    const b=document.createElement('button');b.type='button';b.className='planet-falling-star';
    b.setAttribute('aria-label','Attraper une étoile filante');
    b.innerHTML='<span class="falling-tail"></span><span class="falling-core"></span>';
-   const star={node:b,x:28+i*17,y:-30-i*25,speed:17+i*4,phase:i*2};
+   // Même origine aléatoire que les petites étoiles FX : x = 0..150 %
+   // de la scène, y = -15..35 %, puis trajectoire diagonale vers le bas-gauche.
+   const star={node:b,x:0,y:0,speed:.43+Math.random()*.36};
+   spawnPlanetFallingStar(star);
+   b.style.left=star.x+'%';b.style.top=star.y+'%';
    b.addEventListener('click',e=>{
     e.stopPropagation();
     if(game.done||b.classList.contains('collected'))return;
     b.classList.add('collected');game.caught++;
     planetCosmicMessage('Étoiles attrapées : '+game.caught+' / 3');
     if(game.caught>=3){finishPlanetCosmicGame();return}
-    setTimeout(()=>{b.classList.remove('collected');star.y=-24;star.x=18+Math.random()*65},380);
+    setTimeout(()=>{if(planetCosmicGame!==game)return;spawnPlanetFallingStar(star);b.style.left=star.x+'%';b.style.top=star.y+'%';b.classList.remove('collected')},380);
    });
    game.stars.push(star);objects.appendChild(b);
   }
@@ -4142,17 +4146,28 @@ function startPlanetCosmicGame(id){
   spin(35);
  }
 }
+function spawnPlanetFallingStar(star){
+ // Distribution identique au tirage de drawCosmicFX pour la pluie d'étoiles.
+ star.x=Math.random()*150;
+ star.y=Math.random()*50-15;
+ star.speed=.43+Math.random()*.36;
+}
 function updatePlanetCosmicGame(now){
  const game=planetCosmicGame;
  if(!game)return;
  if(game.planet!==state.planet||(!game.done&&availableCosmicEvent()!==game.id)){stopPlanetCosmicGame();return}
  if(game.id!==0||game.done||document.hidden)return;
  const elapsed=Math.min(0.05,Math.max(0,(now-(game.lastFrame||now))/1000));game.lastFrame=now;
+ const box=$('planet-cosmic-play').getBoundingClientRect();
+ if(box.width<=0||box.height<=0)return;
+ const u=Math.min(box.width,box.height);
  for(const star of game.stars){
   if(star.node.classList.contains('collected'))continue;
-  star.y+=star.speed*elapsed;
-  star.x-=star.speed*.21*elapsed;
-  if(star.y>108||star.x< -8){star.y=-22-Math.random()*26;star.x=25+Math.random()*75}
+  // Même vitesse et même inclinaison que les étoiles d'ambiance.
+  const velocity=u*star.speed;
+  star.y+=velocity*elapsed/box.height*100;
+  star.x-=velocity*.56*elapsed/box.width*100;
+  if(star.y>115||star.x< -12)spawnPlanetFallingStar(star);
   star.node.style.left=star.x+'%';star.node.style.top=star.y+'%';
  }
 }
@@ -6135,4 +6150,4 @@ document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=74').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=75').catch(console.warn));}</script></body></html>
