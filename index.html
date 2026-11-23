@@ -3141,7 +3141,7 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
 <meta name="theme-color" content="#0b192c">
 </head>
-<body><main class="app"><div class="balance"><div class="balance-money"><div class="muted"><span class="hud-finance-mark">◈</span> CRÉDITS COSMIQUES</div><div class="amount" id="money">0 $</div></div><div class="balance-actions"><div class="income" id="rates">+0 $ / min</div><button type="button" class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu principal" aria-controls="side-menu" aria-expanded="false"><span aria-hidden="true">☰</span><span class="nav-dot hidden" id="nav-dot" aria-hidden="true"></span><span class="nav-count hidden" id="nav-count" aria-hidden="true">0</span></button></div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">Planètes</span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-progress-rail" aria-hidden="true"><span id="planet-progress-fill"></span></div><div class="planet-stage"><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><button type="button" class="orbital-find hidden" id="orbital-find" aria-label="Collecter une anomalie spatiale"><span id="orbital-glyph">✧</span></button><button type="button" class="relic-find hidden" id="relic-find" aria-label="Examiner un site mystérieux">⌁</button><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><canvas id="cosmic-fx" aria-hidden="true"></canvas>
+<body><main class="app"><div class="balance"><div class="balance-money"><div class="muted"><span class="hud-finance-mark">◈</span> CRÉDITS COSMIQUES</div><div class="amount" id="money">0 $</div></div><div class="balance-actions"><div class="income" id="rates">+0 $ / min</div><button type="button" class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu principal" aria-controls="side-menu" aria-expanded="false"><span aria-hidden="true">☰</span><span class="nav-dot hidden" id="nav-dot" aria-hidden="true"></span><span class="nav-count hidden" id="nav-count" aria-hidden="true">0</span></button></div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">Planètes</span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-progress-rail" aria-hidden="true"><span id="planet-progress-fill"></span></div><div class="planet-stage"><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><div id="artifact-awakening-live" class="artifact-awakening-live hidden" aria-hidden="true"><canvas id="artifact-awakening-live-fx" width="520" height="520"></canvas><div id="artifact-awakening-live-runes" class="artifact-awakening-live-runes"></div><div class="artifact-awakening-live-label">ÉVEIL DU CŒUR PLANÉTAIRE</div></div><button type="button" class="orbital-find hidden" id="orbital-find" aria-label="Collecter une anomalie spatiale"><span id="orbital-glyph">✧</span></button><button type="button" class="relic-find hidden" id="relic-find" aria-label="Examiner un site mystérieux">⌁</button><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><canvas id="cosmic-fx" aria-hidden="true"></canvas>
 <div class="planet-cosmic-play hidden" id="planet-cosmic-play" aria-label="Interaction cosmique sur la planète">
  <div class="planet-cosmic-object-layer" id="planet-cosmic-objects"></div>
  <div class="planet-cosmic-interact hidden" id="planet-cosmic-interact" tabindex="0"></div>
@@ -3242,14 +3242,8 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  </section>
 </div>
 <div class="artifact-awakening-overlay hidden" id="artifact-awakening-overlay">
- <section class="artifact-awakening-stage" role="dialog" aria-modal="true" aria-labelledby="artifact-awakening-title">
+ <section class="artifact-awakening-stage artifact-result-only" role="dialog" aria-modal="true" aria-labelledby="artifact-awakening-title">
   <div class="artifact-awakening-top">✦ MYSTÈRE PLANÉTAIRE RÉSOLU ✦</div>
-  <div class="artifact-awakening-scene">
-   <div class="artifact-awakening-planet"></div>
-   <div class="artifact-awakening-runes" id="artifact-awakening-runes"></div>
-   <div class="artifact-awakening-core" id="artifact-awakening-core"></div>
-   <div class="artifact-awakening-wave"></div>
-  </div>
   <div class="artifact-awakening-heading">ARTÉFACT ÉVEILLÉ</div>
   <h2 id="artifact-awakening-title">Cœur planétaire</h2>
   <p id="artifact-awakening-world"></p>
@@ -3689,35 +3683,155 @@ $('toast').addEventListener('pointercancel',()=>{
 $('toast').addEventListener('click',()=>{if($('toast').classList.contains('show'))dismissToast()});
 
 // Les archives se découvrent uniquement en développant le monde.
+// V79 : la cérémonie se déroule SUR LE CANVAS DE LA VRAIE PLANÈTE.
+// Les runes ne sont pas un autre globe : elles convergent physiquement vers son centre.
+let liveArtifactRitual=null;
+const artifactRuneIcons=[
+ 'signal','star','material-fragment',
+ 'nature-weather','planet','discovery-core',
+ 'discovery-echo','material-crystal','nature-life',
+ 'target','lightning','archive'
+];
+const artifactClamp=(v,min,max)=>Math.min(max,Math.max(min,v));
+const artifactEase=v=>{const t=artifactClamp(v,0,1);return t*t*(3-2*t)};
 function showArtifactAwakening(){
  if(!state.exploration?.artifactAwakened)return;
+ closeArtifactAwakening();
  closeDiscovery();
- const overlay=$('artifact-awakening-overlay'),item=currentArtifact();
+ const item=currentArtifact(),planet=state.planet;
  $('artifact-awakening-title').textContent=item.name;
- $('artifact-awakening-world').textContent='Planète '+state.planet+' · '+worldName(state.planet);
+ $('artifact-awakening-world').textContent='Planète '+planet+' · '+worldName(planet);
  $('artifact-awakening-passive').textContent=item.passive;
  $('artifact-awakening-power').textContent=item.power+' · '+item.powerText;
- const core=$('artifact-awakening-core');core.innerHTML=bpIcon(item.icon,68);
- core.style.setProperty('--artifact-color',item.color);
- const runes=$('artifact-awakening-runes');runes.replaceChildren();
- const glyphs=['signal','star','material-fragment','nature-weather','discovery-echo','archive','planet','discovery-core','target','lightning','material-crystal','nature-life'];
- glyphs.forEach((name,i)=>{
-  const rune=document.createElement('span');rune.className='artifact-awakening-rune';
-  rune.innerHTML=bpIcon(name,22);
-  rune.style.setProperty('--n',i);
-  rune.style.setProperty('--angle',(i*30)+'deg');
-  rune.style.setProperty('--delay',(i*.065)+'s');
-  runes.append(rune);
+ const holder=document.querySelector('.planet-stage .planet-holder');
+ const layer=$('artifact-awakening-live'),runes=$('artifact-awakening-live-runes');
+ if(!holder||!layer){$('artifact-awakening-overlay').classList.remove('hidden');return}
+ // On replace la vraie planète dans le champ de vision, sans créer une fenêtre de planète.
+ holder.scrollIntoView({block:'center',behavior:'instant'});
+ runes.replaceChildren();
+ const symbols=artifactRuneIcons.map((icon,i)=>{
+  const el=document.createElement('span');
+  el.className='artifact-awakening-live-rune';
+  el.innerHTML=bpIcon(icon,24);
+  el.style.color=i<3?'#b2e8fb':i<6?'#b6e8d1':i<11?'#d9c6ff':'#ffe4ab';
+  runes.appendChild(el);
+  return el;
  });
- overlay.classList.remove('hidden');
- overlay.classList.remove('playing');
- void overlay.offsetWidth;
- overlay.classList.add('playing');
+ layer.classList.remove('hidden');
+ document.body.classList.add('artifact-ritual-running');
+ const ctxFx=$('artifact-awakening-live-fx').getContext('2d');
+ liveArtifactRitual={
+  planet,item,started:performance.now(),ctx:ctxFx,symbols,
+  stage:holder,layer,lastFrame:0,finished:false
+ };
  playSound('discovery');
+ liveArtifactRitual.frame=requestAnimationFrame(animateLiveArtifactAwakening);
+}
+function animateLiveArtifactAwakening(now){
+ const ritual=liveArtifactRitual;
+ if(!ritual||ritual.planet!==state.planet)return;
+ const {ctx,symbols,item,stage}=ritual;
+ const elapsed=now-ritual.started;
+ const canvas=ctx.canvas;
+ ctx.clearRect(0,0,520,520);
+ const scale=stage.getBoundingClientRect().width/520;
+ if(!scale||!Number.isFinite(scale)){
+  ritual.frame=requestAnimationFrame(animateLiveArtifactAwakening);
+  return;
+ }
+ const reduceMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ const t=reduceMotion?elapsed*3:elapsed;
+ const phase=t<1300?0:t<3700?1:2;
+ const center=260,r=222;
+ // L'éclat reste strictement sur la planète d'origine, jamais une copie.
+ ctx.save();
+ if(phase===0){
+  ctx.beginPath();ctx.ellipse(center,center,244,145,-.26,0,Math.PI*2);
+  ctx.strokeStyle='rgba(147,244,244,.30)';ctx.lineWidth=2;ctx.stroke();
+ }
+ const absorbed=[];
+ symbols.forEach((node,i)=>{
+  const angle=i*Math.PI/6-.8+(t/6000);
+  const orbitX=Math.cos(angle)*240;
+  const orbitY=Math.sin(angle)*235;
+  const delay=i*85;
+  const toward=artifactEase((t-1300-delay)/1650);
+  const x=orbitX*(1-toward);
+  const y=orbitY*(1-toward);
+  const alpha=artifactClamp(t/480-i*.035,0,1)*(1-artifactEase((toward-.76)/.24));
+  const radius=1-.76*toward;
+  node.style.opacity=String(alpha);
+  node.style.transform='translate(-50%,-50%) translate('+x*scale+'px,'+y*scale+'px) scale('+radius+')';
+  if(t>=1300+delay&&t<3100+delay){
+   const tail=artifactEase((t-1300-delay)/1650);
+   const gradient=ctx.createLinearGradient(center+x*1.34,center+y*1.34,center+x,center+y);
+   gradient.addColorStop(0,'rgba(110,217,255,0)');
+   gradient.addColorStop(1,'rgba(174,255,237,'+(alpha*.8)+')');
+   ctx.strokeStyle=gradient;ctx.lineWidth=3.8*(1-tail)+.5;
+   ctx.beginPath();ctx.moveTo(center+x*1.34,center+y*1.34);
+   ctx.lineTo(center+x,center+y);ctx.stroke();
+  }
+  if(toward>=.98)absorbed.push(i);
+ });
+ if(phase===2){
+  const awakening=artifactEase((t-3100)/900);
+  const glow=ctx.createRadialGradient(center,center,8,center,center,r);
+  glow.addColorStop(0,'rgba(245,255,229,'+(.65*awakening)+')');
+  glow.addColorStop(.24,'rgba(136,255,221,'+(.42*awakening)+')');
+  glow.addColorStop(1,'rgba(84,206,255,0)');
+  ctx.save();ctx.beginPath();ctx.arc(center,center,r,0,Math.PI*2);ctx.clip();
+  ctx.fillStyle=glow;ctx.fillRect(38,38,444,444);ctx.restore();
+  if(t>3450){
+   const wave=artifactClamp((t-3450)/1150,0,1);
+   ctx.strokeStyle='rgba(167,255,232,'+(.75*(1-wave))+')';
+   ctx.lineWidth=11*(1-wave)+1;
+   ctx.shadowColor=item.color;ctx.shadowBlur=24;
+   ctx.beginPath();ctx.arc(center,center,25+280*wave,0,Math.PI*2);ctx.stroke();
+  }
+  if(t>3800){
+   ctx.save();ctx.strokeStyle=item.color;ctx.globalAlpha=artifactClamp((t-3800)/500,0,.83);
+   ctx.lineWidth=3;ctx.shadowColor=item.color;ctx.shadowBlur=22;
+   ctx.beginPath();
+   for(let n=0;n<6;n++){
+    const a=n*Math.PI/3-Math.PI/2;
+    const rr=n%2===0?40:22;
+    const xx=center+Math.cos(a)*rr,yy=center+Math.sin(a)*rr;
+    if(n===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);
+   }
+   ctx.closePath();ctx.stroke();ctx.restore();
+  }
+ }
+ ctx.restore();
+ if(t>=4800){
+  ritual.finished=true;
+  finishLiveArtifactAwakening();
+ }else{
+  ritual.frame=requestAnimationFrame(animateLiveArtifactAwakening);
+ }
+}
+function finishLiveArtifactAwakening(){
+ if(!liveArtifactRitual||!liveArtifactRitual.finished)return;
+ const planet=liveArtifactRitual.planet;
+ // La conclusion seule est un panneau : toute la cérémonie a eu lieu sur le globe.
+ if(planet===state.planet){
+  $('artifact-awakening-overlay').classList.remove('hidden');
+  $('artifact-awakening-continue').focus();
+ }
+ document.body.classList.remove('artifact-ritual-running');
+ $('artifact-awakening-live').classList.add('hidden');
+ $('artifact-awakening-live-runes').replaceChildren();
+ $('artifact-awakening-live-fx').getContext('2d').clearRect(0,0,520,520);
+ liveArtifactRitual=null;
 }
 function closeArtifactAwakening(){
+ if(liveArtifactRitual?.frame)cancelAnimationFrame(liveArtifactRitual.frame);
+ liveArtifactRitual=null;
+ document.body.classList.remove('artifact-ritual-running');
+ $('artifact-awakening-live').classList.add('hidden');
+ $('artifact-awakening-live-runes').replaceChildren();
+ const c=$('artifact-awakening-live-fx');
+ c.getContext('2d').clearRect(0,0,520,520);
  $('artifact-awakening-overlay').classList.add('hidden');
- $('artifact-awakening-overlay').classList.remove('playing');
 }
 $('artifact-awakening-continue').addEventListener('click',closeArtifactAwakening);
 $('artifact-awakening-overlay').addEventListener('keydown',e=>{if(e.key==='Escape')closeArtifactAwakening()});
