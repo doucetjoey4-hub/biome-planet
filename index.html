@@ -2946,7 +2946,10 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
 <div class="planet-cosmic-play hidden" id="planet-cosmic-play" aria-label="Interaction cosmique sur la planète">
  <div class="planet-cosmic-object-layer" id="planet-cosmic-objects"></div>
  <div class="planet-cosmic-interact hidden" id="planet-cosmic-interact" tabindex="0"></div>
-</div></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Jouer</button><button type="button" class="planet-cosmic-direct hidden" id="planet-cosmic-direct">Activer directement</button></div></div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2><span class="biome-title-glyph">◈</span> MODULES DE BIOMES <span class="biome-title-index" id="biome-title-index"></span></h2><button type="button" class="planet-layout-toggle" id="planet-layout-toggle" aria-pressed="false" aria-label="Agrandir la planète">⤢ Planète</button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section></div></main>
+</div></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Jouer</button><button type="button" class="planet-cosmic-direct hidden" id="planet-cosmic-direct">Activer directement</button></div></div><div class="artifact-hud" id="artifact-hud">
+ <button type="button" id="artifact-open" class="artifact-open" aria-label="Ouvrir le mystère planétaire"><span class="artifact-hud-icon">✧</span><span class="artifact-hud-label"><b id="artifact-hud-title">MYSTÈRE PLANÉTAIRE</b><small id="artifact-hud-sub">0 / 12 éléments retrouvés</small></span><span class="artifact-hud-count" id="artifact-hud-count">0/12</span></button>
+ <button type="button" id="artifact-power" class="artifact-power hidden">Activer le pouvoir</button>
+</div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2><span class="biome-title-glyph">◈</span> MODULES DE BIOMES <span class="biome-title-index" id="biome-title-index"></span></h2><button type="button" class="planet-layout-toggle" id="planet-layout-toggle" aria-pressed="false" aria-label="Agrandir la planète">⤢ Planète</button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section></div></main>
 <div class="side-menu-overlay hidden" id="side-menu-overlay">
  <aside class="side-menu" id="side-menu" role="dialog" aria-modal="true" aria-labelledby="side-menu-title">
   <div class="side-menu-head"><div class="bp-menu-heading"><div class="bp-menu-brand"><span class="bp-brand-sigil" aria-hidden="true"><img src="./icons/biome-planet-app.svg" alt="" width="42" height="42" decoding="async"></span><span class="bp-brand-wordmark">BIOME <b>PLANET</b><small>ORBITAL COMMAND</small></span></div><h2 id="side-menu-title">Centre de contrôle</h2><p id="menu-world-info">Planète Aube · Exploration en cours</p></div><button type="button" id="nav-close" class="nav-close" aria-label="Fermer le menu">✕</button></div>
@@ -3039,6 +3042,22 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
   <button type="button" class="cosmic-signal-skip" id="cosmic-signal-skip">Activer directement</button>
  </section>
 </div>
+<div class="artifact-awakening-overlay hidden" id="artifact-awakening-overlay">
+ <section class="artifact-awakening-stage" role="dialog" aria-modal="true" aria-labelledby="artifact-awakening-title">
+  <div class="artifact-awakening-top">✦ MYSTÈRE PLANÉTAIRE RÉSOLU ✦</div>
+  <div class="artifact-awakening-scene">
+   <div class="artifact-awakening-planet"></div>
+   <div class="artifact-awakening-runes" id="artifact-awakening-runes"></div>
+   <div class="artifact-awakening-core" id="artifact-awakening-core"></div>
+   <div class="artifact-awakening-wave"></div>
+  </div>
+  <div class="artifact-awakening-heading">ARTÉFACT ÉVEILLÉ</div>
+  <h2 id="artifact-awakening-title">Cœur planétaire</h2>
+  <p id="artifact-awakening-world"></p>
+  <div class="artifact-awakening-reward"><div><b>POUVOIR PERMANENT</b><span id="artifact-awakening-passive"></span></div><div><b>POUVOIR À ACTIVER</b><span id="artifact-awakening-power"></span></div></div>
+  <button type="button" id="artifact-awakening-continue">Continuer l'exploration</button>
+ </section>
+</div>
 <div class="discovery-overlay hidden" id="discovery-overlay">
   <section class="discovery-dialog" role="dialog" aria-modal="true" aria-labelledby="discovery-title">
     <div class="discovery-head"><span>◈ ARCHIVES COSMIQUES</span><button type="button" id="discovery-close" aria-label="Fermer">✕</button></div>
@@ -3046,6 +3065,7 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
     <h2 id="discovery-title"></h2>
     <p id="discovery-description"></p>
     <div class="discovery-reward" id="discovery-reward"></div>
+    <div id="artifact-journal" class="artifact-journal hidden"></div>
     <div class="discovery-hold hidden" id="discovery-hold">
       <div class="discovery-hold-track"><span id="discovery-hold-fill"></span></div>
       <small>Maintiens le bouton pendant une seconde pour révéler le secret.</small>
@@ -3470,6 +3490,41 @@ $('toast').addEventListener('pointercancel',()=>{
 $('toast').addEventListener('click',()=>{if($('toast').classList.contains('show'))dismissToast()});
 
 // Les archives se découvrent uniquement en développant le monde.
+function showArtifactAwakening(){
+ if(!state.exploration?.artifactAwakened)return;
+ closeDiscovery();
+ const overlay=$('artifact-awakening-overlay'),item=currentArtifact();
+ $('artifact-awakening-title').textContent=item.name;
+ $('artifact-awakening-world').textContent='Planète '+state.planet+' · '+worldName(state.planet);
+ $('artifact-awakening-passive').textContent=item.passive;
+ $('artifact-awakening-power').textContent=item.power+' · '+item.powerText;
+ const core=$('artifact-awakening-core');core.innerHTML=bpIcon('discovery-core',68);
+ core.style.setProperty('--artifact-color',item.color);
+ const runes=$('artifact-awakening-runes');runes.replaceChildren();
+ const glyphs=['signal','star','material-fragment','nature-weather','discovery-echo','archive','planet','discovery-core','target','lightning','material-crystal','nature-life'];
+ glyphs.forEach((name,i)=>{
+  const rune=document.createElement('span');rune.className='artifact-awakening-rune';
+  rune.innerHTML=bpIcon(name,22);
+  rune.style.setProperty('--n',i);
+  rune.style.setProperty('--angle',(i*30)+'deg');
+  rune.style.setProperty('--delay',(i*.065)+'s');
+  runes.append(rune);
+ });
+ overlay.classList.remove('hidden');
+ overlay.classList.remove('playing');
+ void overlay.offsetWidth;
+ overlay.classList.add('playing');
+ playSound('discovery');
+}
+function closeArtifactAwakening(){
+ $('artifact-awakening-overlay').classList.add('hidden');
+ $('artifact-awakening-overlay').classList.remove('playing');
+}
+$('artifact-awakening-continue').addEventListener('click',closeArtifactAwakening);
+$('artifact-awakening-overlay').addEventListener('keydown',e=>{if(e.key==='Escape')closeArtifactAwakening()});
+$('artifact-open').addEventListener('click',openJournal);
+$('artifact-power').addEventListener('click',activateArtifactPower);
+
 // V77 : chaque planète possède une quête unique en 12 éléments.
 const PLANET_ARTIFACTS=[
  {name:'Cœur stellaire',passive:'Revenus permanents +8 %',power:'Impulsion stellaire',powerText:'Double les revenus pendant 30 secondes',kind:'income',powerKind:'burst',color:'#84dafa'},
@@ -3562,6 +3617,7 @@ function openDiscovery(index){
  playSound('discovery');
  discoveryMode='claim';discoveryIndex=index;
  const event=COSMIC_ARCHIVES[index];if(!event)return;
+ $('artifact-journal').classList.add('hidden');
  $('discovery-hold').classList.remove('hidden');
  $('discovery-skip').classList.remove('hidden');
  $('discovery-hold-fill').style.width='0%';
@@ -3572,16 +3628,87 @@ function openDiscovery(index){
  $('discovery-action').textContent='Maintiens pour révéler';
  $('discovery-overlay').classList.remove('hidden');
 }
+function artifactNextStep(){
+ const p=artifactProgress(),e=state.exploration;
+ if(p.complete)return 'Tous les éléments sont réunis : ton artéfact est éveillé !';
+ if(nextSignal()>=0)return 'Un secret scintille sur la planète. Touche « Découvrir ».';
+ if(availableCosmicEvent()>=0)return 'Un phénomène est prêt : joue directement sur ta planète.';
+ if(e.encounter)return 'Une anomalie est visible sur la planète. Récupère-la !';
+ if(e.monumentFound&&!e.monumentRestored)return 'Restaure le vestige dans « Monde vivant ».';
+ if(!e.monumentFound&&cover()<34)return 'Développe les biomes pour trouver le vestige ancien.';
+ if(p.counts[2]<5)return 'Continue de révéler la planète pour trouver les secrets (8, 22, 40, 62 et 85 %).';
+ if(p.counts[1]<3)return 'Monte les niveaux de tes biomes : les phénomènes arrivent à 20, 75 et 160 niveaux.';
+ return 'Joue normalement : de nouveaux signaux cosmiques vont apparaître.';
+}
+function renderArtifactJournal(){
+ const area=$('artifact-journal'),p=artifactProgress(),item=currentArtifact(),e=state.exploration;
+ area.replaceChildren();
+ const intro=document.createElement('div');intro.className='artifact-journal-intro';
+ intro.innerHTML='<span class="artifact-journal-kicker">DOSSIER PLANÉTAIRE '+String(state.planet).padStart(2,'0')+'</span><strong></strong><small></small>';
+ intro.querySelector('strong').textContent=item.name;
+ intro.querySelector('small').textContent='Réunis 12 éléments pour éveiller l’artéfact caché sous ce monde.';
+ area.append(intro);
+ const progress=document.createElement('div');progress.className='artifact-total-progress';
+ progress.innerHTML='<div><b>Artéfact reconstruit</b><strong></strong></div><span class="artifact-total-track"><i></i></span>';
+ progress.querySelector('strong').textContent=p.total+' / 12';
+ progress.querySelector('i').style.width=(p.total/12*100)+'%';
+ area.append(progress);
+ const names=[
+  ['Météore scintillant','Signal inconnu','Poussière stellaire'],
+  ['Pluie d’étoiles','Aurore magnétique','Alignement céleste'],
+  ARTIFACT_CLUE_NAMES,
+  [relicName()]
+ ];
+ const obtained=[
+  e.encounterTypes||[],
+  state.events||[],
+  state.discoveries||[],
+  e.monumentRestored?[0]:[]
+ ];
+ ARTIFACT_CATEGORIES.forEach((category,i)=>{
+  const box=document.createElement('section');box.className='artifact-category';
+  const head=document.createElement('div');head.className='artifact-category-head';
+  const title=document.createElement('strong');title.innerHTML=bpIcon(category.icon,17)+'<span></span>';title.querySelector('span').textContent=category.title;
+  const count=document.createElement('b');count.textContent=p.counts[i]+' / '+category.count;
+  head.append(title,count);box.append(head);
+  const help=document.createElement('p');help.textContent=category.help;box.append(help);
+  const grid=document.createElement('div');grid.className='artifact-clues';
+  names[i].forEach((name,j)=>{
+   const unlocked=obtained[i].includes(j);
+   const clue=document.createElement('div');clue.className='artifact-clue'+(unlocked?' obtained':'');
+   const icon=document.createElement('span');icon.className='artifact-clue-icon';icon.innerHTML=bpIcon(unlocked?'check':'lock',14);
+   const label=document.createElement('span');label.textContent=unlocked?name:(i===2?'Indice inconnu':name);
+   clue.append(icon,label);grid.append(clue);
+  });
+  box.append(grid);area.append(box);
+ });
+ const next=document.createElement('div');next.className='artifact-next-step';
+ next.innerHTML='<b>PROCHAINE ÉTAPE</b><p></p>';next.querySelector('p').textContent=artifactNextStep();
+ area.append(next);
+ const reward=document.createElement('section');reward.className='artifact-journal-reward';
+ reward.innerHTML='<span>RÉCOMPENSE FINALE</span><strong></strong><p></p><p></p>';
+ reward.querySelector('strong').textContent=item.name;
+ reward.querySelectorAll('p')[0].textContent='✦ '+item.passive;
+ reward.querySelectorAll('p')[1].textContent='✧ '+item.power+' : '+item.powerText;
+ if(e.artifactAwakened){
+  reward.classList.add('awakened');
+  const replay=document.createElement('button');replay.type='button';replay.textContent='✦ Revoir l’éveil de l’artéfact';
+  replay.addEventListener('click',showArtifactAwakening);reward.append(replay);
+ }
+ area.append(reward);
+}
 function openJournal(){
  playSound('open');
  discoveryMode='journal';discoveryIndex=-1;
- const claimed=archiveClaimed();
+ const p=artifactProgress(),item=currentArtifact();
  $('discovery-hold').classList.add('hidden');
  $('discovery-skip').classList.add('hidden');
- $('discovery-emblem').innerHTML=bpIcon(claimed.length?'archive':'discovery-echo',38);
- $('discovery-title').textContent='Journal des découvertes';
- $('discovery-description').textContent=claimed.length?claimed.map(i=>COSMIC_ARCHIVES[i]?.title).filter(Boolean).join('  ·  '):'La planète garde encore ses mystères. Continue à développer ses biomes pour en savoir plus.';
- $('discovery-reward').textContent=claimed.length+' / '+COSMIC_ARCHIVES.length+' découvertes sur cette planète';
+ $('artifact-journal').classList.remove('hidden');
+ $('discovery-emblem').innerHTML=bpIcon(state.exploration.artifactAwakened?'discovery-core':'archive',38);
+ $('discovery-title').textContent='Mystère planétaire';
+ $('discovery-description').textContent=state.exploration.artifactAwakened?'Tu as éveillé '+item.name+' ! Son pouvoir est prêt à servir sur cette planète.':'Trouve les 12 éléments pour éveiller '+item.name+'. Chaque découverte fait avancer ton enquête.';
+ $('discovery-reward').textContent=p.total+' / 12 éléments retrouvés';
+ renderArtifactJournal();
  $('discovery-action').textContent='Retour à la planète';
  $('discovery-overlay').classList.remove('hidden');
 }
