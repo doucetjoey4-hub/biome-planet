@@ -3253,7 +3253,7 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
   <div class="artifact-awakening-heading">ARTÉFACT ÉVEILLÉ</div>
   <h2 id="artifact-awakening-title">Cœur planétaire</h2>
   <p id="artifact-awakening-world"></p>
-  <div class="artifact-awakening-reward"><div><b>POUVOIR PERMANENT</b><span id="artifact-awakening-passive"></span></div><div><b>POUVOIR À ACTIVER</b><span id="artifact-awakening-power"></span></div></div>
+  <div class="artifact-awakening-reward"><div><b>BONUS SUR CETTE PLANÈTE</b><span id="artifact-awakening-passive"></span></div><div><b>POUVOIR À ACTIVER</b><span id="artifact-awakening-power"></span></div></div>
   <button type="button" id="artifact-awakening-continue">Continuer l'exploration</button>
  </section>
 </div>
@@ -4366,7 +4366,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWorlds();else i
 const COSMIC_EVENTS=[
  {levels:20,name:'Pluie d’étoiles',desc:'Récolte des fragments rares + revenus pendant 90 secondes',seconds:90,factor:1.35},
  {levels:75,name:'Aurore magnétique',desc:'Cycles accélérés + revenus pendant 120 secondes',seconds:120,factor:1.5},
- {levels:160,name:'Alignement céleste',desc:'Décode une énergie ancienne + revenus pendant 150 secondes',seconds:150,factor:1.7}
+ {levels:160,name:'Alignement céleste',desc:'Révèle une anomalie cachée +3 recherche et revenus pendant 150 secondes',seconds:150,factor:1.7}
 ];
 
 const FX_PREF='biome-planet-cosmic-fx-v49';
@@ -4766,7 +4766,14 @@ function triggerCosmicEvent(){
  state.eventActive={id:i,until:Date.now()+event.seconds*1000};
  // Les phénomènes ne sont plus simplement des multiplicateurs identiques.
  if(i===0)addWorkshopMaterials({fragment:2,crystal:1},'Pluie d’étoiles');
- if(i===2)earnResearch(3,'Alignement céleste');
+ if(i===2){
+  earnResearch(3,'Alignement céleste');
+  // L'alignement révèle une anomalie réelle sur la planète.
+  if(!state.exploration.encounter){
+   state.exploration.nextEncounterAt=Date.now()-1;
+   eventTick();
+  }
+ }
  playSound('event');
  save();renderCosmicEvent();renderUI();checkArtifactAwakening();toast('✦ '+event.name+' · phénomène '+artifactProgress().counts[1]+'/3 de l’artéfact','event');
 }
@@ -6659,4 +6666,4 @@ document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=77').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=78').catch(console.warn));}</script></body></html>
