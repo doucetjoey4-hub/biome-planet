@@ -3498,6 +3498,87 @@ body.cosmic-intro-playing{overflow:hidden}
 @keyframes fragmentExtractCharge{from{width:0%}to{width:100%}}
 .fragment-scanner-ui:has(.fragment-scanner-panel:not(.hidden)){z-index:25}
 @media(prefers-reduced-motion:reduce){.fragment-extract-track i.extracting{animation:fragmentExtractCharge 1.1s linear forwards!important}}
+
+/* V84 · Scanner pleinement intégré au panneau planétaire, sans fenêtre flottante. */
+.planet-panel>.fragment-scanner-ui{
+ position:relative!important;inset:auto!important;left:auto!important;top:auto!important;
+ z-index:3!important;pointer-events:auto!important;
+ display:grid!important;grid-template-columns:33px minmax(0,1fr) auto;
+ align-items:center;gap:9px;min-height:60px;width:100%;max-width:none!important;
+ margin:8px 0 9px;padding:9px 10px;
+ border:1px solid #315d72;border-radius:13px;
+ background:linear-gradient(110deg,#112738,#142b42 72%,#183748);
+ box-shadow:inset 0 1px #a4f7ec16,0 7px 18px #0003;
+ overflow:hidden;isolation:isolate;
+}
+.planet-panel>.fragment-scanner-ui.hidden{display:none!important}
+.fragment-scanner-indicator{position:relative;display:grid;place-items:center;width:33px;height:33px;border:1px solid #467a8f;border-radius:9px;background:#163e50;color:#86dfe0}
+.fragment-scanner-status-dot{position:absolute;right:-3px;top:-3px;width:8px;height:8px;border-radius:50%;background:#76d9c7;box-shadow:0 0 7px #7cf2da}
+.fragment-scanner-info{display:grid;gap:3px;min-width:0;position:relative;z-index:1}
+.fragment-scanner-info strong{color:#e0fcf4;font-size:.64rem;letter-spacing:.075em;font-weight:900;line-height:1.1}
+.fragment-scanner-info span{color:#a0c6d4;font-size:.65rem;line-height:1.27;overflow-wrap:anywhere}
+.fragment-scanner-action{position:relative;z-index:1;min-width:86px;min-height:37px;padding:7px 11px;white-space:nowrap;border-radius:9px;border:1px solid #7ee8d7;background:linear-gradient(125deg,#245b62,#23687a);color:#ecfffd;font-size:.71rem;font-weight:900;box-shadow:0 2px 12px #1a77854d;cursor:pointer}
+.fragment-scanner-action:disabled{cursor:default;opacity:.72;background:#1c3f4b;border-color:#4d8690}
+.fragment-scanner-trace{position:absolute;left:-40%;bottom:0;width:34%;height:2px;background:linear-gradient(90deg,transparent,#9affed,transparent);opacity:0;pointer-events:none}
+.fragment-scanner-ui[data-status="scanning"]{border-color:#70e6d5;box-shadow:inset 0 0 15px #46d8c31f,0 0 18px #53d4d42e}
+.fragment-scanner-ui[data-status="scanning"] .fragment-scanner-trace{opacity:1;animation:fragmentDockTrace 1.3s ease-in-out infinite}
+.fragment-scanner-ui[data-status="scanning"] .fragment-scanner-status-dot{animation:fragmentRadarPing .6s ease-in-out infinite}
+.fragment-scanner-ui[data-status="found"]{border-color:#58b4a4;background:linear-gradient(105deg,#163d43,#183b4d)}
+.fragment-scanner-ui[data-status="found"] .fragment-scanner-status-dot{background:#a2ffe1;box-shadow:0 0 10px #9fffdc}
+.fragment-scanner-ui[data-status="cooldown"] .fragment-scanner-status-dot{background:#78909d;box-shadow:none}
+@keyframes fragmentDockTrace{from{transform:translateX(0)}to{transform:translateX(420%)}}
+.planet-holder .fragment-scan-planet-fx{
+ position:absolute;inset:0;z-index:17;pointer-events:none;
+ overflow:hidden;border-radius:50%;isolation:isolate;
+}
+.fragment-scan-planet-fx .fragment-scan-planet-grid{
+ position:absolute;inset:7.3%;border:1px solid #a3ffee83;border-radius:50%;
+ background:
+ repeating-radial-gradient(circle at center,transparent 0,transparent 16.8%,#9bf8d936 17%,transparent 17.4%),
+ linear-gradient(#7de2d512,#7de2d512);
+ opacity:0;transform:scale(.85);
+}
+.fragment-scan-planet-fx .fragment-scan-planet-sweep{
+ position:absolute;inset:7.3%;border-radius:50%;
+ background:conic-gradient(from 0deg,transparent 0deg,#80ffe504 15deg,#77ffe02c 49deg,#a2ffe75c 80deg,transparent 88deg,transparent 360deg);
+ opacity:0;filter:drop-shadow(0 0 8px #84ffdb);
+}
+.fragment-scan-planet-fx .fragment-scan-planet-circle{
+ position:absolute;top:50%;left:50%;width:83%;aspect-ratio:1;border:2px solid #9fffe6;border-radius:50%;opacity:0;
+ box-shadow:0 0 21px #66ffdc8c,inset 0 0 17px #5cf5cb62;
+ transform:translate(-50%,-50%) scale(.1)
+}
+.fragment-scan-planet-fx .fragment-scan-planet-caption{
+ position:absolute;top:48%;left:50%;transform:translate(-50%,-50%);z-index:3;
+ white-space:nowrap;padding:6px 9px;border:1px solid #88f5d7;
+ border-radius:8px;background:#0d3445ec;color:#ccfff3;
+ font-size:.63rem;font-weight:900;letter-spacing:.08em;opacity:0;
+ text-shadow:0 0 9px #7bf8e5;
+}
+.fragment-scan-planet-fx.scanning .fragment-scan-planet-grid{animation:fragmentScanGrid 1.75s ease-out both}
+.fragment-scan-planet-fx.scanning .fragment-scan-planet-sweep{animation:fragmentScanBeam 1.75s ease-in-out both}
+.fragment-scan-planet-fx.scanning .fragment-scan-planet-circle{animation:fragmentScanRing 1.75s ease-out both}
+.fragment-scan-planet-fx.scanning .fragment-scan-planet-caption{animation:fragmentScanCaption 1.75s ease-in-out both}
+@keyframes fragmentScanGrid{0%{opacity:0;transform:scale(.85)}23%,76%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(1.08)}}
+@keyframes fragmentScanBeam{0%{opacity:0;transform:rotate(0deg)}15%{opacity:.9}82%{opacity:1}100%{opacity:0;transform:rotate(720deg)}}
+@keyframes fragmentScanRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.14)}30%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(1.17)}}
+@keyframes fragmentScanCaption{0%,13%{opacity:0}22%,66%{opacity:1}95%,100%{opacity:0}}
+.fragment-deposit.fragment-newly-revealed{animation:fragmentFoundBurst .9s cubic-bezier(.15,.88,.25,1) both;z-index:22}
+@keyframes fragmentFoundBurst{0%{opacity:0;scale:.2;filter:brightness(2)}35%{opacity:1;scale:1.35;filter:brightness(1.9)}100%{opacity:1;scale:1;filter:none}}
+@media(max-width:400px){
+ .planet-panel>.fragment-scanner-ui{grid-template-columns:29px minmax(0,1fr) auto;gap:7px;padding:8px;min-height:55px}
+ .fragment-scanner-indicator{width:29px;height:29px}
+ .fragment-scanner-info strong{font-size:.58rem}
+ .fragment-scanner-info span{font-size:.59rem}
+ .fragment-scanner-action{min-width:73px;min-height:34px;font-size:.66rem;padding:6px}
+}
+@media(prefers-reduced-motion:reduce){
+ .fragment-scan-planet-fx.scanning .fragment-scan-planet-grid{animation:none;opacity:.65;transform:scale(1)}
+ .fragment-scan-planet-fx.scanning .fragment-scan-planet-sweep{animation:none}
+ .fragment-scan-planet-fx.scanning .fragment-scan-planet-circle{animation:none;opacity:.55;transform:translate(-50%,-50%) scale(1)}
+ .fragment-scan-planet-fx.scanning .fragment-scan-planet-caption{animation:none;opacity:1}
+ .fragment-deposit.fragment-newly-revealed{animation:none}
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -7602,4 +7683,4 @@ document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 if(!cosmicIntroAlreadySeen())requestAnimationFrame(()=>startCosmicIntro());
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=83').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=84').catch(console.warn));}</script></body></html>
