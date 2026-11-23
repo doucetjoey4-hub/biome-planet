@@ -3504,22 +3504,19 @@ body.cosmic-intro-playing{overflow:hidden}
 <meta name="theme-color" content="#0b192c">
 </head>
 <body><main class="app"><div class="balance"><div class="balance-money"><div class="muted"><span class="hud-finance-mark">◈</span> CRÉDITS COSMIQUES</div><div class="amount" id="money">0 $</div></div><div class="balance-actions"><div class="income" id="rates">+0 $ / min</div><button type="button" class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu principal" aria-controls="side-menu" aria-expanded="false"><span aria-hidden="true">☰</span><span class="nav-dot hidden" id="nav-dot" aria-hidden="true"></span><span class="nav-count hidden" id="nav-count" aria-hidden="true">0</span></button></div></div><section class="planet-panel"><div class="planet-top"><strong id="planet-name">Planète Aube</strong><button type="button" class="planet-select-btn" id="open-planets" aria-label="Choisir une planète"><span class="planet-select-text">Planètes</span></button><span class="tag" id="planet-tag">Planète 1</span><span class="muted" id="land-label">Progression : 0 %</span></div><div class="planet-progress-rail" aria-hidden="true"><span id="planet-progress-fill"></span></div><div class="planet-stage"><div class="planet-holder"><div class="planet-hint" id="planet-hint">👆 Touche la planète pour ajouter ta première forêt</div>
-<div class="fragment-scanner-ui hidden" id="fragment-scanner-ui">
- <button type="button" id="fragment-scanner-open" class="fragment-scanner-open" aria-label="Ouvrir le scanner de fragments"></button>
- <div class="fragment-scanner-panel hidden" id="fragment-scanner-panel">
-  <div class="fragment-scan-head"><strong>SCANNER DE RÉSONANCE</strong><button type="button" id="fragment-scanner-close" aria-label="Fermer le scanner">×</button></div>
-  <p id="fragment-scanner-message">Recherche de signatures...</p>
-  <div class="fragment-scanner-radar"><span class="fragment-scanner-sweep"></span><span class="fragment-scanner-ping"></span></div>
-  <button type="button" id="fragment-scanner-action">Balayer la planète</button>
- </div>
-</div>
+<div class="fragment-scan-planet-fx hidden" id="fragment-scan-planet-fx" aria-hidden="true"><div class="fragment-scan-planet-grid"></div><div class="fragment-scan-planet-sweep"></div><div class="fragment-scan-planet-circle"></div><span class="fragment-scan-planet-caption">ANALYSE DE LA SURFACE…</span></div>
 <div id="fragment-rain-shards" class="fragment-rain-shards hidden" aria-label="Fragments tombés sur la planète"></div>
 <button type="button" id="fragment-deposit" class="fragment-deposit hidden" aria-label="Récupérer un fragment découvert"><span class="fragment-deposit-gem">◆</span><span class="fragment-deposit-ring"></span><small id="fragment-deposit-label">MAINTENIR POUR EXTRAIRE</small></button>
 <div class="fragment-extract-panel hidden" id="fragment-extract-panel" aria-live="polite"><b id="fragment-extract-title">EXTRACTION</b><span id="fragment-extract-detail"></span><div class="fragment-extract-track"><i id="fragment-extract-fill"></i></div></div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><div class="planet-milestone hidden" id="planet-milestone" aria-live="polite"><span class="planet-milestone-ring"></span><span class="planet-milestone-sigil" id="planet-milestone-sigil">✧</span><div class="planet-milestone-message"><small id="planet-milestone-label">TRANSMISSION RETROUVÉE</small><strong id="planet-milestone-title">La planète répond</strong><span id="planet-milestone-text"></span></div></div><div id="artifact-awakening-live" class="artifact-awakening-live hidden" aria-hidden="true"><canvas id="artifact-awakening-live-fx" width="520" height="520"></canvas><div id="artifact-awakening-live-runes" class="artifact-awakening-live-runes"></div><div class="artifact-awakening-live-label">ÉVEIL DU CŒUR PLANÉTAIRE</div></div><button type="button" class="orbital-find hidden" id="orbital-find" aria-label="Collecter une anomalie spatiale"><span id="orbital-glyph">✧</span></button><button type="button" class="relic-find hidden" id="relic-find" aria-label="Examiner un site mystérieux">⌁</button><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><canvas id="cosmic-fx" aria-hidden="true"></canvas>
 <div class="planet-cosmic-play hidden" id="planet-cosmic-play" aria-label="Interaction cosmique sur la planète">
  <div class="planet-cosmic-object-layer" id="planet-cosmic-objects"></div>
  <div class="planet-cosmic-interact hidden" id="planet-cosmic-interact" tabindex="0"></div>
-</div></div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Jouer</button><button type="button" class="planet-cosmic-direct hidden" id="planet-cosmic-direct">Activer directement</button></div></div><div class="artifact-hud" id="artifact-hud">
+</div></div><div class="fragment-scanner-ui hidden" id="fragment-scanner-ui" aria-label="Scanner de résonance">
+ <div class="fragment-scanner-indicator" aria-hidden="true"><span class="fragment-scanner-status-dot"></span><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 12L17 5M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div>
+ <div class="fragment-scanner-info"><strong id="fragment-scanner-label">SCANNER DE RÉSONANCE</strong><span id="fragment-scanner-message" role="status" aria-live="polite">Analyse disponible</span></div>
+ <button type="button" id="fragment-scanner-action" class="fragment-scanner-action">Scanner</button>
+ <span class="fragment-scanner-trace" aria-hidden="true"></span>
+</div><div class="cosmic-event hidden" id="cosmic-event"><div class="event-caption"><span id="event-caption">✦ Phénomène cosmique</span><strong id="event-timer"></strong></div><div class="event-body"><span id="event-detail"></span><button type="button" id="event-trigger">Jouer</button><button type="button" class="planet-cosmic-direct hidden" id="planet-cosmic-direct">Activer directement</button></div></div><div class="artifact-hud" id="artifact-hud">
  <button type="button" id="artifact-open" class="artifact-open" aria-label="Ouvrir le mystère planétaire"><span class="artifact-hud-icon">✧</span><span class="artifact-hud-label"><b id="artifact-hud-title">MYSTÈRE PLANÉTAIRE</b><small id="artifact-hud-sub">0 / 12 éléments retrouvés</small></span><span class="artifact-hud-count" id="artifact-hud-count">0/12</span></button>
  <button type="button" id="artifact-power" class="artifact-power hidden">Activer le pouvoir</button>
 </div><div class="evolution-line"><span class="evolution-stage" id="evolution-stage">◈ Monde en éveil</span><span class="evolution-sub" id="evolution-sub">Une histoire prend forme...</span></div><button class="next hidden" id="next">Planète complétée! Passer à la suivante →</button></section><div class="section-title"><h2><span class="biome-title-glyph">◈</span> MODULES DE BIOMES <span class="biome-title-index" id="biome-title-index"></span></h2><button type="button" class="planet-layout-toggle" id="planet-layout-toggle" aria-pressed="false" aria-label="Agrandir la planète">⤢ Planète</button></div><div class="biome-scroll" id="biome-scroll"><section class="biomes" id="biomes"></section></div></main>
@@ -4904,7 +4901,7 @@ function switchWorld(num,award=false){
  const p=Math.floor(Number(num));
  if(!Number.isFinite(p)||p<1||p>999)return;
  if(p===state.planet){closeWorlds();return}
- stopHold();clearFragmentExtraction();fragmentScannerOpen=false;fragmentScanActive=false;closePlanetMilestone();closeArtifactAwakening();launchVisual=null;workshopAnim=null;workshopPreviewCanvas=null;save();playSound('navigate');
+ stopHold();cancelFragmentScanAnimation();clearFragmentExtraction();fragmentScannerOpen=false;fragmentScanActive=false;closePlanetMilestone();closeArtifactAwakening();launchVisual=null;workshopAnim=null;workshopPreviewCanvas=null;save();playSound('navigate');
  const stored=state.worlds[p];
  state.planet=p;BIOMES=makeBiomes(p);
  state.levels=stored?.levels?[...stored.levels]:BIOMES.map(()=>0);
@@ -5575,58 +5572,75 @@ function renderFragmentRain(){
  });
 }
 
-function fragmentScannerOpenPanel(){
- if(totalLevels()<8){toast('Le scanner se débloque à 8 niveaux de biomes.','info');return}
- fragmentScannerOpen=!fragmentScannerOpen;
- renderFragmentScanner();
- if(fragmentScannerOpen)playSound('open');
+// V84 · Scanner intégré : commande compacte dans le panneau, balayage sur la vraie planète.
+let fragmentScanAnimating=false,fragmentScanTimer=null;
+function cancelFragmentScanAnimation(){
+ if(fragmentScanTimer!==null)clearTimeout(fragmentScanTimer);
+ fragmentScanTimer=null;fragmentScanAnimating=false;
+ const fx=$('fragment-scan-planet-fx');
+ if(fx){fx.classList.add('hidden');fx.classList.remove('scanning')}
 }
 function fragmentScan(){
+ if(totalLevels()<8||fragmentScanAnimating||fragmentScanActive)return;
  fragmentDepositTick();
- if(!fragmentScanner().fragmentDeposit){
-  const left=Math.max(0,Math.ceil(((fragmentScanner().fragmentNextAt||0)-Date.now())/1000));
-  toast(left?'Aucune signature · prochaine recherche dans '+Math.ceil(left/60)+' min':'Aucune signature pour le moment.','info');
+ const e=fragmentScanner();
+ if(!e.fragmentDeposit){
   renderFragmentScanner();return;
  }
- fragmentScanActive=true;fragmentScannerOpen=false;
- playSound('event');renderFragmentScanner();
- const d=fragmentScanner().fragmentDeposit;
- toast('Signal localisé'+(fragmentScanner().scannerLevel>=1?' · '+fragmentDirection(d):'')+' : récupère le cristal sur la planète !','info');
+ fragmentScanAnimating=true;
+ const fx=$('fragment-scan-planet-fx');
+ fx.classList.remove('hidden','scanning');
+ void fx.offsetWidth;
+ fx.classList.add('scanning');
+ playSound('event');
+ renderFragmentScanner();
+ const planet=state.planet,seed=e.fragmentDeposit.seed;
+ const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ fragmentScanTimer=setTimeout(()=>{
+  fragmentScanTimer=null;
+  if(planet!==state.planet||fragmentScanner().fragmentDeposit?.seed!==seed){cancelFragmentScanAnimation();return}
+  cancelFragmentScanAnimation();
+  fragmentScanActive=true;
+  playSound('claim');
+  renderFragmentScanner();
+  const marker=$('fragment-deposit');
+  marker.classList.add('fragment-newly-revealed');
+  setTimeout(()=>marker.classList.remove('fragment-newly-revealed'),1050);
+ },reduced?350:1750);
 }
 function renderFragmentScanner(){
  const e=fragmentScanner(),unlocked=totalLevels()>=8,deposit=e.fragmentDeposit;
- const ui=$('fragment-scanner-ui'),panel=$('fragment-scanner-panel'),button=$('fragment-scanner-open'),dot=$('fragment-deposit');
+ const ui=$('fragment-scanner-ui'),action=$('fragment-scanner-action'),dot=$('fragment-deposit');
  ui.classList.toggle('hidden',!unlocked);
- panel.classList.toggle('hidden',!fragmentScannerOpen||!unlocked);
- const buttonStatus=(deposit&&fragmentScanActive)?'SIGNAL REPÉRÉ':'SCANNER';
- if(button.dataset.status!==buttonStatus){button.dataset.status=buttonStatus;button.innerHTML=bpIcon('expedition-radar',19)+'<span>'+buttonStatus+'</span>'}
- button.setAttribute('aria-expanded',String(fragmentScannerOpen));
- const revealed=unlocked&&!!deposit&&fragmentScanActive;
+ if(!unlocked){dot.classList.add('hidden');return}
+ const label=$('fragment-scanner-label'),message=$('fragment-scanner-message');
+ const left=Math.max(0,Math.ceil(((e.fragmentNextAt||0)-Date.now())/1000));
+ const revealed=!!deposit&&fragmentScanActive&&!fragmentScanAnimating;
+ let status='ready',description='Recherche de fragments sur la planète',caption='Scanner',disabled=false;
+ if(fragmentScanAnimating){
+  status='scanning';description='Balayage en cours sur la surface…';caption='Analyse…';disabled=true;
+ }else if(revealed){
+  status='found';description=fragmentLabel(deposit.type)+' détecté'+(e.scannerLevel>=1?' · '+fragmentDirection(deposit):'')+' · touche le cristal sur la planète';
+  caption='Repéré ✓';disabled=true;
+ }else if(deposit){
+  status='ready';description='Signal mystérieux détecté · lance le balayage';caption='Scanner';
+ }else if(left>0){
+  status='cooldown';description='Prochain signal dans '+Math.ceil(left/60)+' min';caption='En veille';disabled=true;
+ }else{
+  status='ready';description='Prêt à rechercher un gisement';caption='Scanner';
+ }
+ if(ui.dataset.status!==status)ui.dataset.status=status;
+ if(message.textContent!==description)message.textContent=description;
+ if(label.textContent!=='SCANNER DE RÉSONANCE')label.textContent='SCANNER DE RÉSONANCE';
+ if(action.textContent!==caption)action.textContent=caption;
+ action.disabled=disabled;
  dot.classList.toggle('hidden',!revealed);
  if(revealed){
   dot.style.left=(50+deposit.x*42)+'%';
   dot.style.top=(50+deposit.y*42)+'%';
   dot.dataset.type=String(deposit.type);
-  $('fragment-deposit-label').textContent=deposit.type===0?'MAINTENIR POUR EXTRAIRE':'STABILISER LE FRAGMENT';
-  dot.setAttribute('aria-label',fragmentLabel(deposit.type)+' détecté, '+(deposit.type===0?'maintenir pour extraire':'toucher trois fois pour stabiliser'));
- }
- const scanMessage=$('fragment-scanner-message');
- const action=$('fragment-scanner-action');
- if(!unlocked)return;
- if(!deposit){
-  const left=Math.max(0,Math.ceil(((e.fragmentNextAt||0)-Date.now())/1000));
-  scanMessage.textContent=left?'Aucun signal pour le moment. Nouvelle recherche dans '+Math.ceil(left/60)+' min.':'Balaye la planète pour découvrir un gisement caché.';
-  action.textContent='Balayer la planète';
-  action.disabled=left>0;
- }else if(!fragmentScanActive){
-  scanMessage.textContent='Une signature a été repérée. Lance un balayage pour trouver le gisement.';
-  action.textContent='Localiser le signal';
-  action.disabled=false;
- }else{
-  const direction=e.scannerLevel>=1?' · secteur '+fragmentDirection(deposit):' · repère lumineux sur le globe';
-  scanMessage.textContent=fragmentLabel(deposit.type)+direction+'. Touche le cristal visible sur la planète.';
-  action.textContent='Signal localisé ✓';
-  action.disabled=true;
+  $('fragment-deposit-label').textContent=deposit.type===0?'MAINTENIR POUR EXTRAIRE':'STABILISER · 3 TOUCHES';
+  dot.setAttribute('aria-label',fragmentLabel(deposit.type)+', '+(deposit.type===0?'maintenir pour extraire':'toucher trois fois pour stabiliser'));
  }
 }
 function clearFragmentExtraction(){
@@ -5669,7 +5683,7 @@ function collectFragmentDeposit(){
  const e=fragmentScanner(),d=e.fragmentDeposit;
  if(!d||!fragmentScanActive)return;
  const amount=fragmentQuantity(d.type)+(artifactBonus('fragments')?1:0);
- const location=$('fragment-deposit').getBoundingClientRect(),target=$('fragment-scanner-open').getBoundingClientRect();
+ const location=$('fragment-deposit').getBoundingClientRect(),target=$('fragment-scanner-action').getBoundingClientRect();
  const sparkle=document.createElement('span');
  sparkle.className='fragment-flying-loot';sparkle.textContent='◆ +'+amount;
  sparkle.style.left=(location.left+location.width/2)+'px';
@@ -5722,8 +5736,6 @@ function appendFragmentScannerUpgrade(container){
  }else section.appendChild(exploreElement('p','fragment-maxed','✦ Scanner quantique au maximum.'));
  container.appendChild(section);
 }
-$('fragment-scanner-open').addEventListener('click',fragmentScannerOpenPanel);
-$('fragment-scanner-close').addEventListener('click',()=>{fragmentScannerOpen=false;renderFragmentScanner()});
 $('fragment-scanner-action').addEventListener('click',fragmentScan);
 $('fragment-deposit').addEventListener('pointerdown',e=>{
  if(fragmentScanner().fragmentDeposit?.type!==0)return;
@@ -7578,7 +7590,7 @@ function frame(now){
 canvas.addEventListener('click',()=>{const nextIndex=state.levels.findIndex(l=>l===0);if(nextIndex<0){toast('Tous les biomes sont déjà débloqués!');return}if(nextIndex>0&&state.money<unlockCost(nextIndex)){toast('Il te faut '+moneyFormat(unlockCost(nextIndex))+' pour ajouter '+BIOMES[nextIndex].name);return}buy(nextIndex)});
 $('next').addEventListener('click',()=>{if(cover()<99.999)return;playSound('discovery');switchWorld(state.planet+1,true);toast('Nouvelle planète découverte!','success')});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDiscovery()});
-$('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();launchVisual=null;clearFragmentExtraction();fragmentScannerOpen=false;fragmentScanActive=false;closePlanetMilestone();closeArtifactAwakening();stopPlanetCosmicGame();state.exploration=normalizedExploration(null);BIOMES=makeBiomes(state.planet);normalizeProgress();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';lastMissionRender='';refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
+$('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();launchVisual=null;cancelFragmentScanAnimation();clearFragmentExtraction();fragmentScannerOpen=false;fragmentScanActive=false;closePlanetMilestone();closeArtifactAwakening();stopPlanetCosmicGame();state.exploration=normalizedExploration(null);BIOMES=makeBiomes(state.planet);normalizeProgress();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';lastMissionRender='';refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
 // Offline earnings capped at 4 hours; preserve partial production progress.
 const offline=Math.min(40*60*1000,Math.max(0,Date.now()-(Number(state.last)||Date.now())));if(offline>5000){let earned=0;BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+offline,cycles=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);earned+=cycles*revenue(i)});state.money+=earned;if(earned>0)setTimeout(()=>toast('Pendant ton absence : +'+moneyFormat(earned)),500)}
 window.addEventListener('pagehide',()=>{state.last=Date.now();save()});document.addEventListener('visibilitychange',()=>{if(document.hidden){state.last=Date.now();save()}else{let dt=Math.min(40*60*1000,Math.max(0,Date.now()-(state.last||Date.now())));BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+dt,n=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);state.money+=n*revenue(i)});lastTick=performance.now();state.last=Date.now();save()}});
