@@ -5248,7 +5248,21 @@ function closeExploration(){
  $('explore-overlay').classList.remove('workshop-fullscreen');
  $('explore-open').setAttribute('aria-expanded','false');
 }
+function nextWorkshopProject(){
+ // Les satellites suivent l'ordre de fabrication : observatoire, climat, relais.
+ // Un satellite n'est terminé qu'une fois déployé en orbite.
+ const completed=state.exploration?.satellites||[];
+ const next=SATELLITES.findIndex((sat,i)=>!completed.includes(i));
+ return next>=0?next:SATELLITES.length-1; // Flotte terminée : afficher le dernier.
+}
 function openExploration(tab='nature'){
+ if(tab==='satellites'){
+  // À chaque ouverture, choisir le premier projet encore à réaliser.
+  // Les changements manuels entre satellites restent disponibles pendant la visite.
+  workshopSelected=nextWorkshopProject();
+  workshopSceneEntered=performance.now();
+  workshopPanel='modules';
+ }
  explorationTab=tab;
  playSound('open');
  $('explore-overlay').classList.remove('hidden');
@@ -6805,4 +6819,4 @@ document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=79').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=80').catch(console.warn));}</script></body></html>
