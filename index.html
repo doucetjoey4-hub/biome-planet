@@ -3697,7 +3697,7 @@ function showArtifactAwakening(){
  $('artifact-awakening-world').textContent='Planète '+state.planet+' · '+worldName(state.planet);
  $('artifact-awakening-passive').textContent=item.passive;
  $('artifact-awakening-power').textContent=item.power+' · '+item.powerText;
- const core=$('artifact-awakening-core');core.innerHTML=bpIcon('discovery-core',68);
+ const core=$('artifact-awakening-core');core.innerHTML=bpIcon(item.icon,68);
  core.style.setProperty('--artifact-color',item.color);
  const runes=$('artifact-awakening-runes');runes.replaceChildren();
  const glyphs=['signal','star','material-fragment','nature-weather','discovery-echo','archive','planet','discovery-core','target','lightning','material-crystal','nature-life'];
@@ -3726,12 +3726,12 @@ $('artifact-power').addEventListener('click',activateArtifactPower);
 
 // V77 : chaque planète possède une quête unique en 12 éléments.
 const PLANET_ARTIFACTS=[
- {name:'Cœur stellaire',passive:'Revenus permanents +8 %',power:'Impulsion stellaire',powerText:'Double les revenus pendant 30 secondes',kind:'income',powerKind:'burst',color:'#84dafa'},
- {name:'Sablier des marées',passive:'Cycles de production 10 % plus rapides',power:'Vague temporelle',powerText:'Accélère les cycles pendant 45 secondes',kind:'speed',powerKind:'haste',color:'#89f0c6'},
- {name:'Prisme des dunes',passive:'Améliorations 8 % moins chères',power:'Pluie de crédits',powerText:'Reçoit 2 minutes de production immédiatement',kind:'discount',powerKind:'harvest',color:'#ffd28c'},
- {name:'Codex du vivant',passive:'1 point de recherche bonus par gain',power:'Illumination',powerText:'Reçoit 12 points de recherche',kind:'research',powerKind:'insight',color:'#cbadff'},
- {name:'Noyau des constellations',passive:'Satellites producteurs +12 % de revenus',power:'Appel cosmique',powerText:'Fait apparaître une anomalie et donne des matériaux',kind:'satellite',powerKind:'signal',color:'#f4a1da'},
- {name:'Fragment primordial',passive:'1 fragment bonus par anomalie récupérée',power:'Résonance ancienne',powerText:'Triple les revenus pendant 20 secondes',kind:'fragments',powerKind:'surge',color:'#ffb4a4'}
+ {name:'Cœur stellaire',passive:'Revenus permanents +8 %',power:'Impulsion stellaire',powerText:'Double les revenus pendant 30 secondes',kind:'income',powerKind:'burst',icon:'star',color:'#84dafa'},
+ {name:'Sablier des marées',passive:'Cycles de production 10 % plus rapides',power:'Vague temporelle',powerText:'Accélère les cycles pendant 45 secondes',kind:'speed',powerKind:'haste',icon:'tech-clock',color:'#89f0c6'},
+ {name:'Prisme des dunes',passive:'Améliorations 8 % moins chères',power:'Pluie de crédits',powerText:'Reçoit 2 minutes de production immédiatement',kind:'discount',powerKind:'harvest',icon:'material-crystal',color:'#ffd28c'},
+ {name:'Codex du vivant',passive:'1 point de recherche bonus par gain',power:'Illumination',powerText:'Reçoit 12 points de recherche',kind:'research',powerKind:'insight',icon:'nature-life',color:'#cbadff'},
+ {name:'Noyau des constellations',passive:'Satellites producteurs +12 % de revenus',power:'Appel cosmique',powerText:'Fait apparaître une anomalie et donne des matériaux',kind:'satellite',powerKind:'signal',icon:'satellite-relay',color:'#f4a1da'},
+ {name:'Fragment primordial',passive:'1 fragment bonus par anomalie récupérée',power:'Résonance ancienne',powerText:'Triple les revenus pendant 20 secondes',kind:'fragments',powerKind:'surge',icon:'discovery-core',color:'#ffb4a4'}
 ];
 const ARTIFACT_CATEGORIES=[
  {title:'Anomalies',count:3,icon:'signal',help:'Attrape les 3 types de signaux sur ta planète.'},
@@ -3773,7 +3773,7 @@ function checkArtifactAwakening(){
  return true;
 }
 function artifactPowerRemaining(){
- return Math.max(0,Math.ceil((Number(state.exploration?.artifactPowerCooldown)||0-Date.now())/1000));
+ return Math.max(0,Math.ceil(((Number(state.exploration?.artifactPowerCooldown)||0)-Date.now())/1000));
 }
 function activateArtifactPower(){
  const e=state.exploration;
@@ -3917,7 +3917,7 @@ function openJournal(){
  $('discovery-hold').classList.add('hidden');
  $('discovery-skip').classList.add('hidden');
  $('artifact-journal').classList.remove('hidden');
- $('discovery-emblem').innerHTML=bpIcon(state.exploration.artifactAwakened?'discovery-core':'archive',38);
+ $('discovery-emblem').innerHTML=bpIcon(state.exploration.artifactAwakened?item.icon:'archive',38);
  $('discovery-title').textContent='Mystère planétaire';
  $('discovery-description').textContent=state.exploration.artifactAwakened?'Tu as éveillé '+item.name+' ! Son pouvoir est prêt à servir sur cette planète.':'Trouve les 12 éléments pour éveiller '+item.name+'. Chaque découverte fait avancer ton enquête.';
  $('discovery-reward').textContent=p.total+' / 12 éléments retrouvés';
@@ -5571,6 +5571,8 @@ function renderExploration(){
 function renderArtifactHud(){
  const e=state.exploration,p=artifactProgress(),art=currentArtifact();
  const title=$('artifact-hud-title'),sub=$('artifact-hud-sub'),count=$('artifact-hud-count');
+ const emblem=$('artifact-hud').querySelector('.artifact-hud-icon');
+ if(emblem){const key=e.artifactAwakened?art.icon:'discovery-echo';if(emblem.dataset.glyph!==key){emblem.dataset.glyph=key;emblem.innerHTML=bpIcon(key,23)}}
  if(title)title.textContent=e.artifactAwakened?'ARTÉFACT ÉVEILLÉ':'MYSTÈRE PLANÉTAIRE';
  if(sub)sub.textContent=e.artifactAwakened?art.name+' · '+art.passive:'Retrouve les 12 éléments de '+art.name;
  if(count)count.textContent=p.total+'/12';
