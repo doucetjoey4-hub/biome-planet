@@ -3161,6 +3161,124 @@ body.artifact-ritual-running .planet-cosmic-play{visibility:hidden}
 @keyframes artifactResultSlide{from{opacity:0;transform:translateY(23px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-height:570px){.artifact-awakening-live-rune{width:24px;height:24px;border-radius:7px}.artifact-awakening-live-rune .bp-line-icon{width:17px;height:17px}.artifact-awakening-live-label{font-size:.52rem;padding:5px 7px;bottom:-6px}.artifact-awakening-stage.artifact-result-only{max-height:85dvh;padding:11px}}
 @media(prefers-reduced-motion:reduce){.artifact-awakening-stage.artifact-result-only{animation:none!important}.artifact-awakening-live-rune{will-change:auto}}
+
+/* V81 · Prologue : quatre scènes cosmiques, vraie apparence de planète, flash d'entrée. */
+.cosmic-intro-overlay{
+ position:fixed;inset:0;z-index:320;display:flex;align-items:center;justify-content:center;
+ padding:max(13px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom));
+ background:radial-gradient(ellipse at 50% 33%,#1d4865,#08172c 73%,#040d1e);
+ color:#ecfbff;overflow:hidden;isolation:isolate;
+}
+.cosmic-intro-stars{position:absolute;inset:0;pointer-events:none;opacity:.55;
+ background-image:radial-gradient(1px 1px at 16% 18%,#d9f7ff 98%,transparent),
+ radial-gradient(2px 2px at 71% 23%,#c9fff5 98%,transparent),
+ radial-gradient(1px 1px at 86% 69%,#ecffff 98%,transparent),
+ radial-gradient(2px 2px at 37% 79%,#a8cff8 98%,transparent),
+ radial-gradient(1px 1px at 52% 8%,#fff 98%,transparent);
+ background-size:283px 187px;animation:cosmicIntroStarDrift 15s linear infinite;
+}
+@keyframes cosmicIntroStarDrift{to{transform:translateY(26px)}}
+.cosmic-intro-layout{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:min(100%,460px);max-height:96dvh;min-height:0}
+.cosmic-intro-overline{font-size:.7rem;letter-spacing:.19em;font-weight:900;color:#86ebdf;text-align:center;text-shadow:0 0 15px #6deaca96}
+.cosmic-intro-illustration{
+ width:min(100%,min(42dvh,340px));aspect-ratio:1;
+ position:relative;display:grid;place-items:center;isolation:isolate;flex:none;
+ filter:drop-shadow(0 0 20px #75ebde35);
+}
+.cosmic-intro-illustration canvas{
+ position:relative;z-index:2;width:83%;height:83%;aspect-ratio:1;
+ object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 0 20px #8eece04f);
+ animation:cosmicIntroPlanetBreathe 4s ease-in-out infinite alternate;
+}
+@keyframes cosmicIntroPlanetBreathe{to{filter:drop-shadow(0 0 36px #9fffe477);transform:scale(1.025)}}
+.cosmic-intro-orbit{position:absolute;inset:7%;border:1px solid #70dadf77;border-radius:50%;transform:rotate(-23deg) scaleY(.46);box-shadow:0 0 21px #61ffe244}
+.cosmic-intro-symbols{position:absolute;inset:0;z-index:3;pointer-events:none}
+.cosmic-intro-symbol{
+ position:absolute;left:50%;top:50%;width:29px;height:29px;
+ margin:-14px 0 0 -14px;border:1px solid #95d8f0;border-radius:50%;
+ display:grid;place-items:center;
+ background:#1b3e59dd;color:#dcfff7;box-shadow:0 0 12px #72e4ff93;
+ transform:rotate(var(--intro-angle)) translateX(min(20dvh,144px)) rotate(calc(-1*var(--intro-angle)));
+ transition:opacity .32s,transform .7s cubic-bezier(.15,.8,.3,1);
+}
+.cosmic-intro-symbol svg{width:18px!important;height:18px!important}
+.cosmic-intro-core{
+ position:absolute;z-index:4;left:50%;top:50%;width:44px;height:44px;
+ transform:translate(-50%,-50%) scale(.7);border:2px solid #b4ffe0;border-radius:50%;
+ background:radial-gradient(circle,#d9fff8,#65ded9 21%,#276788 62%,#184263);
+ box-shadow:0 0 33px #6fffecc9;opacity:0;transition:opacity .6s,transform .7s;
+}
+.cosmic-intro-echo{position:absolute;z-index:5;inset:29%;border:2px solid #b0ffea;border-radius:50%;opacity:0;pointer-events:none}
+.cosmic-intro-overlay[data-scene="1"] .cosmic-intro-symbol{opacity:0;transform:rotate(var(--intro-angle)) translateX(8px) rotate(calc(-1*var(--intro-angle))) scale(.5)}
+.cosmic-intro-overlay[data-scene="1"] .cosmic-intro-core{opacity:.48;transform:translate(-50%,-50%) scale(.65);animation:cosmicIntroCorePulse 2.5s ease-in-out infinite}
+.cosmic-intro-overlay[data-scene="2"] .cosmic-intro-symbol{opacity:1;animation:cosmicIntroRuneAppear .55s ease-out var(--intro-delay) both}
+.cosmic-intro-overlay[data-scene="3"] .cosmic-intro-symbol{opacity:0;transform:rotate(var(--intro-angle)) translateX(0px) rotate(calc(-1*var(--intro-angle))) scale(.25)}
+.cosmic-intro-overlay[data-scene="3"] .cosmic-intro-core{opacity:.88;transform:translate(-50%,-50%) scale(1.1)}
+.cosmic-intro-overlay[data-scene="4"] .cosmic-intro-symbol{opacity:0;transform:rotate(var(--intro-angle)) translateX(0px) rotate(calc(-1*var(--intro-angle))) scale(.1)}
+.cosmic-intro-overlay[data-scene="4"] .cosmic-intro-core{opacity:1;transform:translate(-50%,-50%) scale(1.6);animation:cosmicIntroCorePulse 2s ease-in-out infinite}
+.cosmic-intro-overlay[data-scene="4"] .cosmic-intro-echo{animation:cosmicIntroRipple 2.5s ease-out infinite}
+@keyframes cosmicIntroRuneAppear{from{opacity:0;scale:.65}to{opacity:1;scale:1}}
+@keyframes cosmicIntroCorePulse{50%{box-shadow:0 0 48px 16px #92ffdd9c}}
+@keyframes cosmicIntroRipple{0%{opacity:.8;transform:scale(.4)}100%{opacity:0;transform:scale(2.15)}}
+.cosmic-intro-dialog{
+ width:100%;padding:15px 19px 18px;border:1px solid #4f92a9;border-radius:19px;
+ background:linear-gradient(150deg,#132f49f3,#0b2138f8);
+ box-shadow:0 20px 65px #0008,inset 0 1px #d7fffd16;
+ text-align:center;display:grid;gap:9px;
+}
+.cosmic-intro-step-label{color:#8fece1;font-size:.64rem;font-weight:900;letter-spacing:.14em}
+.cosmic-intro-dialog h2{font:900 clamp(1.22rem,4.7vw,1.62rem)/1.12 Rajdhani,sans-serif;color:#f1fff6;margin:0}
+.cosmic-intro-dialog p{color:#cce5f2;font-size:.85rem;line-height:1.5;margin:0 auto;max-width:38ch;min-height:50px}
+.cosmic-intro-progress{display:flex;justify-content:center;gap:7px;margin:2px 0 3px}
+.cosmic-intro-dot{width:20px;height:5px;background:#31566e;border-radius:8px;transition:width .25s,background .25s}
+.cosmic-intro-dot.current{width:31px;background:#a4ffe1;box-shadow:0 0 11px #7ef7e396}
+.cosmic-intro-dot.passed{background:#70a9b5}
+.cosmic-intro-actions{display:grid;grid-template-columns:minmax(82px,1fr) minmax(0,2fr);gap:9px}
+.cosmic-intro-actions button{min-height:45px;border-radius:11px;font-size:.83rem;font-weight:900}
+.cosmic-intro-skip{border:1px solid #4c7085;background:#152e43;color:#a9d6e3}
+.cosmic-intro-next{
+ border:1px solid #baffed;color:#102f3c;
+ background:linear-gradient(110deg,#9bffe1,#69d6eb);
+ box-shadow:0 0 23px #61e9dd3a;
+}
+.cosmic-intro-next span{margin-left:5px;font-size:1.1rem}
+.cosmic-intro-replay{
+ display:flex;align-items:center;justify-content:center;gap:8px;
+ width:100%;min-height:39px;margin-top:0;padding:9px;
+ border-radius:9px;border:1px solid #50758f;
+ background:#17374a;color:#bbeaf8;font-size:.72rem;font-weight:800;
+}
+.cosmic-intro-flash{
+ position:fixed;inset:0;z-index:1000;pointer-events:all;
+ background:#fff;opacity:0;
+}
+.cosmic-intro-flash.running{animation:cosmicIntroWhiteFlash 1.15s ease-in-out both}
+@keyframes cosmicIntroWhiteFlash{
+ 0%{opacity:0}28%{opacity:1}54%{opacity:1}100%{opacity:0}
+}
+body.cosmic-intro-playing{overflow:hidden}
+@media(max-height:650px){
+ .cosmic-intro-layout{width:min(100%,760px);display:grid;grid-template-columns:minmax(100px,.85fr) minmax(0,1.15fr);column-gap:13px;row-gap:5px}
+ .cosmic-intro-overline{grid-column:1/-1;font-size:.58rem}
+ .cosmic-intro-illustration{width:min(100%,68dvh)}
+ .cosmic-intro-dialog{padding:11px 12px;gap:5px;border-radius:14px}
+ .cosmic-intro-dialog h2{font-size:1.17rem}
+ .cosmic-intro-dialog p{font-size:.72rem;min-height:0;line-height:1.32}
+ .cosmic-intro-actions button{min-height:37px;font-size:.69rem}
+ .cosmic-intro-step-label{font-size:.54rem}
+ .cosmic-intro-symbol{transform:rotate(var(--intro-angle)) translateX(min(25dvh,100px)) rotate(calc(-1*var(--intro-angle)))}
+}
+@media(max-height:380px){
+ .cosmic-intro-illustration{width:min(100%,58dvh)}
+ .cosmic-intro-overline{font-size:.52rem}
+ .cosmic-intro-dialog{padding:8px 11px}
+}
+@media(prefers-reduced-motion:reduce){
+ .cosmic-intro-stars,.cosmic-intro-illustration canvas,.cosmic-intro-core,.cosmic-intro-echo{animation:none!important}
+ .cosmic-intro-symbol{animation:none!important;transition:none!important}
+ .cosmic-intro-flash.running{animation:cosmicIntroWhiteFlashReduced .26s ease-in-out both}
+ @keyframes cosmicIntroWhiteFlashReduced{0%{opacity:0}40%{opacity:1}100%{opacity:0}}
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
