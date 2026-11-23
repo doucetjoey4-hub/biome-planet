@@ -3640,6 +3640,18 @@ body.cosmic-intro-playing{overflow:hidden}
 .archive-journal-finale .archive-resonance-action{min-height:40px;background:linear-gradient(120deg,#266457,#1d6c77);border-color:#90ffe1}
 @media(max-height:620px){.archive-oscilloscope{height:40px}.archive-channel{padding:7px 9px;gap:4px}.archive-channel-list{gap:5px}.archive-decoder{gap:7px}}
 @media(prefers-reduced-motion:reduce){.archive-wave,.archive-scanline,.archive-final-map,.archive-final-symbols span{animation:none!important}}
+
+/* V85 : archives clairement signalées sur le monde, dialogue adaptable aux mobiles. */
+#discovery-overlay{padding:max(8px,env(safe-area-inset-top)) 10px max(8px,env(safe-area-inset-bottom));overscroll-behavior:contain}
+#discovery-overlay .discovery-dialog{width:min(100%,430px);max-height:calc(100dvh - 18px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;text-align:left;padding:14px 16px 17px}
+#discovery-overlay .discovery-dialog h2,#discovery-overlay .discovery-dialog>p,#discovery-overlay .discovery-reward{text-align:center}
+#discovery-overlay .discovery-emblem{font-size:2.7rem;margin:4px auto 2px;display:grid;place-items:center;min-height:43px}
+#discovery-overlay .discovery-primary{width:100%;min-height:43px;margin-top:10px}
+#anomaly-signal{border-color:#95fbdd!important;background:radial-gradient(circle,#368477e8,#193b57eb 65%)!important;box-shadow:0 0 19px #68f6d790,0 0 7px #abffe4!important}
+#anomaly-signal .signal-glyph{color:#d4ffef;font-size:1.15rem}
+#anomaly-signal .signal-pulse{border-color:#96ffe1}
+#anomaly-signal:after{content:'ARCHIVE';position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);color:#c3ffea;background:#113d45eb;padding:2px 4px;border-radius:4px;font-size:.48rem;font-weight:900;letter-spacing:.06em;white-space:nowrap;pointer-events:none}
+@media(max-height:600px){#discovery-overlay .discovery-dialog{padding:9px 13px 12px}#discovery-overlay .discovery-emblem{min-height:29px;margin:0 auto}#discovery-overlay .discovery-dialog h2{margin:3px 0 5px}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -4817,7 +4829,6 @@ function claimDiscovery(){
  state.exploration.archivePuzzle=null;save();
  const finalArchive=state.discoveries.length===COSMIC_ARCHIVES.length;
  if(finalArchive&&!state.exploration.archiveFinalRevealed){
-  checkArtifactAwakening();
   showArchiveFinalReveal();return;
  }
  checkArtifactAwakening();
@@ -4833,7 +4844,9 @@ function cancelDiscoveryHold(){
 }
 $('discovery-action').addEventListener('click',()=>{
  if(discoveryMode==='decode'){if(archiveSolved())claimDiscovery();return}
+ const wasFinal=discoveryMode==='archive-final';
  closeDiscovery();
+ if(wasFinal)checkArtifactAwakening();
 });
 $('discovery-skip').addEventListener('click',()=>{if(discoveryMode==='decode')assistArchiveDecoder()});
 $('discovery-overlay').addEventListener('click',e=>{if(e.target===$('discovery-overlay'))closeDiscovery()});
@@ -6740,6 +6753,10 @@ function renderUI(){
  $('biome-title-index').textContent=state.levels.filter(l=>l>0).length+'/'+BIOMES.length;
  const signal=nextSignal();
  $('anomaly-signal').classList.toggle('hidden',signal<0);
+ if(signal>=0){
+  $('anomaly-signal').setAttribute('aria-label','Déchiffrer l’archive cosmique '+(signal+1)+' : '+COSMIC_ARCHIVES[signal].title);
+  $('anomaly-signal').setAttribute('title','Archive cosmique '+(signal+1)+'/5');
+ }
  const found=archiveClaimed().length;
  $('planet-log-count').textContent=artifactProgress().total+'/12';
  $('planet-log-btn').classList.toggle('unlocked',found>0);
