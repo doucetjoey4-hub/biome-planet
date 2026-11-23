@@ -3407,6 +3407,7 @@ body.cosmic-intro-playing{overflow:hidden}
   <button type="button" id="fragment-scanner-action">Balayer la planète</button>
  </div>
 </div>
+<div id="fragment-rain-shards" class="fragment-rain-shards hidden" aria-label="Fragments tombés sur la planète"></div>
 <button type="button" id="fragment-deposit" class="fragment-deposit hidden" aria-label="Récupérer un fragment découvert"><span class="fragment-deposit-gem">◆</span><span class="fragment-deposit-ring"></span><small id="fragment-deposit-label">MAINTENIR POUR EXTRAIRE</small></button>
 <div class="fragment-extract-panel hidden" id="fragment-extract-panel" aria-live="polite"><b id="fragment-extract-title">EXTRACTION</b><span id="fragment-extract-detail"></span><div class="fragment-extract-track"><i id="fragment-extract-fill"></i></div></div><canvas id="planet" width="520" height="520" role="img" aria-label="Planète vue de face dont les biomes apparaissent pixel par pixel"></canvas><div class="planet-milestone hidden" id="planet-milestone" aria-live="polite"><span class="planet-milestone-ring"></span><span class="planet-milestone-sigil" id="planet-milestone-sigil">✧</span><div class="planet-milestone-message"><small id="planet-milestone-label">TRANSMISSION RETROUVÉE</small><strong id="planet-milestone-title">La planète répond</strong><span id="planet-milestone-text"></span></div></div><div id="artifact-awakening-live" class="artifact-awakening-live hidden" aria-hidden="true"><canvas id="artifact-awakening-live-fx" width="520" height="520"></canvas><div id="artifact-awakening-live-runes" class="artifact-awakening-live-runes"></div><div class="artifact-awakening-live-label">ÉVEIL DU CŒUR PLANÉTAIRE</div></div><button type="button" class="orbital-find hidden" id="orbital-find" aria-label="Collecter une anomalie spatiale"><span id="orbital-glyph">✧</span></button><button type="button" class="relic-find hidden" id="relic-find" aria-label="Examiner un site mystérieux">⌁</button><button type="button" class="anomaly-signal hidden" id="anomaly-signal" aria-label="Examiner le signal détecté"><span class="signal-glyph">✦</span><span class="signal-pulse"></span></button></div><canvas id="cosmic-fx" aria-hidden="true"></canvas>
 <div class="planet-cosmic-play hidden" id="planet-cosmic-play" aria-label="Interaction cosmique sur la planète">
@@ -3738,6 +3739,7 @@ function normalizedExploration(input,existingLevels){
   scannerLevel:Math.max(0,Math.min(3,Math.floor(Number(d.scannerLevel)||0))),
   fragmentDepositsFound:Math.max(0,Math.floor(Number(d.fragmentDepositsFound)||0)),
   fragmentNextAt:Math.max(0,Number(d.fragmentNextAt)||0),
+  fragmentRainShards:[...new Set(Array.isArray(d.fragmentRainShards)?d.fragmentRainShards.filter(n=>Number.isInteger(n)&&n>=0&&n<3):[])],
   fragmentDeposit:d.fragmentDeposit&&Number.isFinite(d.fragmentDeposit.x)&&Number.isFinite(d.fragmentDeposit.y)&&Number.isInteger(d.fragmentDeposit.type)&&d.fragmentDeposit.type>=0&&d.fragmentDeposit.type<=2?{x:Math.max(-.8,Math.min(.8,d.fragmentDeposit.x)),y:Math.max(-.8,Math.min(.8,d.fragmentDeposit.y)),type:d.fragmentDeposit.type,seed:Math.max(0,Number(d.fragmentDeposit.seed)||0)}:null,
   nextEncounterAt:Number.isFinite(d.nextEncounterAt)?d.nextEncounterAt:Date.now()+75000
  };
@@ -5225,7 +5227,12 @@ function triggerCosmicEvent(){
  state.events.push(i); // Chaque phénomène rejoint la collection de cette planète.
  state.eventActive={id:i,until:Date.now()+event.seconds*1000};
  // Les phénomènes ne sont plus simplement des multiplicateurs identiques.
- if(i===0)addWorkshopMaterials({fragment:2,crystal:1},'Pluie d’étoiles');
+ if(i===0){
+  addWorkshopMaterials({fragment:1,crystal:1},'Pluie d’étoiles');
+  state.exploration.fragmentRainShards=[...new Set([...state.exploration.fragmentRainShards,0,1,2])];
+  renderFragmentRain();
+  toast('Trois éclats brillent autour de la planète : touche-les pour les ramasser !','reward');
+ }
  if(i===2){
   earnResearch(3,'Alignement céleste');
   // L'alignement révèle une anomalie réelle sur la planète.
@@ -5434,6 +5441,34 @@ function fragmentDepositTick(){
  fragmentScanActive=false;fragmentStability=0;
  save();
 }
+function renderFragmentRain(){
+ const e=fragmentScanner(),layer=$('fragment-rain-shards');
+ const ids=e?.fragmentRainShards||[];
+ const visible=ids.length>0&&!cosmicIntroRunning&&!liveArtifactRitual;
+ layer.classList.toggle('hidden',!visible);
+ const signature=state.planet+'|'+ids.join(',');
+ if(layer.dataset.signature===signature)return;
+ layer.dataset.signature=signature;layer.replaceChildren();
+ ids.forEach(i=>{
+  const button=document.createElement('button');
+  button.type='button';button.className='fragment-rain-shard';
+  button.setAttribute('aria-label','Ramasser le fragment stellaire '+(i+1));
+  button.style.left=(24+i*26)+'%';
+  button.style.top=([29,56,32][i])+'%';
+  button.style.animationDelay=(i*.18)+'s';
+  button.innerHTML=bpIcon('material-fragment',22);
+  button.addEventListener('click',()=>{
+   const index=fragmentScanner().fragmentRainShards.indexOf(i);
+   if(index<0)return;
+   fragmentScanner().fragmentRainShards.splice(index,1);
+   addWorkshopMaterials({fragment:1},'Éclat d’étoile');
+   playSound('claim');save();renderFragmentRain();
+   if(!$('explore-overlay').classList.contains('hidden')&&explorationTab==='satellites')renderExploration();
+  });
+  layer.append(button);
+ });
+}
+
 function fragmentScannerOpenPanel(){
  if(totalLevels()<8){toast('Le scanner se débloque à 8 niveaux de biomes.','info');return}
  fragmentScannerOpen=!fragmentScannerOpen;
@@ -6269,6 +6304,7 @@ function renderUI(){
  $('planet-hint').classList.toggle('hidden',state.levels[0]>0);
  renderArtifactHud();
  renderFragmentScanner();
+ renderFragmentRain();
  $('money').textContent=moneyFormat(state.money);
  updateRebirthBadge();
  $('planet-tag').textContent='Planète '+state.planet+' · '+BIOMES.length+' biomes';
