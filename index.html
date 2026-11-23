@@ -3261,13 +3261,13 @@ const prestigeCost=()=>Math.pow(.965,prestigeLevel(2));
 const prestigeStarter=()=>Math.floor(120*prestigeLevel(3)*Math.pow(1.18,Math.max(0,state.planet-1)));
 const multiplier=()=>Math.pow(1.16,state.planet-1);
 const bonusCount=(i,type)=>(state.bonuses[i]||[]).filter(v=>v===type).length;
-const cycleTime=i=>BIOMES[i].time*Math.pow(.95,bonusCount(i,'speed'))*researchCycle()*satelliteCycle()*prestigeCycle();
-const upgradeCost=i=>Math.max(1,Math.floor(BIOMES[i].cost*Math.pow(1.075,state.levels[i])*Math.pow(1.20,state.planet-1)*Math.pow(.96,bonusCount(i,'discount'))*researchCost()*satelliteCost()*prestigeCost()));
-const unlockCost=i=>i===0?0:Math.floor(BIOMES[i].cost*Math.pow(1.20,state.planet-1)*researchCost()*satelliteCost()*prestigeCost());
+const cycleTime=i=>BIOMES[i].time*Math.pow(.95,bonusCount(i,'speed'))*researchCycle()*satelliteCycle()*prestigeCycle()*artifactCycleFactor()*artifactPowerCycleFactor();
+const upgradeCost=i=>Math.max(1,Math.floor(BIOMES[i].cost*Math.pow(1.075,state.levels[i])*Math.pow(1.20,state.planet-1)*Math.pow(.96,bonusCount(i,'discount'))*researchCost()*satelliteCost()*prestigeCost()*artifactCostFactor()));
+const unlockCost=i=>i===0?0:Math.floor(BIOMES[i].cost*Math.pow(1.20,state.planet-1)*researchCost()*satelliteCost()*prestigeCost()*artifactCostFactor());
 // Les paliers de 25 niveaux doublent le revenu de chaque cycle :
  // 1-24: x1, 25-49: x2, 50-74: x4, 75-99: x8, etc.
 function bonusPalier(level){return Math.pow(2,Math.floor(level/25))}
-function revenue(i){return BIOMES[i].base*state.levels[i]*bonusPalier(state.levels[i])*multiplier()*Math.pow(1.10,bonusCount(i,'cash'))*1.12*(1+archiveClaimed().length*.02)*biomeHarmony(i)*cosmicMultiplier()*researchRevenue()*satelliteRevenue()*prestigeRevenue()}
+function revenue(i){return BIOMES[i].base*state.levels[i]*bonusPalier(state.levels[i])*multiplier()*Math.pow(1.10,bonusCount(i,'cash'))*1.12*(1+archiveClaimed().length*.02)*biomeHarmony(i)*cosmicMultiplier()*researchRevenue()*satelliteRevenue()*prestigeRevenue()*(artifactBonus('income')?1.08:1)*artifactPowerFactor()}
 function cover(){return Math.min(100,100*pixelShown()/pixelTotal)}
 // Petit clic synthétique, très bref et discret. Aucun fichier audio externe.
 const SOUND_KEY='biome-planet-sound-enabled';
@@ -3470,6 +3470,80 @@ $('toast').addEventListener('pointercancel',()=>{
 $('toast').addEventListener('click',()=>{if($('toast').classList.contains('show'))dismissToast()});
 
 // Les archives se découvrent uniquement en développant le monde.
+// V77 : chaque planète possède une quête unique en 12 éléments.
+const PLANET_ARTIFACTS=[
+ {name:'Cœur stellaire',passive:'Revenus permanents +8 %',power:'Impulsion stellaire',powerText:'Double les revenus pendant 30 secondes',kind:'income',powerKind:'burst',color:'#84dafa'},
+ {name:'Sablier des marées',passive:'Cycles de production 10 % plus rapides',power:'Vague temporelle',powerText:'Accélère les cycles pendant 45 secondes',kind:'speed',powerKind:'haste',color:'#89f0c6'},
+ {name:'Prisme des dunes',passive:'Améliorations 8 % moins chères',power:'Pluie de crédits',powerText:'Reçoit 2 minutes de production immédiatement',kind:'discount',powerKind:'harvest',color:'#ffd28c'},
+ {name:'Codex du vivant',passive:'1 point de recherche bonus par gain',power:'Illumination',powerText:'Reçoit 12 points de recherche',kind:'research',powerKind:'insight',color:'#cbadff'},
+ {name:'Noyau des constellations',passive:'Satellites producteurs +12 % de revenus',power:'Appel cosmique',powerText:'Fait apparaître une anomalie et donne des matériaux',kind:'satellite',powerKind:'signal',color:'#f4a1da'},
+ {name:'Fragment primordial',passive:'1 fragment bonus par anomalie récupérée',power:'Résonance ancienne',powerText:'Triple les revenus pendant 20 secondes',kind:'fragments',powerKind:'surge',color:'#ffb4a4'}
+];
+const ARTIFACT_CATEGORIES=[
+ {title:'Anomalies',count:3,icon:'signal',help:'Attrape les 3 types de signaux sur ta planète.'},
+ {title:'Phénomènes',count:3,icon:'star',help:'Active la pluie, l’aurore et l’alignement.'},
+ {title:'Secrets',count:5,icon:'discovery-echo',help:'Explore tes biomes pour révéler 5 indices.'},
+ {title:'Vestige ancien',count:1,icon:'archive',help:'Trouve le vestige et restaure-le.'}
+];
+const ARTIFACT_CLUE_NAMES=['Premier écho','Fragment enfoui','Mémoire du monde','Pulsation stellaire','Cœur planétaire'];
+function currentArtifact(){return PLANET_ARTIFACTS[(state.planet-1)%PLANET_ARTIFACTS.length]}
+function artifactCounters(){
+ const e=state.exploration||{};
+ const unique=list=>[...new Set((Array.isArray(list)?list:[]).filter(v=>Number.isInteger(v)))];
+ return [
+  unique(e.encounterTypes).filter(v=>v>=0&&v<3).length,
+  unique(state.events).filter(v=>v>=0&&v<3).length,
+  unique(state.discoveries).filter(v=>v>=0&&v<5).length,
+  e.monumentRestored?1:0
+ ];
+}
+function artifactProgress(){
+ const counts=artifactCounters();
+ return {counts,total:counts.reduce((a,b)=>a+b,0),max:12,complete:counts.reduce((a,b)=>a+b,0)===12};
+}
+function artifactBonus(kind){return !!state.exploration?.artifactAwakened&&currentArtifact().kind===kind}
+function artifactActivePower(){return state.exploration?.artifactAwakened&&Date.now()<Number(state.exploration.artifactPowerUntil||0)}
+function artifactPowerFactor(){return artifactActivePower()&&['burst','surge'].includes(currentArtifact().powerKind)?(currentArtifact().powerKind==='surge'?3:2):1}
+function artifactCycleFactor(){return artifactBonus('speed')?.90:1}
+function artifactPowerCycleFactor(){return artifactActivePower()&&currentArtifact().powerKind==='haste'?.50:1}
+function artifactCostFactor(){return artifactBonus('discount')?.92:1}
+function checkArtifactAwakening(){
+ const e=state.exploration;
+ if(!e||e.artifactAwakened||!artifactProgress().complete)return false;
+ e.artifactAwakened=true;
+ e.artifactCelebrated=true;
+ save();
+ renderUI();
+ setTimeout(()=>showArtifactAwakening(),100);
+ return true;
+}
+function artifactPowerRemaining(){
+ return Math.max(0,Math.ceil((Number(state.exploration?.artifactPowerCooldown)||0-Date.now())/1000));
+}
+function activateArtifactPower(){
+ const e=state.exploration;
+ if(!e?.artifactAwakened)return;
+ if(artifactPowerRemaining()>0){toast('Le pouvoir se recharge encore.','info');return}
+ const power=currentArtifact();
+ e.artifactPowerCooldown=Date.now()+5*60*1000;
+ e.artifactPowerUntil=0;
+ if(power.powerKind==='burst')e.artifactPowerUntil=Date.now()+30000;
+ else if(power.powerKind==='haste')e.artifactPowerUntil=Date.now()+45000;
+ else if(power.powerKind==='harvest')state.money+=Math.max(80*state.planet,Math.round(planetIncome()*2));
+ else if(power.powerKind==='insight')earnResearch(12,'Artéfact');
+ else if(power.powerKind==='signal'){
+  const ex=state.exploration;
+  if(!ex.encounter){
+   const missing=[0,1,2].filter(i=>!ex.encounterTypes.includes(i));
+   const pool=missing.length?missing:[0,1,2];
+   ex.encounter={id:pool[Math.floor(Math.random()*pool.length)],until:Date.now()+31536000000};
+  }
+  addWorkshopMaterials({metal:3,crystal:2,circuit:2,fragment:1},'Appel cosmique');
+ }else if(power.powerKind==='surge')e.artifactPowerUntil=Date.now()+20000;
+ playSound('event');save();renderUI();
+ toast('✦ '+power.power+' activé !','success');
+}
+
 const COSMIC_ARCHIVES=[
  {at:8,icon:'✦',title:'Premier écho',description:'Un faible signal traverse la surface de ce monde. Il semble réagir aux premiers territoires révélés.',perk:'Une nouvelle énergie parcourt la planète.'},
  {at:22,icon:'◈',title:'Le fragment enfoui',description:'Dans les couches anciennes de la planète, une structure inconnue s’est réveillée.',perk:'Une impulsion venue des profondeurs.'},
@@ -4348,10 +4422,13 @@ function availableCosmicEvent(){
 function triggerCosmicEvent(){
  const i=availableCosmicEvent();if(i<0)return;
  const event=COSMIC_EVENTS[i];
- state.events.push(i); // Marqué utilisé avant l'application du bonus.
+ state.events.push(i); // Chaque phénomène rejoint la collection de cette planète.
  state.eventActive={id:i,until:Date.now()+event.seconds*1000};
+ // Les phénomènes ne sont plus simplement des multiplicateurs identiques.
+ if(i===0)addWorkshopMaterials({fragment:2,crystal:1},'Pluie d’étoiles');
+ if(i===2)earnResearch(3,'Alignement céleste');
  playSound('event');
- save();renderCosmicEvent();renderUI();toast('✦ '+event.name+' : x'+event.factor+' pendant '+event.seconds+' s','event');
+ save();renderCosmicEvent();renderUI();checkArtifactAwakening();toast('✦ '+event.name+' : x'+event.factor+' pendant '+event.seconds+' s','event');
 }
 function cosmicMultiplier(){
  const active=activeCosmicEvent();
@@ -4465,11 +4542,12 @@ const researchCycle=()=>Math.pow(.97,researchLevel(1));
 const researchCost=()=>Math.pow(.98,researchLevel(2));
 const expeditionSpeed=()=>Math.pow(.93,researchLevel(3));
 const hasSatellite=i=>state.exploration.satellites.includes(i);
-const satelliteRevenue=()=>hasSatellite(0)?1.08:1;
+const satelliteRevenue=()=>hasSatellite(0)?1.08*(artifactBonus('satellite')?1.12:1):1;
 const satelliteCycle=()=>hasSatellite(1)?.95:1;
 const satelliteCost=()=>hasSatellite(2)?.95:1;
 function earnResearch(points,reason){
- state.science.points=Math.min(1000000,state.science.points+Math.max(0,Math.floor(points)));
+ const earned=Math.max(0,Math.floor(points));
+ state.science.points=Math.min(1000000,state.science.points+earned+(earned>0&&artifactBonus('research')?1:0));
 }
 function scienceCost(i){return (researchLevel(i)+1)*(researchLevel(i)+2)}
 function techPrerequisite(i){return i===0||i===1&&researchLevel(0)>=1||i===2&&researchLevel(0)>=1||i===3&&researchLevel(1)>=1&&researchLevel(2)>=1}
@@ -4638,6 +4716,7 @@ function claimEncounter(){
  state.exploration.nextEncounterAt=Date.now()+120000+Math.floor(Math.random()*130000);
  const reward=Math.max(38*state.planet,Math.round(planetIncome()*.38));
  state.money+=reward;
+ if(artifactBonus('fragments'))addWorkshopMaterials({fragment:1},'Artéfact');
  addWorkshopMaterials(encounter.id===0?{metal:2,fragment:1}:encounter.id===1?{circuit:2,crystal:1}:{crystal:2,fragment:1},'Anomalie');
  if(encounter.id===1)earnResearch(2,'Signal décodé');
  else earnResearch(1,'Anomalie spatiale');
