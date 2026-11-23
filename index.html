@@ -2883,6 +2883,60 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  .planet-falling-star .falling-core,.planet-aurora-ribbon,.planet-orbit-target{animation:none!important}
  .planet-interactive-orbit{transition:none!important}
 }
+
+/* V76 : mini-jeux lisibles sur la véritable planète, cible et jauge sans ambiguïté. */
+.planet-orbit-touch{position:relative;overflow:visible!important;touch-action:none!important}
+.planet-orbit-touch .planet-interactive-orbit{
+ position:absolute!important;inset:auto!important;left:7%!important;top:23%!important;
+ width:86%!important;height:54%!important;border-radius:50%!important;
+ border:3px dashed #83dcf1bd!important;transform:none!important;
+ box-shadow:0 0 20px #72d7ff38,inset 0 0 13px #8ce8fd25!important;
+ pointer-events:none!important;
+}
+.planet-orbit-touch .planet-orbit-path{position:absolute;inset:0;pointer-events:none}
+.planet-orbit-touch .planet-orbit-target{
+ position:absolute!important;left:93%!important;top:50%!important;
+ width:30px!important;height:30px!important;transform:translate(-50%,-50%)!important;
+ border:3px solid #fff6d5!important;border-radius:50%!important;
+ background:#ffda6f!important;box-shadow:0 0 13px 4px #ffdb8a,0 0 25px #ffb74b!important;
+ pointer-events:none!important;z-index:3!important;
+}
+.planet-orbit-touch .planet-orbit-mover{
+ position:absolute!important;top:50%;left:8%;
+ width:27px!important;height:27px!important;
+ border-radius:50%!important;transform:translate(-50%,-50%)!important;
+ border:3px solid #f5ffff!important;background:#48cfff!important;
+ box-shadow:0 0 12px 4px #4dd8ff,0 0 24px #8df6ff!important;
+ pointer-events:none!important;z-index:4!important;
+}
+.planet-orbit-touch .planet-orbit-mover:after,.planet-orbit-touch .planet-orbit-target:after{
+ content:"";position:absolute;inset:7px;border-radius:50%;
+ background:#fff;opacity:.75;pointer-events:none;
+}
+.planet-orbit-touch .planet-orbit-help{
+ bottom:-13%!important;white-space:nowrap;
+ background:#102b42f0!important;color:#fff2bf!important;
+ border-color:#bca766!important;font-weight:900!important;
+ font-size:.69rem!important;padding:6px 10px!important;
+}
+.planet-aurora-touch{position:relative}
+.planet-aurora-touch .planet-aurora-meter{
+ position:absolute;bottom:13%;left:13%;height:12px;width:74%;z-index:6;
+ border-radius:100px;border:1px solid #d8f7ff8c;
+ background:#0a293ad9;overflow:hidden;pointer-events:none;
+ box-shadow:0 1px 9px #0008;
+}
+.planet-aurora-meter i{
+ width:0%;height:100%;display:block;background:linear-gradient(90deg,#7cb7ff,#8bfec1);
+ box-shadow:0 0 14px #b3ffe2;transition:width .15s ease;
+}
+.planet-aurora-help{
+ position:absolute;z-index:6;left:50%;top:6%;transform:translateX(-50%);
+ background:#102f46dc;border:1px solid #83d9d1;border-radius:7px;
+ padding:5px 8px;font-size:.61rem;font-weight:900;letter-spacing:.04em;
+ color:#d3fff2;white-space:nowrap;pointer-events:none;
+}
+@media(prefers-reduced-motion:reduce){.planet-aurora-meter i{transition:none!important}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -4096,54 +4150,59 @@ function startPlanetCosmicGame(id){
   }
   planetCosmicMessage('Touche 3 vraies étoiles filantes sur la planète · 0 / 3');
  }else if(id===1){
-  surface.classList.remove('hidden');
-  surface.classList.add('planet-aurora-touch');
+  surface.className='planet-cosmic-interact planet-aurora-touch';
   surface.setAttribute('role','button');
-  surface.setAttribute('aria-label','Glisser sur les aurores au-dessus de la planète');
-  surface.innerHTML='<span class="planet-aurora-ribbon"></span><span class="planet-aurora-ribbon"></span><span class="planet-aurora-ribbon"></span>';
+  surface.setAttribute('aria-label','Toucher ou frotter les lumières de l’aurore pour la charger');
+  surface.innerHTML='<span class="planet-aurora-ribbon"></span><span class="planet-aurora-ribbon"></span><span class="planet-aurora-ribbon"></span><span class="planet-aurora-meter"><i></i></span><span class="planet-aurora-help">GLISSE OU TOUCHE ICI</span>';
+  const meter=surface.querySelector('.planet-aurora-meter i');
   const boost=n=>{
    if(game.done)return;
    game.charge=Math.min(100,game.charge+n);
+   meter.style.width=game.charge+'%';
    surface.style.setProperty('--aurora-charge',game.charge+'%');
-   planetCosmicMessage('Charge l’aurore en glissant dessus : '+game.charge+' %');
+   planetCosmicMessage('Aurore chargée : '+game.charge+' % · '+(game.charge>=75?'Encore un peu !':'Glisse ou touche les lumières'));
    if(game.charge>=100)finishPlanetCosmicGame();
   };
   let last=null;
-  surface.onpointerdown=e=>{last=[e.clientX,e.clientY];surface.setPointerCapture?.(e.pointerId);boost(22)};
+  surface.onpointerdown=e=>{last=[e.clientX,e.clientY];surface.setPointerCapture?.(e.pointerId);boost(25)};
   surface.onpointermove=e=>{
    if(last===null||!surface.hasPointerCapture?.(e.pointerId))return;
    const move=Math.hypot(e.clientX-last[0],e.clientY-last[1]);
-   if(move>9){last=[e.clientX,e.clientY];boost(Math.min(22,Math.max(4,Math.round(move*.65))))}
+   if(move>9){last=[e.clientX,e.clientY];boost(Math.min(25,Math.max(6,Math.round(move*.65))))}
   };
   surface.onpointerup=surface.onpointercancel=()=>{last=null};
   surface.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();boost(25)}};
-  planetCosmicMessage('Glisse ton doigt sur les aurores de la planète');
+  planetCosmicMessage('Aurore magnétique : touche ou frotte les lumières · 0 %');
  }else{
-  surface.classList.remove('hidden');
-  surface.classList.add('planet-orbit-touch');
+  surface.className='planet-cosmic-interact planet-orbit-touch';
   surface.setAttribute('role','slider');
-  surface.setAttribute('aria-label','Tourner l’anneau autour de la planète');
+  surface.setAttribute('aria-label','Déplacer l’étoile bleue sur l’étoile dorée, à droite de l’anneau');
   surface.setAttribute('aria-valuemin','0');surface.setAttribute('aria-valuemax','100');surface.setAttribute('aria-valuenow','0');
-  surface.innerHTML='<span class="planet-interactive-orbit"><i class="planet-orbit-mover"></i></span><span class="planet-orbit-target"></span><span class="planet-orbit-help">Tourne l’anneau</span>';
+  surface.innerHTML='<span class="planet-interactive-orbit"></span><span class="planet-orbit-path"></span><span class="planet-orbit-target"></span><span class="planet-orbit-mover"></span><span class="planet-orbit-help">BLEUE → DORÉE</span>';
+  const marker=surface.querySelector('.planet-orbit-mover');
   const spin=value=>{
    if(game.done)return;
-   game.angle=Math.max(0,Math.min(360,value));
-   surface.style.setProperty('--orbital-angle',game.angle+'deg');
+   game.angle=(value%360+360)%360;
+   const radians=game.angle*Math.PI/180;
+   marker.style.left=(50+43*Math.cos(radians))+'%';
+   marker.style.top=(50+27*Math.sin(radians))+'%';
    surface.setAttribute('aria-valuenow',String(Math.round(game.angle/3.6)));
-   const delta=Math.abs(((game.angle-225+540)%360)-180);
-   planetCosmicMessage(delta<30?'Presque aligné ! Continue.':'Fais glisser autour de la planète pour aligner les astres');
-   if(delta<=14)finishPlanetCosmicGame();
+   const delta=Math.min(game.angle,360-game.angle);
+   const pct=Math.max(0,Math.round((180-delta)/180*100));
+   planetCosmicMessage(delta<=35?'Presque ! Mets la bleue sur la dorée.':'Aligne les étoiles : '+pct+' % · glisse la BLEUE vers la DORÉE');
+   if(delta<=17)finishPlanetCosmicGame();
   };
   const aim=e=>{
    const r=surface.getBoundingClientRect();
-   const angle=(Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2))*180/Math.PI+450)%360;
-   spin(angle);
+   const dx=(e.clientX-(r.left+r.width/2))/(r.width*.43);
+   const dy=(e.clientY-(r.top+r.height/2))/(r.height*.27);
+   spin(Math.atan2(dy,dx)*180/Math.PI);
   };
   surface.onpointerdown=e=>{game.drag=true;surface.setPointerCapture?.(e.pointerId);aim(e)};
   surface.onpointermove=e=>{if(game.drag)aim(e)};
   surface.onpointerup=surface.onpointercancel=()=>{game.drag=false};
-  surface.onkeydown=e=>{if(e.key==='ArrowRight'||e.key==='ArrowUp'||e.key==='ArrowLeft'||e.key==='ArrowDown'){e.preventDefault();spin(game.angle+(e.key==='ArrowRight'||e.key==='ArrowUp'?8:-8))}};
-  spin(35);
+  surface.onkeydown=e=>{if(['ArrowRight','ArrowUp','ArrowLeft','ArrowDown'].includes(e.key)){e.preventDefault();spin(game.angle+(e.key==='ArrowRight'||e.key==='ArrowUp'?8:-8))}};
+  spin(155);
  }
 }
 function spawnPlanetFallingStar(star){
@@ -6150,4 +6209,4 @@ document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=75').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=76').catch(console.warn));}</script></body></html>
