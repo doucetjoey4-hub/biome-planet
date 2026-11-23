@@ -2937,6 +2937,197 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  color:#d3fff2;white-space:nowrap;pointer-events:none;
 }
 @media(prefers-reduced-motion:reduce){.planet-aurora-meter i{transition:none!important}}
+
+/* V77 · Mystère planétaire : collection guidée, artéfacts et cérémonie d'éveil. */
+.artifact-hud{display:flex;align-items:stretch;gap:6px;margin:5px 0 2px;min-width:0}
+.artifact-open{
+ display:flex;align-items:center;gap:9px;flex:1;min-width:0;min-height:44px;
+ text-align:left;padding:7px 10px;border:1px solid #5e91a6;border-radius:11px;
+ background:linear-gradient(110deg,#163c52,#112a42 65%,#182e48);
+ color:#e5f9ff;box-shadow:inset 0 1px #efffff13;
+}
+.artifact-open:active{background:#20536d}
+.artifact-hud-icon{
+ display:grid;place-items:center;width:30px;height:30px;flex:none;
+ border-radius:9px;background:#285475;color:#a5e9ff;font-size:1.3rem;
+ box-shadow:inset 0 0 10px #77dfff22;
+}
+.artifact-hud-label{min-width:0;flex:1;display:grid;gap:2px}
+.artifact-hud-label b{font-size:.69rem;letter-spacing:.075em;color:#eafcff}
+.artifact-hud-label small{font-size:.62rem;color:#a9d3e5;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.artifact-hud-count{
+ border-radius:8px;flex:none;font:900 .78rem Rajdhani,sans-serif;
+ background:#21495b;border:1px solid #5d9eb3;color:#a8f4e5;padding:5px 7px;
+}
+.artifact-hud.awakened .artifact-open{
+ border-color:#abdbb0;background:linear-gradient(110deg,#183d42,#153747,#254049);
+ box-shadow:0 0 15px #9debc71d,inset 0 1px #bfffe722;
+}
+.artifact-hud.awakened .artifact-hud-icon{background:#25594c;color:#c8ffe1}
+.artifact-power{
+ flex:0 1 45%;min-width:0;padding:6px 9px;border-radius:10px;
+ border:1px solid #a4d4b8;background:linear-gradient(120deg,#296e62,#1a5255);
+ color:#e0ffea;font-size:.66rem;line-height:1.35;font-weight:850;
+}
+.artifact-power:disabled{color:#9ac6b6;background:#1a4244;opacity:.75;cursor:default}
+.planet-panel:has(.artifact-hud.awakened) #planet{filter:drop-shadow(0 0 10px #7ceace3b)}
+.discovery-dialog:has(.artifact-journal:not(.hidden)){
+ max-height:min(91dvh,850px);overflow-y:auto;overscroll-behavior:contain;
+ width:min(100%,470px);padding-bottom:14px;
+}
+.discovery-dialog:has(.artifact-journal:not(.hidden)) .discovery-emblem{
+ margin:4px auto 0;font-size:2.5rem;animation:none;
+}
+.discovery-dialog:has(.artifact-journal:not(.hidden)) #discovery-title{margin:4px 0 6px}
+.discovery-dialog:has(.artifact-journal:not(.hidden)) #discovery-description{
+ margin:0 0 9px;line-height:1.45;font-size:.76rem;
+}
+.discovery-dialog:has(.artifact-journal:not(.hidden)) #discovery-reward{padding:7px;font-size:.7rem}
+.artifact-journal{text-align:left;margin:10px 0 0;display:grid;gap:10px}
+.artifact-journal-intro{
+ display:grid;gap:4px;padding:11px 12px;border-radius:12px;
+ background:radial-gradient(ellipse at top left,#254e67,#132b41 72%);
+ border:1px solid #44758e;
+}
+.artifact-journal-kicker{font-size:.62rem;letter-spacing:.12em;font-weight:900;color:#8bcde5}
+.artifact-journal-intro strong{font:800 1.12rem Rajdhani,sans-serif;color:#effbff}
+.artifact-journal-intro small{font-size:.74rem;line-height:1.4;color:#bbd7e7}
+.artifact-total-progress{display:grid;gap:6px}
+.artifact-total-progress>div{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.artifact-total-progress b{font-size:.75rem;color:#daf2ff}
+.artifact-total-progress strong{font-size:.85rem;color:#b4ffe2}
+.artifact-total-track{height:10px;display:block;overflow:hidden;border-radius:20px;background:#1c3445;border:1px solid #34546b}
+.artifact-total-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#54afd9,#87f4c1);border-radius:99px;transition:width .4s}
+.artifact-category{padding:8px 10px;border-radius:11px;background:#112a3b;border:1px solid #345970}
+.artifact-category-head{display:flex;justify-content:space-between;align-items:center;gap:9px}
+.artifact-category-head strong{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:#e5f8ff}
+.artifact-category-head strong svg{flex:none;color:#9be5eb}
+.artifact-category-head b{font-size:.75rem;color:#b2ffe1;white-space:nowrap}
+.artifact-category>p{margin:4px 0 8px;font-size:.69rem;line-height:1.35;color:#a5cadd}
+.artifact-clues{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.artifact-clue{
+ display:flex;align-items:center;gap:5px;padding:6px 7px;min-height:35px;
+ border:1px solid #2a485c;border-radius:8px;background:#0c2030;
+ font-size:.68rem;line-height:1.25;color:#829eb1;
+}
+.artifact-clue.obtained{border-color:#3e8274;background:#163a3c;color:#c5fce6}
+.artifact-clue-icon{width:17px;display:grid;place-items:center;flex:none}
+.artifact-clue-icon svg{width:13px;height:13px}
+.artifact-next-step{
+ padding:9px 11px;border-left:3px solid #8bdbea;
+ background:#193749;border-radius:7px 10px 10px 7px;
+}
+.artifact-next-step b{font-size:.62rem;letter-spacing:.1em;color:#a3e9f8}
+.artifact-next-step p{margin:4px 0 0;font-size:.74rem;line-height:1.45;color:#eefbff}
+.artifact-journal-reward{
+ padding:12px;border:1px solid #746b9b;border-radius:12px;
+ background:linear-gradient(130deg,#263047,#1c2943 75%);
+ display:grid;gap:6px;
+}
+.artifact-journal-reward.awakened{border-color:#7ad0aa;background:linear-gradient(120deg,#1d4541,#152f43)}
+.artifact-journal-reward>span{font-size:.61rem;letter-spacing:.12em;font-weight:900;color:#d5c7fa}
+.artifact-journal-reward strong{font:800 1.12rem Rajdhani,sans-serif;color:#fff4cf}
+.artifact-journal-reward p{margin:0;font-size:.72rem;color:#c6e4e9;line-height:1.35}
+.artifact-journal-reward button{
+ border:1px solid #7bd9b8;background:#235a53;color:#dbfff0;
+ border-radius:8px;padding:9px;font-size:.73rem;font-weight:900;margin-top:5px;
+}
+.artifact-awakening-overlay{
+ position:fixed;inset:0;z-index:240;display:flex;align-items:center;justify-content:center;
+ padding:max(15px,env(safe-area-inset-top)) 16px max(15px,env(safe-area-inset-bottom));
+ background:radial-gradient(ellipse at 50% 45%,#123b58f5,#040c1bf7 78%);
+ backdrop-filter:blur(12px);
+ overflow-y:auto;
+}
+.artifact-awakening-stage{
+ width:min(100%,480px);max-height:94dvh;overflow-y:auto;
+ text-align:center;color:#effdff;padding:20px 14px 17px;border-radius:24px;
+ border:1px solid #75e5d5;background:radial-gradient(ellipse at 50% 28%,#1b4d63,#10273b 61%,#091827);
+ box-shadow:0 20px 100px #000d,0 0 44px #57ead130;
+}
+.artifact-awakening-top{color:#abffe3;font-size:.68rem;letter-spacing:.15em;font-weight:900}
+.artifact-awakening-scene{position:relative;width:min(100%,305px);height:245px;margin:6px auto 4px;display:grid;place-items:center;isolation:isolate}
+.artifact-awakening-planet{
+ position:absolute;width:144px;height:144px;border-radius:50%;
+ background:radial-gradient(circle at 34% 26%,#3e8c9b,#1b536a 43%,#112a49 73%,#06152c 100%);
+ box-shadow:inset -17px -19px 24px #00102180,0 0 35px #5ed9df3e;
+}
+.artifact-awakening-planet:before{
+ content:"";position:absolute;inset:-18px;border:1px solid #75e5de38;
+ border-radius:50%;transform:rotate(-26deg) scaleY(.42);
+}
+.artifact-awakening-runes{position:absolute;inset:0;display:grid;place-items:center;z-index:2}
+.artifact-awakening-rune{
+ --angle:0deg;--delay:0s;position:absolute;left:50%;top:50%;
+ width:29px;height:29px;margin:-14px 0 0 -14px;
+ display:grid;place-items:center;color:#b7f8ff;
+ border:1px solid #6ab9dc80;border-radius:50%;background:#204761e8;
+ box-shadow:0 0 13px #68d9ff6b;
+ transform:rotate(var(--angle)) translateX(110px) rotate(calc(-1 * var(--angle)));
+}
+.artifact-awakening-rune svg{width:18px;height:18px}
+.artifact-awakening-overlay.playing .artifact-awakening-rune{
+ animation:artifactRuneConverge 3s cubic-bezier(.23,.75,.25,1) var(--delay) both;
+}
+@keyframes artifactRuneConverge{
+ 0%,37%{opacity:0;transform:rotate(var(--angle)) translateX(115px) rotate(calc(-1 * var(--angle))) scale(.5)}
+ 45%,68%{opacity:1;transform:rotate(var(--angle)) translateX(110px) rotate(calc(-1 * var(--angle))) scale(1)}
+ 95%,100%{opacity:0;transform:rotate(var(--angle)) translateX(0) rotate(calc(-1 * var(--angle))) scale(.5)}
+}
+.artifact-awakening-core{
+ --artifact-color:#8fe6df;position:absolute;z-index:4;display:grid;place-items:center;
+ width:92px;height:92px;border-radius:22px;
+ color:var(--artifact-color);background:radial-gradient(circle,#2a657b,#142e4d 70%);
+ border:2px solid var(--artifact-color);
+ box-shadow:0 0 22px var(--artifact-color),inset 0 0 22px #8ee9de44;
+ opacity:1;transform:scale(1) rotate(45deg);
+}
+.artifact-awakening-core svg{transform:rotate(-45deg);width:57px!important;height:57px!important}
+.artifact-awakening-overlay.playing .artifact-awakening-core{animation:artifactCoreAwaken 3.3s ease-out both}
+@keyframes artifactCoreAwaken{
+ 0%,65%{opacity:0;transform:scale(.12) rotate(45deg)}
+ 77%{opacity:1;transform:scale(1.3) rotate(45deg)}
+ 100%{opacity:1;transform:scale(1) rotate(45deg)}
+}
+.artifact-awakening-wave{position:absolute;border:2px solid #abffe9;border-radius:50%;width:95px;height:95px;z-index:3;opacity:0}
+.artifact-awakening-overlay.playing .artifact-awakening-wave{animation:artifactEnergyWave 1.15s ease-out 2.7s both}
+@keyframes artifactEnergyWave{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(3.4)}}
+.artifact-awakening-heading{font-size:.75rem;letter-spacing:.24em;font-weight:900;color:#b4ffdf}
+.artifact-awakening-stage h2{font:900 1.8rem Rajdhani,sans-serif;margin:5px 0 3px;color:#fff8cf}
+.artifact-awakening-stage>p{color:#abd4e7;margin:0 0 12px;font-size:.76rem}
+.artifact-awakening-reward{display:grid;gap:8px;text-align:left}
+.artifact-awakening-reward>div{
+ padding:10px 12px;background:#123d49aa;border:1px solid #447c81;
+ border-radius:10px;display:grid;gap:5px;
+}
+.artifact-awakening-reward b{font-size:.62rem;letter-spacing:.09em;color:#9cdac7}
+.artifact-awakening-reward span{font-size:.78rem;color:#edfff7;line-height:1.4}
+#artifact-awakening-continue{
+ width:100%;min-height:46px;margin-top:13px;border-radius:12px;
+ background:linear-gradient(100deg,#93f1d7,#61cde4);border:1px solid #bafff1;
+ color:#103342;font-weight:900;font-size:.85rem;
+}
+@media(max-height:660px){
+ .artifact-awakening-stage{padding:10px 12px}
+ .artifact-awakening-scene{height:154px}
+ .artifact-awakening-planet{width:105px;height:105px}
+ .artifact-awakening-rune{display:none}
+ .artifact-awakening-core{width:70px;height:70px}
+ .artifact-awakening-core svg{width:40px!important;height:40px!important}
+ .artifact-awakening-stage h2{font-size:1.3rem}
+ .artifact-awakening-reward>div{padding:7px}
+ .artifact-awakening-top{font-size:.59rem}
+}
+@media(max-width:370px){
+ .artifact-hud{flex-wrap:wrap}
+ .artifact-power{flex:1 1 100%;min-height:35px}
+ .artifact-clue{font-size:.63rem;padding:5px}
+}
+@media(prefers-reduced-motion:reduce){
+ .artifact-awakening-rune{display:none!important}
+ .artifact-awakening-overlay.playing .artifact-awakening-core,.artifact-awakening-overlay.playing .artifact-awakening-wave{animation:none!important}
+ .artifact-awakening-core{opacity:1}
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -6444,4 +6635,4 @@ document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=76').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=77').catch(console.warn));}</script></body></html>
