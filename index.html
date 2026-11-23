@@ -3492,6 +3492,12 @@ body.cosmic-intro-playing{overflow:hidden}
 @media(prefers-reduced-motion:reduce){
  .fragment-rain-shard,.fragment-deposit-ring,.fragment-scanner-sweep,.fragment-scanner-ping{animation:none!important}
 }
+
+/* V83 : extraction continue et états réellement lisibles. */
+.fragment-extract-track i.extracting{animation:fragmentExtractCharge 1.1s linear forwards!important;transition:none!important}
+@keyframes fragmentExtractCharge{from{width:0%}to{width:100%}}
+.fragment-scanner-ui:has(.fragment-scanner-panel:not(.hidden)){z-index:25}
+@media(prefers-reduced-motion:reduce){.fragment-extract-track i.extracting{animation:fragmentExtractCharge 1.1s linear forwards!important}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -5572,7 +5578,6 @@ function renderFragmentRain(){
 function fragmentScannerOpenPanel(){
  if(totalLevels()<8){toast('Le scanner se débloque à 8 niveaux de biomes.','info');return}
  fragmentScannerOpen=!fragmentScannerOpen;
- if(!fragmentScannerOpen)fragmentScanActive=false;
  renderFragmentScanner();
  if(fragmentScannerOpen)playSound('open');
 }
@@ -5593,7 +5598,8 @@ function renderFragmentScanner(){
  const ui=$('fragment-scanner-ui'),panel=$('fragment-scanner-panel'),button=$('fragment-scanner-open'),dot=$('fragment-deposit');
  ui.classList.toggle('hidden',!unlocked);
  panel.classList.toggle('hidden',!fragmentScannerOpen||!unlocked);
- button.innerHTML=bpIcon('expedition-radar',19)+'<span>'+((deposit&&fragmentScanActive)?'SIGNAL REPÉRÉ':'SCANNER')+'</span>';
+ const buttonStatus=(deposit&&fragmentScanActive)?'SIGNAL REPÉRÉ':'SCANNER';
+ if(button.dataset.status!==buttonStatus){button.dataset.status=buttonStatus;button.innerHTML=bpIcon('expedition-radar',19)+'<span>'+buttonStatus+'</span>'}
  button.setAttribute('aria-expanded',String(fragmentScannerOpen));
  const revealed=unlocked&&!!deposit&&fragmentScanActive;
  dot.classList.toggle('hidden',!revealed);
@@ -5629,6 +5635,7 @@ function clearFragmentExtraction(){
  fragmentStability=0;
  $('fragment-extract-panel').classList.add('hidden');
  $('fragment-extract-fill').style.width='0%';
+ $('fragment-extract-fill').classList.remove('extracting');
 }
 function startFragmentExtraction(){
  if(!fragmentScanActive||!fragmentScanner().fragmentDeposit)return;
@@ -5640,6 +5647,8 @@ function startFragmentExtraction(){
  const panel=$('fragment-extract-panel');panel.classList.remove('hidden');
  $('fragment-extract-title').textContent='EXTRACTION EN COURS';
  $('fragment-extract-detail').textContent='Maintiens le doigt sur le cristal.';
+ const fill=$('fragment-extract-fill');fill.classList.remove('extracting');
+ void fill.offsetWidth;fill.classList.add('extracting');
  const started=fragmentExtractStart;
  fragmentExtractTimer=setTimeout(()=>{
   if(fragmentExtractPointer&&fragmentExtractStart===started)collectFragmentDeposit();
@@ -5651,6 +5660,7 @@ function stabilizeFragment(){
  const panel=$('fragment-extract-panel');panel.classList.remove('hidden');
  $('fragment-extract-title').textContent='STABILISATION';
  $('fragment-extract-detail').textContent='Impulsions '+fragmentStability+'/3 · touche encore le cristal.';
+ $('fragment-extract-fill').classList.remove('extracting');
  $('fragment-extract-fill').style.width=Math.round(fragmentStability/3*100)+'%';
  playSound('claim');
  if(fragmentStability>=3)collectFragmentDeposit();
