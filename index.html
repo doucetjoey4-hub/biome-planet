@@ -3279,6 +3279,119 @@ body.cosmic-intro-playing{overflow:hidden}
  .cosmic-intro-flash.running{animation:cosmicIntroWhiteFlashReduced .26s ease-in-out both}
  @keyframes cosmicIntroWhiteFlashReduced{0%{opacity:0}40%{opacity:1}100%{opacity:0}}
 }
+
+/* V82 · LE SIGNAL OUBLIÉ : ambiance sombre, transmission, révélation et micro-scènes. */
+.cosmic-intro-overlay{
+ background:radial-gradient(ellipse at 50% 38%,#102237,#030711 77%,#01040b)!important;
+}
+.cosmic-intro-overline{color:#a9dce8;letter-spacing:.16em;text-shadow:0 0 12px #65d9e4ac}
+.cosmic-intro-illustration{filter:drop-shadow(0 0 21px #44c7da2b);transition:filter .8s}
+.cosmic-intro-illustration canvas{transition:opacity 1.05s ease,filter 1.05s ease}
+.cosmic-intro-overlay[data-scene="1"] .cosmic-intro-illustration canvas{opacity:0!important;filter:brightness(0)!important}
+.cosmic-intro-overlay[data-scene="1"] .cosmic-intro-orbit{opacity:0}
+.cosmic-intro-overlay[data-scene="1"] .cosmic-intro-core{
+ opacity:1!important;width:8px;height:8px;transform:translate(-50%,-50%) scale(1)!important;
+ box-shadow:0 0 10px 4px #c6faff,0 0 35px #7adce8!important;
+ background:#e6ffff;animation:cosmicIntroLonelySignal 2.2s ease-in-out infinite!important;
+}
+@keyframes cosmicIntroLonelySignal{0%,74%,100%{opacity:.12;filter:brightness(.5)}16%,24%{opacity:1;filter:brightness(1.7)}}
+.cosmic-intro-overlay[data-scene="2"] .cosmic-intro-illustration canvas{
+ opacity:1;animation:cosmicIntroPlanetReveal 1.6s ease-out both;
+}
+@keyframes cosmicIntroPlanetReveal{from{opacity:.1;filter:brightness(.1) drop-shadow(0 0 1px #65e0dd)}to{opacity:1;filter:brightness(.8) drop-shadow(0 0 25px #87eff2)}}
+.cosmic-intro-overlay[data-scene="2"] .cosmic-intro-core{
+ opacity:.56!important;animation:cosmicIntroHeart 2.8s ease-in-out infinite!important;
+}
+@keyframes cosmicIntroHeart{0%,60%,100%{box-shadow:0 0 16px #69d6e981}75%{box-shadow:0 0 49px 14px #94ffedd3}}
+.cosmic-intro-overlay[data-scene="3"] .cosmic-intro-symbol{filter:drop-shadow(0 0 7px #89ffdb9e)}
+.cosmic-intro-overlay[data-scene="3"] .cosmic-intro-illustration canvas{filter:brightness(.75)}
+.cosmic-intro-overlay[data-scene="4"] .cosmic-intro-core{box-shadow:0 0 31px #c8ffe6}
+.cosmic-intro-overlay[data-scene="4"] .cosmic-intro-echo{animation:cosmicIntroRipple 2.5s ease-out infinite}
+.cosmic-intro-overlay[data-scene="5"] .cosmic-intro-illustration canvas{filter:brightness(.28);opacity:.62}
+.cosmic-intro-overlay[data-scene="5"] .cosmic-intro-symbol{opacity:0;transform:rotate(var(--intro-angle)) translateX(0) scale(.1)}
+.cosmic-intro-overlay[data-scene="5"] .cosmic-intro-orbit{opacity:.12}
+.cosmic-intro-overlay[data-scene="5"] .cosmic-intro-core{
+ opacity:.35;transform:translate(-50%,-50%) scale(.64);animation:cosmicIntroLonelySignal 3s steps(1) infinite;
+}
+.cosmic-intro-overlay[data-scene="5"] .cosmic-intro-dialog{
+ border-color:#bf8aa6;box-shadow:0 0 28px #f15ca926,0 20px 65px #000c;
+ animation:cosmicIntroGlitch .3s steps(2) 2;
+}
+@keyframes cosmicIntroGlitch{0%{transform:translateX(0)}30%{transform:translateX(3px)}65%{transform:translateX(-3px)}100%{transform:translateX(0)}}
+.cosmic-intro-dialog{position:relative;overflow:hidden;background:linear-gradient(150deg,#102136f7,#091726fb)!important}
+.cosmic-intro-dialog:before{
+ content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.06;
+ background:repeating-linear-gradient(to bottom,transparent 0px,transparent 4px,#bdf6ff 5px,transparent 6px);
+}
+.cosmic-intro-dialog>*{position:relative;z-index:1}
+.cosmic-intro-signal{
+ display:flex;justify-content:center;align-items:center;gap:7px;
+ min-height:15px;color:#8cc6cf;letter-spacing:.1em;font-size:.58rem;font-weight:850;
+}
+.cosmic-intro-signal-led{width:6px;height:6px;border-radius:50%;background:#75f8d2;box-shadow:0 0 10px #79ffdf;animation:cosmicSignalLight 2.2s steps(2) infinite}
+@keyframes cosmicSignalLight{50%{opacity:.13}}
+.cosmic-intro-overlay[data-scene="5"] .cosmic-intro-signal-led{background:#fd9dbb;box-shadow:0 0 10px #ff8fa8}
+.cosmic-intro-overlay[data-scene="5"] .cosmic-intro-signal{color:#f9aabe}
+.cosmic-intro-detail{font-size:.75rem!important;line-height:1.35!important;color:#a8e9df!important;font-style:italic;min-height:20px!important;margin-top:-2px!important}
+.cosmic-intro-overlay[data-scene="5"] .cosmic-intro-detail{color:#ffe6d0!important}
+.cosmic-intro-overlay[data-scene="5"] .cosmic-intro-dialog h2{color:#f5cbdc}
+.cosmic-intro-overlay[data-scene="5"] .cosmic-intro-description{color:#fff1e9}
+.cosmic-intro-dot{width:16px}.cosmic-intro-dot.current{width:27px}
+.planet-milestone{
+ position:absolute;inset:0;z-index:14;pointer-events:none;
+ display:flex;align-items:center;justify-content:center;
+ overflow:visible;isolation:isolate;
+}
+.planet-milestone-ring{
+ position:absolute;left:50%;top:50%;width:42%;aspect-ratio:1;
+ border:3px solid #a3ffe5;border-radius:50%;
+ transform:translate(-50%,-50%) scale(.1);
+ box-shadow:0 0 25px #9cffdeab,inset 0 0 20px #62e9e2a3;opacity:0;
+}
+.planet-milestone-sigil{
+ position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.3);
+ color:#c8fff0;text-shadow:0 0 15px #acffe3,0 0 45px #81e5eb;
+ font-size:clamp(2rem,10vw,3.4rem);opacity:0;
+}
+.planet-milestone-message{
+ position:absolute;left:50%;bottom:2%;width:94%;max-width:320px;
+ transform:translate(-50%,10px);
+ padding:9px 12px;display:grid;gap:4px;text-align:center;
+ border:1px solid #77d8de;border-radius:13px;
+ background:#0b263de8;color:#e4ffff;
+ box-shadow:0 10px 28px #0008,0 0 18px #60dfec4d;
+ opacity:0;
+}
+.planet-milestone-message small{font-size:.53rem;font-weight:900;letter-spacing:.12em;color:#8de9df}
+.planet-milestone-message strong{font:900 clamp(.85rem,3vw,1.15rem) Rajdhani,sans-serif;color:#f3fff1}
+.planet-milestone-message span{font-size:.67rem;line-height:1.3;color:#b9e2e9}
+.planet-milestone.playing .planet-milestone-ring{animation:planetMysteryWave 3.2s ease-out .3s both}
+.planet-milestone.playing .planet-milestone-sigil{animation:planetMysteryGlyph 3.7s ease-out .2s both}
+.planet-milestone.playing .planet-milestone-message{animation:planetMysteryMessage 4.5s ease-out .1s both}
+@keyframes planetMysteryWave{0%{opacity:0;transform:translate(-50%,-50%) scale(.1)}30%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(2.4)}}
+@keyframes planetMysteryGlyph{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}30%,68%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.4)}}
+@keyframes planetMysteryMessage{0%{opacity:0;transform:translate(-50%,10px)}15%,78%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,7px)}}
+@media(max-height:650px){
+ .cosmic-intro-signal{font-size:.5rem}
+ .cosmic-intro-detail{font-size:.66rem!important;min-height:0!important}
+ .planet-milestone-message{padding:5px 8px;bottom:-1%}
+ .planet-milestone-message small{font-size:.47rem}
+ .planet-milestone-message span{font-size:.59rem}
+}
+@media(prefers-reduced-motion:reduce){
+ .cosmic-intro-overlay[data-scene="1"] .cosmic-intro-core,
+ .cosmic-intro-overlay[data-scene="2"] .cosmic-intro-core,
+ .cosmic-intro-overlay[data-scene="5"] .cosmic-intro-core,
+ .cosmic-intro-overlay[data-scene="2"] .cosmic-intro-illustration canvas,
+ .cosmic-intro-overlay[data-scene="5"] .cosmic-intro-dialog,
+ .cosmic-intro-signal-led,
+ .planet-milestone.playing .planet-milestone-ring,
+ .planet-milestone.playing .planet-milestone-sigil,
+ .planet-milestone.playing .planet-milestone-message{animation:none!important}
+ .planet-milestone.playing .planet-milestone-sigil{opacity:.8;transform:translate(-50%,-50%) scale(1)}
+ .planet-milestone.playing .planet-milestone-message{opacity:1;transform:translate(-50%,0)}
+ .cosmic-intro-overlay[data-scene="2"] .cosmic-intro-illustration canvas{opacity:1}
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -6968,7 +7081,7 @@ function restoreControlCenter(){
 refreshBiomeCards();buildPixelMap();installBpIcons();
 restoreControlCenter();
 // V81 : prologue en quatre scènes et flash avant le gameplay.
-const COSMIC_INTRO_KEY='biome-planet-cosmic-intro-v1';
+const COSMIC_INTRO_KEY='biome-planet-cosmic-intro-v2';
 const COSMIC_INTRO_STEPS=[
  {title:'Quelque chose nous appelle',description:'Depuis des milliers d’années… un signal traverse le vide.',detail:'Personne ne sait d’où il vient.',signal:'SIGNAL FAIBLE · ORIGINE INCONNUE'},
  {title:'Une présence sous la surface',description:'Le signal ne vient pas des étoiles…',detail:'Il vient de cette planète.',signal:'SOURCE LOCALISÉE · SOUS LA SURFACE'},
@@ -7058,7 +7171,10 @@ function closeCosmicIntro(withFlash=false){
 $('cosmic-intro-skip').addEventListener('click',()=>closeCosmicIntro(false));
 $('cosmic-intro-next').addEventListener('click',()=>{
  if(cosmicIntroTransitioning)return;
- if(cosmicIntroStep<COSMIC_INTRO_STEPS.length-1){cosmicIntroStep++;renderCosmicIntro()}
+ if(cosmicIntroStep<COSMIC_INTRO_STEPS.length-1){
+  cosmicIntroStep++;renderCosmicIntro();
+  if(cosmicIntroStep===1||cosmicIntroStep===4)playSound('event');
+ }
  else closeCosmicIntro(true);
 });
 $('cosmic-intro-overlay').addEventListener('keydown',e=>{
