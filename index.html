@@ -3579,6 +3579,67 @@ body.cosmic-intro-playing{overflow:hidden}
  .fragment-scan-planet-fx.scanning .fragment-scan-planet-caption{animation:none;opacity:1}
  .fragment-deposit.fragment-newly-revealed{animation:none}
 }
+
+/* V85 — Échos du passé : un décodeur tactile plutôt qu'un bouton maintenu. */
+.archive-decoder{display:grid;gap:11px;margin:10px 0 3px;min-width:0}
+.archive-decoder-head,.archive-journal-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.62rem;font-weight:900;letter-spacing:.09em;color:#b4f1e2}
+.archive-decoder-head strong{font-size:.63rem;color:#94e4f1;white-space:nowrap}
+.archive-oscilloscope{height:62px;position:relative;overflow:hidden;border:1px solid #366b7c;border-radius:11px;background:repeating-linear-gradient(0deg,transparent 0 13px,#65c4d010 13px 14px),repeating-linear-gradient(90deg,transparent 0 25px,#65c4d016 25px 26px),#091c30}
+.archive-oscilloscope .archive-wave{position:absolute;left:-10%;right:-10%;top:50%;height:2px;filter:drop-shadow(0 0 5px currentColor)}
+.archive-wave.wave-one{color:#85eedd;background:linear-gradient(90deg,transparent,#86f5d5,#b2f7ee,#72d2f0,transparent);transform:skewY(-5deg);animation:archiveWaveOne 2.2s ease-in-out infinite alternate}
+.archive-wave.wave-two{color:#8cb5eb;background:linear-gradient(90deg,transparent,#8aa3e4,#9ce7e7,transparent);transform:skewY(6deg);opacity:.7;animation:archiveWaveTwo 1.5s ease-in-out infinite alternate}
+.archive-scanline{position:absolute;top:0;bottom:0;width:24%;background:linear-gradient(90deg,transparent,#71f3e224,transparent);animation:archiveScan 3s linear infinite}
+@keyframes archiveWaveOne{to{transform:skewY(6deg) translateY(-13px)}}
+@keyframes archiveWaveTwo{to{transform:skewY(-6deg) translateY(13px)}}
+@keyframes archiveScan{to{transform:translateX(550%)}}
+.archive-decoder.is-stable .archive-oscilloscope{border-color:#9bffe3;box-shadow:0 0 19px #7af8da3b}
+.archive-decoder-instructions{font-size:.72rem;line-height:1.45;color:#b8d5e7;margin:0!important}
+.archive-channel-list{display:grid;gap:10px}
+.archive-channel{display:grid;gap:7px;padding:10px 11px;border:1px solid #355d73;border-radius:11px;background:#11273a}
+.archive-channel[data-signal="near"]{border-color:#9a8c59}
+.archive-channel[data-signal="synchronized"]{border-color:#71e4be;background:#123e3f}
+.archive-channel-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.archive-channel-head strong{font-size:.67rem;letter-spacing:.075em;color:#d0f2f1}
+.archive-channel-state{font-size:.59rem;font-weight:900;color:#94afc6}
+.archive-channel[data-signal="near"] .archive-channel-state{color:#f0d294}
+.archive-channel[data-signal="synchronized"] .archive-channel-state{color:#a2ffe0}
+.archive-channel-controls{display:grid;grid-template-columns:32px minmax(0,1fr) 32px;align-items:center;gap:9px}
+.archive-channel-controls button{width:32px;height:32px;border:1px solid #567f92;border-radius:8px;background:#1c4055;color:#e4fefa;font-size:1.25rem;font-weight:900}
+.archive-channel-controls input{width:100%;min-width:0;accent-color:#77dddb;cursor:pointer;touch-action:pan-y}
+.archive-channel[data-signal="synchronized"] input{accent-color:#94ffd7}
+.archive-channel-segments{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.archive-channel-segments span{height:4px;border-radius:3px;background:#27495b}
+.archive-channel-segments span.lit{background:#62c3d4}
+.archive-channel[data-signal="near"] .archive-channel-segments span.selected{background:#f9d28f}
+.archive-channel[data-signal="synchronized"] .archive-channel-segments span.lit{background:#82e6bd}
+.archive-assist{border:1px solid #497b86;border-radius:10px;background:#1a3846;color:#d0f5ec;min-height:39px;padding:8px 10px;font-size:.75rem;font-weight:800}
+.archive-assist:disabled{opacity:.54}
+.discovery-primary:disabled{opacity:.48;cursor:default}
+.archive-final-scene{display:grid;justify-items:center;gap:12px;text-align:center;border:1px solid #78c5b4;border-radius:16px;padding:18px 13px;background:radial-gradient(circle at 50% 40%,#1d5161,#0a1a34 74%);box-shadow:0 0 23px #5cddcc25;overflow:hidden}
+.archive-final-symbols{display:flex;width:100%;justify-content:space-around;color:#aefff0;font-size:1.55rem;text-shadow:0 0 14px #67fbdc}
+.archive-final-scene:not(.hidden) .archive-final-symbols span{animation:archiveFinalMerge 3s ease-in-out infinite alternate}
+.archive-final-scene:not(.hidden) .archive-final-symbols span:nth-child(even){animation-delay:.7s}
+@keyframes archiveFinalMerge{to{transform:translateY(10px) scale(1.22);opacity:.55}}
+.archive-final-map{display:grid;place-items:center;width:126px;height:126px;border:1px solid #b5fdeb;border-radius:50%;box-shadow:0 0 30px #7bfce850,inset 0 0 25px #68dfca2e;background:repeating-radial-gradient(circle,transparent 0 22px,#86f6df28 23px 24px);animation:archiveFinalRevealGlow 3.2s ease-in-out infinite}
+@keyframes archiveFinalRevealGlow{50%{box-shadow:0 0 48px #9cfbe3,inset 0 0 32px #9ef7db66}}
+.archive-final-core{font-size:3.2rem;color:#ddfff7;text-shadow:0 0 22px #7dffe3}
+.archive-final-scene>strong{font:.95rem Rajdhani,sans-serif;font-weight:900;letter-spacing:.06em;color:#d3fff0}
+.archive-final-scene p{font-size:.83rem;line-height:1.6;color:#e0f7f3;margin:0}
+.archive-final-scene small{font-size:.65rem;font-weight:900;letter-spacing:.06em;color:#a8e9dc}
+.archive-journal-panel{display:grid;gap:9px;margin:13px 0;border:1px solid #4c8291;border-radius:13px;background:#112a3d;padding:12px}
+.archive-journal-panel>p{margin:0;color:#b9dae6;font-size:.73rem;line-height:1.4}
+.archive-journal-list{display:grid;gap:5px}
+.archive-journal-row{display:flex;align-items:center;gap:8px;padding:7px 5px;border-bottom:1px solid #ffffff17;color:#a9c6d7;font-size:.7rem}
+.archive-journal-row.recovered{color:#b9ffdd}
+.archive-journal-row>span:nth-child(2){flex:1;min-width:0}
+.archive-journal-row button,.archive-journal-finale button{min-height:31px;border:1px solid #6ea8aa;border-radius:8px;background:#214f5d;color:#e2fff4;padding:5px 9px;font-size:.68rem;font-weight:800}
+.archive-journal-finale{display:grid;gap:9px;margin-top:7px;padding:12px;border:1px solid #5ca8a5;border-radius:10px;background:#113c43}
+.archive-journal-finale strong{font-size:.75rem;color:#b4ffe4}
+.archive-journal-finale p{font-size:.72rem;line-height:1.5;color:#d2f1e8;margin:0}
+.archive-journal-finale button:disabled{opacity:.5}
+.archive-journal-finale .archive-resonance-action{min-height:40px;background:linear-gradient(120deg,#266457,#1d6c77);border-color:#90ffe1}
+@media(max-height:620px){.archive-oscilloscope{height:40px}.archive-channel{padding:7px 9px;gap:4px}.archive-channel-list{gap:5px}.archive-decoder{gap:7px}}
+@media(prefers-reduced-motion:reduce){.archive-wave,.archive-scanline,.archive-final-map,.archive-final-symbols span{animation:none!important}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -4599,12 +4660,12 @@ function openDiscovery(index){
 function artifactNextStep(){
  const p=artifactProgress(),e=state.exploration;
  if(p.complete)return 'Tous les éléments sont réunis : ton artéfact est éveillé !';
- if(nextSignal()>=0)return 'Un secret scintille sur la planète. Touche « Découvrir ».';
+ if(nextSignal()>=0)return 'Une archive cosmique est accessible : localise son signal et déchiffre ses trois fréquences.';
  if(availableCosmicEvent()>=0)return 'Un phénomène est prêt : joue directement sur ta planète.';
  if(e.encounter)return 'Une anomalie est visible sur la planète. Récupère-la !';
  if(e.monumentFound&&!e.monumentRestored)return 'Restaure le vestige dans « Monde vivant ».';
  if(!e.monumentFound&&cover()<34)return 'Développe les biomes pour trouver le vestige ancien.';
- if(p.counts[2]<5)return 'Continue de révéler la planète pour trouver les secrets (8, 22, 40, 62 et 85 %).';
+ if(p.counts[2]<5)return 'Développe la planète pour déchiffrer les transmissions aux seuils de 8, 22, 40, 62 et 85 %.';
  if(p.counts[1]<3)return 'Monte les niveaux de tes biomes : les phénomènes arrivent à 20, 75 et 160 niveaux.';
  return 'Joue normalement : de nouveaux signaux cosmiques vont apparaître.';
 }
@@ -4666,6 +4727,39 @@ function renderArtifactJournal(){
   next.append(action);
  }
  area.append(next);
+ const archives=document.createElement('section');
+ archives.className='archive-journal-panel';
+ archives.innerHTML='<div class="archive-journal-heading"><strong>ÉCHOS DU PASSÉ</strong><span></span></div><p>Cinq transmissions à déchiffrer pour retrouver la mémoire de ce monde.</p>';
+ archives.querySelector('span').textContent=state.discoveries.length+'/5 ARCHIVES';
+ const archiveGrid=document.createElement('div');archiveGrid.className='archive-journal-list';
+ COSMIC_ARCHIVES.forEach((entry,i)=>{
+  const claimed=state.discoveries.includes(i),available=nextSignal()===i;
+  const line=document.createElement('div');line.className='archive-journal-row'+(claimed?' recovered':'');
+  const mark=document.createElement('span');mark.innerHTML=bpIcon(claimed?'check':available?'signal':'lock',16);
+  const label=document.createElement('span');label.textContent=claimed?entry.title:available?entry.title+' · à déchiffrer':'Transmission '+String(i+1).padStart(2,'0')+' · verrouillée';
+  line.append(mark,label);
+  if(available){
+   const start=document.createElement('button');start.type='button';start.textContent='Déchiffrer';
+   start.addEventListener('click',()=>openDiscovery(i));
+   line.append(start);
+  }
+  archiveGrid.append(line);
+ });
+ archives.append(archiveGrid);
+ if(state.discoveries.length===5){
+  const final=document.createElement('div');final.className='archive-journal-finale';
+  final.innerHTML='<strong>✧ CARTE MÉMORIELLE RECONSTITUÉE</strong><p>« Nous avons laissé cinq échos pour que le prochain monde retrouve la voie. Le cœur se souviendra. »</p>';
+  const replay=document.createElement('button');replay.type='button';replay.textContent=state.exploration.archiveFinalRevealed?'Revoir la révélation':'Découvrir la carte';
+  replay.addEventListener('click',showArchiveFinalReveal);
+  final.append(replay);
+  const resonance=document.createElement('button');resonance.type='button';resonance.className='archive-resonance-action';
+  const left=Math.max(0,Math.ceil(((state.exploration.archiveResonanceUntil||0)-Date.now())/1000));
+  resonance.textContent=left>0?'Résonance · recharge '+Math.ceil(left/60)+' min':'✦ Activer la Résonance des archives';
+  resonance.disabled=left>0;
+  resonance.addEventListener('click',activateArchiveResonance);
+  final.append(resonance);archives.append(final);
+ }
+ area.append(archives);
  const reward=document.createElement('section');reward.className='artifact-journal-reward';
  reward.innerHTML='<span>RÉCOMPENSE FINALE</span><strong></strong><p></p><p></p>';
  reward.querySelector('strong').textContent=item.name;
@@ -4722,7 +4816,10 @@ function claimDiscovery(){
  discoveryMode='decoded';discoveryIndex=-1;
  state.exploration.archivePuzzle=null;save();
  const finalArchive=state.discoveries.length===COSMIC_ARCHIVES.length;
- if(finalArchive&&!state.exploration.archiveFinalRevealed){showArchiveFinalReveal();return}
+ if(finalArchive&&!state.exploration.archiveFinalRevealed){
+  checkArtifactAwakening();
+  showArchiveFinalReveal();return;
+ }
  checkArtifactAwakening();
  maybeShowPlanetMilestone(before);
 }
@@ -6646,7 +6743,7 @@ function renderUI(){
  const found=archiveClaimed().length;
  $('planet-log-count').textContent=artifactProgress().total+'/12';
  $('planet-log-btn').classList.toggle('unlocked',found>0);
- $('planet-extra-text').textContent=state.exploration.artifactAwakened?'✦ '+currentArtifact().name+' éveillé':signal>=0?'✦ Un indice est prêt à être révélé':artifactProgress().total+' / 12 éléments retrouvés';
+ $('planet-extra-text').textContent=state.exploration.artifactAwakened?'✦ '+currentArtifact().name+' éveillé':signal>=0?'✦ Une archive attend son déchiffrement':artifactProgress().total+' / 12 éléments retrouvés';
 
  $('next').classList.toggle('hidden',cover()<99.999);
  const encounter=state.exploration.encounter;
@@ -7806,4 +7903,4 @@ document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 if(!cosmicIntroAlreadySeen())requestAnimationFrame(()=>startCosmicIntro());
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=84').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=85').catch(console.warn));}</script></body></html>
