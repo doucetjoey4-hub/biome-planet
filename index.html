@@ -3136,6 +3136,31 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  color:#ecffff;font-size:.75rem;font-weight:850;
 }
 .artifact-next-action:active{filter:brightness(1.16)}
+
+/* V79 : éveil in-world, sur la vraie planète et sans globe dupliqué. */
+.planet-panel .planet-stage .planet-holder{isolation:isolate}
+.artifact-awakening-live{position:absolute;inset:0;z-index:15;pointer-events:none;overflow:visible}
+.artifact-awakening-live>canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.artifact-awakening-live-runes{position:absolute;inset:0;pointer-events:none}
+.artifact-awakening-live-rune{position:absolute;left:50%;top:50%;display:grid;place-items:center;width:31px;height:31px;border:1px solid #9fe8ff91;border-radius:11px;background:radial-gradient(circle,#25547dda,#102b50e8);box-shadow:0 0 14px #79dbff8a,inset 0 0 7px #a2ffff3b;will-change:transform,opacity;pointer-events:none}
+.artifact-awakening-live-rune .bp-line-icon{width:22px;height:22px}
+.artifact-awakening-live-label{position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);min-width:max-content;padding:7px 10px;border:1px solid #69d6d2;border-radius:10px;background:#0d2f43ee;color:#d9ffef;font-size:.62rem;font-weight:900;letter-spacing:.1em;text-shadow:0 0 10px #8cfbd7a0;box-shadow:0 0 20px #69e8e53e}
+body.artifact-ritual-running .app>.balance,body.artifact-ritual-running .app>.biomes,body.artifact-ritual-running .planet-panel>:not(.planet-stage){opacity:.25;filter:brightness(.65);transition:opacity .45s ease,filter .45s ease}
+body.artifact-ritual-running .planet-panel .planet-stage{position:relative;z-index:16;filter:drop-shadow(0 0 20px #5be9d544)}
+body.artifact-ritual-running .planet-holder>.orbital-find,body.artifact-ritual-running .planet-holder>.anomaly-signal,body.artifact-ritual-running .planet-holder>.relic-find,body.artifact-ritual-running .planet-holder>.planet-hint{opacity:0;pointer-events:none}
+body.artifact-ritual-running .planet-cosmic-play{visibility:hidden}
+.artifact-awakening-overlay{position:fixed!important;inset:0!important;z-index:240!important;display:flex!important;justify-content:center!important;align-items:flex-end!important;background:transparent!important;backdrop-filter:none!important;padding:12px 14px max(20px,env(safe-area-inset-bottom))!important;pointer-events:none!important}
+.artifact-awakening-overlay.hidden{display:none!important}
+.artifact-awakening-stage.artifact-result-only{width:min(100%,460px);max-height:min(72dvh,530px);overflow:auto;padding:18px 17px 16px;background:linear-gradient(145deg,#173b4cef,#0b2438f8)!important;border:1px solid #82e3d3;border-radius:20px;box-shadow:0 0 32px #54ecc92a,0 18px 60px #000c;pointer-events:auto!important;animation:artifactResultSlide .4s cubic-bezier(.2,.8,.2,1) both}
+.artifact-result-only .artifact-awakening-top{font-size:.65rem}
+.artifact-result-only .artifact-awakening-heading{margin-top:9px;font-size:.8rem}
+.artifact-result-only h2{font-size:1.5rem!important}
+.artifact-result-only .artifact-awakening-reward{gap:7px}
+.artifact-result-only .artifact-awakening-reward>div{padding:9px 11px}
+.artifact-result-only #artifact-awakening-continue{min-height:46px;margin-top:12px}
+@keyframes artifactResultSlide{from{opacity:0;transform:translateY(23px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-height:570px){.artifact-awakening-live-rune{width:24px;height:24px;border-radius:7px}.artifact-awakening-live-rune .bp-line-icon{width:17px;height:17px}.artifact-awakening-live-label{font-size:.52rem;padding:5px 7px;bottom:-6px}.artifact-awakening-stage.artifact-result-only{max-height:85dvh;padding:11px}}
+@media(prefers-reduced-motion:reduce){.artifact-awakening-stage.artifact-result-only{animation:none!important}.artifact-awakening-live-rune{will-change:auto}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -4451,7 +4476,7 @@ function switchWorld(num,award=false){
  const p=Math.floor(Number(num));
  if(!Number.isFinite(p)||p<1||p>999)return;
  if(p===state.planet){closeWorlds();return}
- stopHold();launchVisual=null;workshopAnim=null;workshopPreviewCanvas=null;save();playSound('navigate');
+ stopHold();closeArtifactAwakening();launchVisual=null;workshopAnim=null;workshopPreviewCanvas=null;save();playSound('navigate');
  const stored=state.worlds[p];
  state.planet=p;BIOMES=makeBiomes(p);
  state.levels=stored?.levels?[...stored.levels]:BIOMES.map(()=>0);
@@ -6780,4 +6805,4 @@ document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=78').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=79').catch(console.warn));}</script></body></html>
