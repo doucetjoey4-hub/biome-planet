@@ -4796,7 +4796,7 @@ function switchWorld(num,award=false){
  const p=Math.floor(Number(num));
  if(!Number.isFinite(p)||p<1||p>999)return;
  if(p===state.planet){closeWorlds();return}
- stopHold();closePlanetMilestone();closeArtifactAwakening();launchVisual=null;workshopAnim=null;workshopPreviewCanvas=null;save();playSound('navigate');
+ stopHold();clearFragmentExtraction();fragmentScannerOpen=false;fragmentScanActive=false;closePlanetMilestone();closeArtifactAwakening();launchVisual=null;workshopAnim=null;workshopPreviewCanvas=null;save();playSound('navigate');
  const stored=state.worlds[p];
  state.planet=p;BIOMES=makeBiomes(p);
  state.levels=stored?.levels?[...stored.levels]:BIOMES.map(()=>0);
@@ -5400,6 +5400,198 @@ function addWorkshopMaterials(materials,origin){
  }
  if(changes.length)toast(origin+' : '+changes.join(' · '),'reward');
 }
+// V83 · Chasse aux fragments : scanner, gisements, extraction, stabilisation.
+// La ressource reste le fragment existant de l'Atelier orbital.
+const FRAGMENT_SCANNER_TIERS=[
+ {name:'Scanner basique',benefit:'Détecte un gisement à proximité',cost:null},
+ {name:'Scanner amélioré',benefit:'Indique la direction du signal',cost:{metal:5,circuit:1}},
+ {name:'Scanner avancé',benefit:'Repère aussi les cristaux chargés',cost:{metal:4,crystal:3,circuit:3}},
+ {name:'Scanner quantique',benefit:'Détecte les signatures anciennes plus souvent',cost:{crystal:5,circuit:5,fragment:2}}
+];
+let fragmentScannerOpen=false,fragmentScanActive=false,fragmentExtractStart=0,fragmentExtractTimer=null,fragmentStability=0,fragmentExtractPointer=false,fragmentPointerMoved=false;
+const fragmentScanner=()=>state.exploration;
+function fragmentLabel(type){return ['Fragment ordinaire','Fragment chargé','Fragment ancien'][type]||'Fragment'}
+function fragmentQuantity(type){return Math.max(1,Math.min(3,Number(type)+1))}
+function fragmentDirection(d){
+ const parts=[];
+ if(d.y<-.25)parts.push('nord');else if(d.y>.25)parts.push('sud');
+ if(d.x<-.25)parts.push('ouest');else if(d.x>.25)parts.push('est');
+ return parts.length?parts.join('-'):'centre';
+}
+function fragmentDepositTick(){
+ const e=fragmentScanner();
+ if(!e||e.fragmentDeposit||totalLevels()<8)return;
+ if(Date.now()<(e.fragmentNextAt||0))return;
+ const serial=e.fragmentDepositsFound||0,level=e.scannerLevel||0;
+ let type=0;
+ if(level>=3&&serial>0&&serial%5===0)type=2;
+ else if(level>=2&&serial>0&&serial%3===0)type=1;
+ else if(serial>0&&serial%6===0)type=1;
+ // Un dépôt demeure actif jusqu'à la récupération. Aucune perte de butin.
+ const angle=((serial*137.508+state.planet*39)%360)*Math.PI/180;
+ const radius=.38+.37*(((serial*17+state.planet*11)%10)/10);
+ e.fragmentDeposit={x:Math.cos(angle)*radius,y:Math.sin(angle)*radius,type,seed:Date.now()};
+ fragmentScanActive=false;fragmentStability=0;
+ save();
+}
+function fragmentScannerOpenPanel(){
+ if(totalLevels()<8){toast('Le scanner se débloque à 8 niveaux de biomes.','info');return}
+ fragmentScannerOpen=!fragmentScannerOpen;
+ if(!fragmentScannerOpen)fragmentScanActive=false;
+ renderFragmentScanner();
+ if(fragmentScannerOpen)playSound('open');
+}
+function fragmentScan(){
+ fragmentDepositTick();
+ if(!fragmentScanner().fragmentDeposit){
+  const left=Math.max(0,Math.ceil(((fragmentScanner().fragmentNextAt||0)-Date.now())/1000));
+  toast(left?'Aucune signature · prochaine recherche dans '+Math.ceil(left/60)+' min':'Aucune signature pour le moment.','info');
+  renderFragmentScanner();return;
+ }
+ fragmentScanActive=true;
+ playSound('event');renderFragmentScanner();
+}
+function renderFragmentScanner(){
+ const e=fragmentScanner(),unlocked=totalLevels()>=8,deposit=e.fragmentDeposit;
+ const ui=$('fragment-scanner-ui'),panel=$('fragment-scanner-panel'),button=$('fragment-scanner-open'),dot=$('fragment-deposit');
+ ui.classList.toggle('hidden',!unlocked);
+ panel.classList.toggle('hidden',!fragmentScannerOpen||!unlocked);
+ button.innerHTML=bpIcon('expedition-radar',19)+'<span>'+((deposit&&fragmentScanActive)?'SIGNAL REPÉRÉ':'SCANNER')+'</span>';
+ button.setAttribute('aria-expanded',String(fragmentScannerOpen));
+ const revealed=unlocked&&!!deposit&&fragmentScanActive;
+ dot.classList.toggle('hidden',!revealed);
+ if(revealed){
+  dot.style.left=(50+deposit.x*42)+'%';
+  dot.style.top=(50+deposit.y*42)+'%';
+  dot.dataset.type=String(deposit.type);
+  $('fragment-deposit-label').textContent=deposit.type===0?'MAINTENIR POUR EXTRAIRE':'STABILISER LE FRAGMENT';
+  dot.setAttribute('aria-label',fragmentLabel(deposit.type)+' détecté, '+(deposit.type===0?'maintenir pour extraire':'toucher trois fois pour stabiliser'));
+ }
+ const scanMessage=$('fragment-scanner-message');
+ const action=$('fragment-scanner-action');
+ if(!unlocked)return;
+ if(!deposit){
+  const left=Math.max(0,Math.ceil(((e.fragmentNextAt||0)-Date.now())/1000));
+  scanMessage.textContent=left?'Aucun signal pour le moment. Nouvelle recherche dans '+Math.ceil(left/60)+' min.':'Balaye la planète pour découvrir un gisement caché.';
+  action.textContent='Balayer la planète';
+  action.disabled=left>0;
+ }else if(!fragmentScanActive){
+  scanMessage.textContent='Une signature a été repérée. Lance un balayage pour trouver le gisement.';
+  action.textContent='Localiser le signal';
+  action.disabled=false;
+ }else{
+  const direction=e.scannerLevel>=1?' · secteur '+fragmentDirection(deposit):' · repère lumineux sur le globe';
+  scanMessage.textContent=fragmentLabel(deposit.type)+direction+'. Touche le cristal visible sur la planète.';
+  action.textContent='Signal localisé ✓';
+  action.disabled=true;
+ }
+}
+function clearFragmentExtraction(){
+ if(fragmentExtractTimer!==null)clearTimeout(fragmentExtractTimer);
+ fragmentExtractTimer=null;fragmentExtractStart=0;fragmentExtractPointer=false;
+ fragmentStability=0;
+ $('fragment-extract-panel').classList.add('hidden');
+ $('fragment-extract-fill').style.width='0%';
+}
+function startFragmentExtraction(){
+ if(!fragmentScanActive||!fragmentScanner().fragmentDeposit)return;
+ const deposit=fragmentScanner().fragmentDeposit;
+ if(deposit.type>0){stabilizeFragment();return}
+ if(fragmentExtractPointer)return;
+ fragmentExtractPointer=true;fragmentExtractStart=performance.now();
+ const duration=1100;
+ const panel=$('fragment-extract-panel');panel.classList.remove('hidden');
+ $('fragment-extract-title').textContent='EXTRACTION EN COURS';
+ $('fragment-extract-detail').textContent='Maintiens le doigt sur le cristal.';
+ const started=fragmentExtractStart;
+ fragmentExtractTimer=setTimeout(()=>{
+  if(fragmentExtractPointer&&fragmentExtractStart===started)collectFragmentDeposit();
+ },duration);
+}
+function stabilizeFragment(){
+ if(!fragmentScanActive||!fragmentScanner().fragmentDeposit)return;
+ fragmentStability=Math.min(3,fragmentStability+1);
+ const panel=$('fragment-extract-panel');panel.classList.remove('hidden');
+ $('fragment-extract-title').textContent='STABILISATION';
+ $('fragment-extract-detail').textContent='Impulsions '+fragmentStability+'/3 · touche encore le cristal.';
+ $('fragment-extract-fill').style.width=Math.round(fragmentStability/3*100)+'%';
+ playSound('claim');
+ if(fragmentStability>=3)collectFragmentDeposit();
+}
+function collectFragmentDeposit(){
+ const e=fragmentScanner(),d=e.fragmentDeposit;
+ if(!d||!fragmentScanActive)return;
+ const amount=fragmentQuantity(d.type)+(artifactBonus('fragments')?1:0);
+ const location=$('fragment-deposit').getBoundingClientRect(),target=$('fragment-scanner-open').getBoundingClientRect();
+ const sparkle=document.createElement('span');
+ sparkle.className='fragment-flying-loot';sparkle.textContent='◆ +'+amount;
+ sparkle.style.left=(location.left+location.width/2)+'px';
+ sparkle.style.top=(location.top+location.height/2)+'px';
+ document.body.append(sparkle);
+ const distanceX=target.left+target.width/2-(location.left+location.width/2);
+ const distanceY=target.top+target.height/2-(location.top+location.height/2);
+ if(sparkle.animate){
+  const animation=sparkle.animate([{opacity:1,transform:'translate(-50%,-50%) scale(1)'},{opacity:1,offset:.45,transform:'translate(-50%,-70%) scale(1.6)'},{opacity:0,transform:'translate(calc(-50% + '+distanceX+'px),calc(-50% + '+distanceY+'px)) scale(.35)'}],{duration:850,easing:'ease-in',fill:'forwards'});
+  animation.onfinish=()=>sparkle.remove();
+ }else setTimeout(()=>sparkle.remove(),900);
+ e.fragmentDepositsFound++;
+ e.fragmentDeposit=null;
+ e.fragmentNextAt=Date.now()+Math.max(85000,175000-e.scannerLevel*18000);
+ clearFragmentExtraction();fragmentScanActive=false;
+ addWorkshopMaterials({fragment:amount},fragmentLabel(d.type));
+ if(d.type===2){earnResearch(2,'Signature ancienne');toast('Une signature ancienne résonne avec le cœur planétaire.','reward')}
+ playSound('discovery');save();renderUI();renderFragmentScanner();
+ if(!$('explore-overlay').classList.contains('hidden')&&explorationTab==='satellites')renderExploration();
+}
+function upgradeFragmentScanner(){
+ const e=fragmentScanner(),next=e.scannerLevel+1;
+ if(next>=FRAGMENT_SCANNER_TIERS.length)return;
+ const info=FRAGMENT_SCANNER_TIERS[next],cost=info.cost;
+ if(!canPayMaterials(cost)){toast('Matériaux insuffisants pour améliorer le scanner.','info');return}
+ WORKSHOP_MATERIALS.forEach(k=>{state.workshop[k]-=cost[k]||0});
+ e.scannerLevel=next;
+ save();playSound('unlock');renderExploration();renderFragmentScanner();
+ toast('Scanner amélioré : '+info.name+' !','success');
+}
+function appendFragmentScannerUpgrade(container){
+ const e=fragmentScanner(),current=FRAGMENT_SCANNER_TIERS[e.scannerLevel],next=FRAGMENT_SCANNER_TIERS[e.scannerLevel+1];
+ const section=exploreElement('section','fragment-upgrade-card');
+ section.appendChild(workshopIconLabel(exploreElement('strong',''),'expedition-radar',' Scanner de résonance · Niveau '+(e.scannerLevel+1)+'/4',18));
+ section.appendChild(exploreElement('p','',current.benefit+'. Utilise le bouton SCANNER sur la planète pour trouver les fragments.'));
+ section.appendChild(exploreElement('small','',e.fragmentDepositsFound+' gisements récupérés sur cette planète.'));
+ if(next){
+  const costs=exploreElement('div','fragment-upgrade-costs');
+  for(const k of WORKSHOP_MATERIALS.filter(k=>next.cost[k])){
+   const qty=next.cost[k],have=state.workshop[k]||0;
+   const item=workshopIconLabel(exploreElement('span',have>=qty?'enough':'missing'),WORKSHOP_ICON_NAMES[k],' '+have+'/'+qty,14);
+   costs.append(item);
+  }
+  section.appendChild(costs);
+  const upgrade=exploreElement('button','fragment-upgrade-action');
+  upgrade.textContent='Améliorer · '+next.name;
+  upgrade.disabled=!canPayMaterials(next.cost);
+  upgrade.addEventListener('click',upgradeFragmentScanner);
+  section.appendChild(upgrade);
+ }else section.appendChild(exploreElement('p','fragment-maxed','✦ Scanner quantique au maximum.'));
+ container.appendChild(section);
+}
+$('fragment-scanner-open').addEventListener('click',fragmentScannerOpenPanel);
+$('fragment-scanner-close').addEventListener('click',()=>{fragmentScannerOpen=false;renderFragmentScanner()});
+$('fragment-scanner-action').addEventListener('click',fragmentScan);
+$('fragment-deposit').addEventListener('pointerdown',e=>{
+ if(fragmentScanner().fragmentDeposit?.type!==0)return;
+ e.preventDefault();
+ $('fragment-deposit').setPointerCapture?.(e.pointerId);
+ startFragmentExtraction();
+});
+['pointerup','pointercancel','pointerleave'].forEach(name=>$('fragment-deposit').addEventListener(name,()=>{
+ if(fragmentScanner().fragmentDeposit?.type===0&&fragmentExtractPointer)clearFragmentExtraction();
+}));
+$('fragment-deposit').addEventListener('click',e=>{
+ if(fragmentScanner().fragmentDeposit?.type>0)stabilizeFragment();
+ else if(e.detail===0){startFragmentExtraction();} // Clavier : Enter/Espace
+});
+
 function collectBiomeMaterials(i){
  if(!state.exploration.materialClaims)state.exploration.materialClaims=[];
  const level=state.levels[i]||0;
@@ -5411,7 +5603,7 @@ function collectBiomeMaterials(i){
   if(l%5===0)loot.metal+=2;
   if(l%10===0)loot.crystal++;
   if(l%15===0)loot.circuit++;
-  if(l%25===0)loot.fragment++;
+  if(l%50===0)loot.fragment++; // Quelques fragments passifs demeurent pour le jeu tranquille.
   const name=BIOMES[i].name.toLowerCase();
   if(l%20===0&&/cristaux|glacier|lagon|récif|océan|lac/.test(name))loot.crystal++;
   if(l%20===0&&/cavernes|roche|montagne|canyon|obsidienne/.test(name))loot.metal+=2;
@@ -5505,6 +5697,7 @@ function restoreRelic(){
  toast(relicName()+' restauré · clé de l’artéfact obtenue !','success');
 }
 function eventTick(){
+ fragmentDepositTick();
  const e=state.exploration;if(totalLevels()<12)return;
  const now=Date.now();
  if(!e.encounter&&now>=e.nextEncounterAt){
@@ -5975,6 +6168,7 @@ function renderExploration(){
   const helpTitle=workshopIconLabel(exploreElement('summary',''),'info',' Comment récolter des matériaux',16);
   help.append(helpTitle,container.querySelector('.explore-summary'));
   materialPane.append(inventoryLabel,materialInfo,inventory,help);
+  appendFragmentScannerUpgrade(materialPane);
   partsScroll.append(panelTabs,modulePane,materialPane);
   // Le dock reste fixé sous la baie pour rendre l'action majeure accessible.
   const dock=exploreElement('div','workshop-command-dock');
@@ -6074,6 +6268,7 @@ function renderArtifactHud(){
 function renderUI(){
  $('planet-hint').classList.toggle('hidden',state.levels[0]>0);
  renderArtifactHud();
+ renderFragmentScanner();
  $('money').textContent=moneyFormat(state.money);
  updateRebirthBadge();
  $('planet-tag').textContent='Planète '+state.planet+' · '+BIOMES.length+' biomes';
@@ -7235,7 +7430,7 @@ function frame(now){
 canvas.addEventListener('click',()=>{const nextIndex=state.levels.findIndex(l=>l===0);if(nextIndex<0){toast('Tous les biomes sont déjà débloqués!');return}if(nextIndex>0&&state.money<unlockCost(nextIndex)){toast('Il te faut '+moneyFormat(unlockCost(nextIndex))+' pour ajouter '+BIOMES[nextIndex].name);return}buy(nextIndex)});
 $('next').addEventListener('click',()=>{if(cover()<99.999)return;playSound('discovery');switchWorld(state.planet+1,true);toast('Nouvelle planète découverte!','success')});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDiscovery()});
-$('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();launchVisual=null;closePlanetMilestone();closeArtifactAwakening();stopPlanetCosmicGame();state.exploration=normalizedExploration(null);BIOMES=makeBiomes(state.planet);normalizeProgress();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';lastMissionRender='';refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
+$('reset').addEventListener('click',()=>{if(!confirm('Effacer toutes les planètes et leurs sauvegardes?'))return;state=initial();launchVisual=null;clearFragmentExtraction();fragmentScannerOpen=false;fragmentScanActive=false;closePlanetMilestone();closeArtifactAwakening();stopPlanetCosmicGame();state.exploration=normalizedExploration(null);BIOMES=makeBiomes(state.planet);normalizeProgress();closeObjectives();closeAtlas();closeExploration();lastCosmicDisplay='';lastMissionRender='';refreshBiomeCards();buildPixelMap();save();drawPlanet();renderUI();toast('Nouvelle partie!')});
 // Offline earnings capped at 4 hours; preserve partial production progress.
 const offline=Math.min(40*60*1000,Math.max(0,Date.now()-(Number(state.last)||Date.now())));if(offline>5000){let earned=0;BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+offline,cycles=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);earned+=cycles*revenue(i)});state.money+=earned;if(earned>0)setTimeout(()=>toast('Pendant ton absence : +'+moneyFormat(earned)),500)}
 window.addEventListener('pagehide',()=>{state.last=Date.now();save()});document.addEventListener('visibilitychange',()=>{if(document.hidden){state.last=Date.now();save()}else{let dt=Math.min(40*60*1000,Math.max(0,Date.now()-(state.last||Date.now())));BIOMES.forEach((b,i)=>{if(state.levels[i]===0)return;let total=state.timers[i]+dt,n=Math.floor(total/(cycleTime(i)*1000));state.timers[i]=total%(cycleTime(i)*1000);state.money+=n*revenue(i)});lastTick=performance.now();state.last=Date.now();save()}});
