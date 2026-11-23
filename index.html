@@ -3128,6 +3128,14 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
  .artifact-awakening-overlay.playing .artifact-awakening-core,.artifact-awakening-overlay.playing .artifact-awakening-wave{animation:none!important}
  .artifact-awakening-core{opacity:1}
 }
+/* V77.1 : orientation sans deviner où aller pour la prochaine pièce. */
+.artifact-next-action{
+ display:block;width:100%;min-height:38px;margin-top:9px;
+ border:1px solid #85d8e3;border-radius:8px;
+ background:linear-gradient(105deg,#28728b,#205b6d);
+ color:#ecffff;font-size:.75rem;font-weight:850;
+}
+.artifact-next-action:active{filter:brightness(1.16)}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -3154,7 +3162,7 @@ button:focus-visible{outline:2px solid #b5f6f6!important;outline-offset:2px}
      <button type="button" class="menu-action" id="menu-galaxy" aria-haspopup="dialog" aria-controls="explore-overlay"><span>✧</span><span>Galaxie <small>Explorer les mondes et secteurs</small></span></button>
     <button type="button" class="menu-action" id="objectives-open" aria-haspopup="dialog" aria-controls="objectives-overlay"><span>✧</span><span>Objectifs <small id="menu-objectives-sub">Défis et récompenses</small></span><b id="objectives-badge">0/5</b></button>
     <button type="button" class="menu-action" id="atlas-open"><span>🗺</span><span>Atlas <small>Progression de tes planètes</small></span></button>
-    <button type="button" class="menu-action" id="planet-log-btn"><span>◈</span><span>Journal cosmique <small id="planet-extra-text">Découvertes du monde</small></span><b id="planet-log-count">0/5</b></button>
+    <button type="button" class="menu-action" id="planet-log-btn"><span>◈</span><span>Mystère planétaire <small id="planet-extra-text">Réunis 12 éléments et éveille l’artéfact</small></span><b id="planet-log-count">0/12</b></button>
    </section>
    <section class="menu-group"><h3><span>02</span> Affichage et réglages</h3>
     <button type="button" class="menu-action" id="menu-planet-size"><span>◉</span><span>Affichage planète <small id="menu-planet-size-label">Compact pour les biomes</small></span></button>
@@ -3472,7 +3480,7 @@ const prestigeCost=()=>Math.pow(.965,prestigeLevel(2));
 const prestigeStarter=()=>Math.floor(120*prestigeLevel(3)*Math.pow(1.18,Math.max(0,state.planet-1)));
 const multiplier=()=>Math.pow(1.16,state.planet-1);
 const bonusCount=(i,type)=>(state.bonuses[i]||[]).filter(v=>v===type).length;
-const cycleTime=i=>BIOMES[i].time*Math.pow(.95,bonusCount(i,'speed'))*researchCycle()*satelliteCycle()*prestigeCycle()*artifactCycleFactor()*artifactPowerCycleFactor()*(activeCosmicEvent()?.id===1?.75:1);
+const cycleTime=i=>BIOMES[i].time*Math.pow(.95,bonusCount(i,'speed'))*researchCycle()*satelliteCycle()*prestigeCycle()*artifactCycleFactor()*artifactPowerCycleFactor()*(activeCosmicEvent()?.id===1 ? .75 : 1);
 const upgradeCost=i=>Math.max(1,Math.floor(BIOMES[i].cost*Math.pow(1.075,state.levels[i])*Math.pow(1.20,state.planet-1)*Math.pow(.96,bonusCount(i,'discount'))*researchCost()*satelliteCost()*prestigeCost()*artifactCostFactor()));
 const unlockCost=i=>i===0?0:Math.floor(BIOMES[i].cost*Math.pow(1.20,state.planet-1)*researchCost()*satelliteCost()*prestigeCost()*artifactCostFactor());
 // Les paliers de 25 niveaux doublent le revenu de chaque cycle :
@@ -3760,7 +3768,8 @@ function checkArtifactAwakening(){
  e.artifactCelebrated=true;
  save();
  renderUI();
- setTimeout(()=>showArtifactAwakening(),100);
+ const planet=state.planet;
+ setTimeout(()=>{if(state.planet===planet&&state.exploration.artifactAwakened)showArtifactAwakening()},100);
  return true;
 }
 function artifactPowerRemaining(){
@@ -3875,6 +3884,19 @@ function renderArtifactJournal(){
  });
  const next=document.createElement('div');next.className='artifact-next-step';
  next.innerHTML='<b>PROCHAINE ÉTAPE</b><p></p>';next.querySelector('p').textContent=artifactNextStep();
+ if(!p.complete){
+  const action=document.createElement('button');action.type='button';action.className='artifact-next-action';action.textContent='Me guider vers cette étape';
+  action.addEventListener('click',()=>{
+   closeDiscovery();
+   if(state.exploration.monumentFound&&!state.exploration.monumentRestored){openExploration('nature');return}
+   const signal=nextSignal(),event=availableCosmicEvent(),encounter=state.exploration.encounter;
+   const target=signal>=0?'anomaly-signal':event>=0?'event-trigger':encounter?'orbital-find':'biome-scroll';
+   $(target)?.scrollIntoView?.({block:'center',behavior:'smooth'});
+   if(target!=='biome-scroll')$(target)?.focus?.();
+   else toast('Développe tes biomes pour trouver les prochains indices.','info');
+  });
+  next.append(action);
+ }
  area.append(next);
  const reward=document.createElement('section');reward.className='artifact-journal-reward';
  reward.innerHTML='<span>RÉCOMPENSE FINALE</span><strong></strong><p></p><p></p>';
@@ -3915,7 +3937,7 @@ function claimDiscovery(){
  earnResearch(1,'Découverte cosmique');
  playSound('discovery');
  save();drawPlanet();renderUI();
- $('discovery-reward').textContent='+'+moneyFormat(reward)+'  ·  '+COSMIC_ARCHIVES[i].perk+'  ·  +2 % de revenus permanents';
+ $('discovery-reward').textContent='+'+moneyFormat(reward)+' · Indice '+(i+1)+'/5 ajouté à '+currentArtifact().name+' · +2 % revenus';
  $('discovery-action').textContent='Continuer l’exploration';
  $('discovery-hold').classList.add('hidden');
  $('discovery-skip').classList.add('hidden');
@@ -4746,7 +4768,7 @@ function triggerCosmicEvent(){
  if(i===0)addWorkshopMaterials({fragment:2,crystal:1},'Pluie d’étoiles');
  if(i===2)earnResearch(3,'Alignement céleste');
  playSound('event');
- save();renderCosmicEvent();renderUI();checkArtifactAwakening();toast('✦ '+event.name+' : x'+event.factor+' pendant '+event.seconds+' s','event');
+ save();renderCosmicEvent();renderUI();checkArtifactAwakening();toast('✦ '+event.name+' · phénomène '+artifactProgress().counts[1]+'/3 de l’artéfact','event');
 }
 function cosmicMultiplier(){
  const active=activeCosmicEvent();
@@ -5012,7 +5034,7 @@ function restoreRelic(){
  earnResearch(4,'Monument restauré');playSound('claim');
  save();renderUI();renderExploration();drawPlanet();
  checkArtifactAwakening();
- toast(relicName()+' restauré!','success');
+ toast(relicName()+' restauré · clé de l’artéfact obtenue !','success');
 }
 function eventTick(){
  const e=state.exploration;if(totalLevels()<12)return;
@@ -5040,7 +5062,7 @@ function claimEncounter(){
  else earnResearch(1,'Anomalie spatiale');
  playSound('event');save();renderUI();drawPlanet();renderExploration();
  checkArtifactAwakening();
- toast('Anomalie collectée : +'+moneyFormat(reward),'reward');
+ toast('Anomalie '+artifactProgress().counts[0]+'/3 ajoutée à l’artéfact · +'+moneyFormat(reward),'reward');
 }
 function weatherStatus(){
  const family=(state.planet-1)%6;
@@ -5577,9 +5599,9 @@ function renderUI(){
  const signal=nextSignal();
  $('anomaly-signal').classList.toggle('hidden',signal<0);
  const found=archiveClaimed().length;
- $('planet-log-count').textContent=found+'/'+COSMIC_ARCHIVES.length;
+ $('planet-log-count').textContent=artifactProgress().total+'/12';
  $('planet-log-btn').classList.toggle('unlocked',found>0);
- $('planet-extra-text').textContent=signal>=0?'✦ Signal inhabituel détecté':found?'✧ '+found+' découverte'+(found>1?'s':'')+' archivée'+(found>1?'s':''):'';
+ $('planet-extra-text').textContent=state.exploration.artifactAwakened?'✦ '+currentArtifact().name+' éveillé':signal>=0?'✦ Un indice est prêt à être révélé':artifactProgress().total+' / 12 éléments retrouvés';
 
  $('next').classList.toggle('hidden',cover()<99.999);
  const encounter=state.exploration.encounter;
