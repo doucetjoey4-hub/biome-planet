@@ -3736,6 +3736,20 @@ body.cosmic-intro-playing{overflow:hidden}
     <p id="discovery-description"></p>
     <div class="discovery-reward" id="discovery-reward"></div>
     <div id="artifact-journal" class="artifact-journal hidden"></div>
+    <div id="archive-decoder" class="archive-decoder hidden" aria-label="Déchiffrement des archives">
+     <div class="archive-decoder-head"><span id="archive-decoder-status">TRANSMISSION ENDOMMAGÉE</span><strong id="archive-decoder-progress">0/3 CANAUX</strong></div>
+     <div class="archive-oscilloscope" aria-hidden="true"><span class="archive-wave wave-one"></span><span class="archive-wave wave-two"></span><span class="archive-scanline"></span></div>
+     <p class="archive-decoder-instructions">Ajuste les fréquences. Quand un canal est synchronisé, son signal devient vert.</p>
+     <div id="archive-channel-list" class="archive-channel-list"></div>
+     <button type="button" class="archive-assist" id="archive-assist">✧ Assistance · 1 indice gratuit</button>
+    </div>
+    <div id="archive-final-scene" class="archive-final-scene hidden" aria-live="polite">
+     <div class="archive-final-symbols" aria-hidden="true"><span>✦</span><span>◇</span><span>✧</span><span>◈</span><span>✺</span></div>
+     <div class="archive-final-map" aria-hidden="true"><span class="archive-final-core">✧</span></div>
+     <strong>CARTE MÉMORIELLE RECONSTITUÉE</strong>
+     <p>« Nous avons laissé cinq échos pour que le prochain monde retrouve la voie. Le cœur se souviendra. »</p>
+     <small>RÉSONANCE DES ARCHIVES DÉBLOQUÉE</small>
+    </div>
     <div class="discovery-hold hidden" id="discovery-hold">
       <div class="discovery-hold-track"><span id="discovery-hold-fill"></span></div>
       <small>Maintiens le bouton pendant une seconde pour révéler le secret.</small>
@@ -3920,6 +3934,10 @@ function normalizedExploration(input,existingLevels){
   artifactPowerCooldown:Math.max(0,Number(d.artifactPowerCooldown)||0),
   artifactPowerUntil:Math.max(0,Number(d.artifactPowerUntil)||0),
   milestoneScenes:[...new Set(Array.isArray(d.milestoneScenes)?d.milestoneScenes.filter(n=>[3,6,9].includes(n)):[])],
+  archiveAssistUsed:[...new Set(Array.isArray(d.archiveAssistUsed)?d.archiveAssistUsed.filter(i=>Number.isInteger(i)&&i>=0&&i<5):[])],
+  archivePuzzle:d.archivePuzzle&&Number.isInteger(d.archivePuzzle.index)&&d.archivePuzzle.index>=0&&d.archivePuzzle.index<5&&Array.isArray(d.archivePuzzle.channels)?{index:d.archivePuzzle.index,channels:Array.from({length:3},(_,i)=>Math.max(0,Math.min(5,Math.floor(Number(d.archivePuzzle.channels[i])||0))))}:null,
+  archiveFinalRevealed:!!d.archiveFinalRevealed,
+  archiveResonanceUntil:Math.max(0,Number(d.archiveResonanceUntil)||0),
   scannerLevel:Math.max(0,Math.min(3,Math.floor(Number(d.scannerLevel)||0))),
   fragmentDepositsFound:Math.max(0,Math.floor(Number(d.fragmentDepositsFound)||0)),
   fragmentNextAt:Math.max(0,Number(d.fragmentNextAt)||0),
@@ -4446,25 +4464,137 @@ const COSMIC_ARCHIVES=[
 ];
 let discoveryMode='journal',discoveryIndex=-1;
 const archiveClaimed=()=>Array.isArray(state.discoveries)?state.discoveries:[];
+// V85 · Échos du passé : trois fréquences interactives par archive et reconstitution finale.
+const archiveTargets=i=>[(i*2+1)%6,(i*3+2)%6,(i*4+3)%6];
+const archivePuzzle=()=>state.exploration.archivePuzzle;
+function archiveSolved(){
+ const p=archivePuzzle();
+ return !!p&&p.index===discoveryIndex&&p.channels.every((value,i)=>value===archiveTargets(p.index)[i]);
+}
+function archiveCloseness(value,target){
+ if(value===target)return 'synchronized';
+ if(Math.abs(value-target)===1)return 'near';
+ return 'weak';
+}
+function archiveAdjustChannel(i,value){
+ const p=archivePuzzle();
+ if(discoveryMode!=='decode'||!p||p.index!==discoveryIndex||i<0||i>2)return;
+ p.channels[i]=Math.max(0,Math.min(5,Math.floor(Number(value)||0)));
+ playSound('click');save();renderArchiveDecoder();
+}
+function renderArchiveDecoder(){
+ const p=archivePuzzle();
+ if(!p||discoveryMode!=='decode')return;
+ const targets=archiveTargets(p.index),solved=p.channels.filter((v,i)=>v===targets[i]).length;
+ $('archive-decoder').classList.remove('hidden');
+ $('archive-final-scene').classList.add('hidden');
+ $('archive-decoder-status').textContent=solved===3?'TRANSMISSION STABILISÉE':'DÉCHIFFREMENT EN COURS';
+ $('archive-decoder-progress').textContent=solved+'/3 CANAUX';
+ $('archive-decoder').classList.toggle('is-stable',solved===3);
+ const channels=$('archive-channel-list');
+ // Les boutons survivent au rendu et conservent le focus clavier.
+ if(channels.dataset.archive!==String(p.index)){
+  channels.dataset.archive=String(p.index);channels.replaceChildren();
+  for(let i=0;i<3;i++){
+   const row=document.createElement('section');row.className='archive-channel';
+   row.innerHTML='<div class="archive-channel-head"><strong></strong><span class="archive-channel-state"></span></div><div class="archive-channel-controls"><button type="button" class="archive-channel-minus" aria-label="Diminuer la fréquence">−</button><input type="range" min="0" max="5" step="1" aria-label="Régler la fréquence"><button type="button" class="archive-channel-plus" aria-label="Augmenter la fréquence">+</button></div><div class="archive-channel-segments"></div>';
+   row.querySelector('strong').textContent='CANAL '+['ALPHA','BÊTA','GAMMA'][i];
+   row.querySelector('input').addEventListener('input',e=>archiveAdjustChannel(i,e.target.value));
+   row.querySelector('.archive-channel-minus').addEventListener('click',()=>archiveAdjustChannel(i,Math.max(0,archivePuzzle().channels[i]-1)));
+   row.querySelector('.archive-channel-plus').addEventListener('click',()=>archiveAdjustChannel(i,Math.min(5,archivePuzzle().channels[i]+1)));
+   channels.append(row);
+  }
+ }
+ Array.from(channels.children).forEach((row,i)=>{
+  const current=p.channels[i],closeness=archiveCloseness(current,targets[i]);
+  row.dataset.signal=closeness;
+  row.querySelector('input').value=String(current);
+  row.querySelector('.archive-channel-state').textContent=closeness==='synchronized'?'✓ SYNCHRONISÉ':closeness==='near'?'SIGNAL PROCHE':'SIGNAL FAIBLE';
+  const marks=row.querySelector('.archive-channel-segments');
+  if(marks.children.length!==6)marks.replaceChildren(...Array.from({length:6},()=>document.createElement('span')));
+  Array.from(marks.children).forEach((mark,j)=>mark.className=(j<=current?'lit ':'')+(j===current?'selected':''));
+ });
+ const done=archiveSolved(),used=state.exploration.archiveAssistUsed.includes(p.index);
+ $('archive-assist').disabled=done||used;
+ $('archive-assist').textContent=used?'✧ Assistance déjà utilisée':done?'✓ Fréquences stabilisées':'✧ Assistance · synchroniser un canal';
+ $('discovery-action').disabled=!done;
+ $('discovery-action').textContent=done?'Déchiffrer l’archive':'Synchronise les 3 canaux';
+}
+function assistArchiveDecoder(){
+ const p=archivePuzzle();
+ if(discoveryMode!=='decode'||!p||state.exploration.archiveAssistUsed.includes(p.index))return;
+ const targets=archiveTargets(p.index);
+ const wrong=p.channels.findIndex((v,i)=>v!==targets[i]);
+ if(wrong<0)return;
+ p.channels[wrong]=targets[wrong];
+ state.exploration.archiveAssistUsed.push(p.index);
+ playSound('unlock');save();renderArchiveDecoder();
+ toast('Assistance : canal '+['alpha','bêta','gamma'][wrong]+' synchronisé.','info');
+}
+$('archive-assist').addEventListener('click',assistArchiveDecoder);
+function archiveResonanceReady(){
+ return state.discoveries.length===COSMIC_ARCHIVES.length&&Date.now()>=(state.exploration.archiveResonanceUntil||0);
+}
+function activateArchiveResonance(){
+ if(!archiveResonanceReady())return;
+ const e=state.exploration;
+ if(!e.fragmentDeposit){
+  const angle=(state.planet*47+e.fragmentDepositsFound*131)*Math.PI/180;
+  e.fragmentDeposit={x:Math.cos(angle)*.55,y:Math.sin(angle)*.55,type:2,seed:Date.now()};
+ }else{
+  // Ne jamais écraser un gisement déjà disponible : il est amélioré à ancien.
+  e.fragmentDeposit.type=2;
+ }
+ e.archiveResonanceUntil=Date.now()+5*60*1000;
+ fragmentScanActive=false;
+ save();closeDiscovery();renderUI();
+ toast('Résonance activée : un fragment ancien attend ton balayage !','reward');
+ $('fragment-scanner-action')?.scrollIntoView?.({block:'center',behavior:'smooth'});
+}
+function showArchiveFinalReveal(){
+ if(state.discoveries.length!==COSMIC_ARCHIVES.length)return;
+ state.exploration.archiveFinalRevealed=true;save();
+ cancelDiscoveryHold();
+ discoveryMode='archive-final';discoveryIndex=-1;
+ $('artifact-journal').classList.add('hidden');
+ $('archive-decoder').classList.add('hidden');
+ $('archive-final-scene').classList.remove('hidden');
+ $('discovery-hold').classList.add('hidden');$('discovery-skip').classList.add('hidden');
+ $('discovery-title').textContent='Les cinq échos sont réunis';
+ $('discovery-description').textContent='La planète révèle une carte ancienne. Les transmissions formaient une seule histoire.';
+ $('discovery-reward').textContent='✦ Résonance des archives · fragment ancien toutes les 5 minutes';
+ $('discovery-action').disabled=false;
+ $('discovery-action').textContent='Retourner à la planète';
+ $('discovery-overlay').classList.remove('hidden');
+ playSound('discovery');
+}
+
 function nextSignal(){
  const pct=cover(),claimed=archiveClaimed();
  return COSMIC_ARCHIVES.findIndex((v,i)=>pct+1e-6>=v.at&&!claimed.includes(i));
 }
-function closeDiscovery(){cancelDiscoveryHold();$('discovery-overlay').classList.add('hidden');}
+function closeDiscovery(){
+ cancelDiscoveryHold();
+ $('discovery-overlay').classList.add('hidden');
+ $('archive-decoder').classList.add('hidden');
+ $('archive-final-scene').classList.add('hidden');
+}
 function openDiscovery(index){
+ const event=COSMIC_ARCHIVES[index];if(!event||nextSignal()!==index)return;
  playSound('discovery');
- discoveryMode='claim';discoveryIndex=index;
- const event=COSMIC_ARCHIVES[index];if(!event)return;
+ discoveryMode='decode';discoveryIndex=index;
  $('artifact-journal').classList.add('hidden');
- $('discovery-hold').classList.remove('hidden');
- $('discovery-skip').classList.remove('hidden');
- $('discovery-hold-fill').style.width='0%';
+ $('archive-final-scene').classList.add('hidden');
+ $('discovery-hold').classList.add('hidden');$('discovery-skip').classList.add('hidden');
  $('discovery-emblem').innerHTML=bpIcon(['discovery-echo','material-fragment','nature-symbiosis','star','discovery-core'][index]||'star',38);
- $('discovery-title').textContent=event.title;
- $('discovery-description').textContent=event.description;
- $('discovery-reward').textContent='Indice '+(index+1)+'/5 pour '+currentArtifact().name+' · crédits, recherche et +2 % de revenus';
- $('discovery-action').textContent='Maintiens pour révéler';
+ $('discovery-title').textContent=event.title+' · transmission '+(index+1)+'/5';
+ $('discovery-description').textContent='Un message ancien est brouillé. Stabilise ses trois fréquences pour le déchiffrer.';
+ $('discovery-reward').textContent='Récompense : crédits, recherche et un nouvel indice pour '+currentArtifact().name;
+ const p=archivePuzzle();
+ if(!p||p.index!==index)state.exploration.archivePuzzle={index,channels:[0,0,0]};
+ $('archive-channel-list').dataset.archive='';
  $('discovery-overlay').classList.remove('hidden');
+ save();renderArchiveDecoder();
 }
 function artifactNextStep(){
  const p=artifactProgress(),e=state.exploration;
@@ -4559,6 +4689,8 @@ function openJournal(){
  const p=artifactProgress(),item=currentArtifact();
  $('discovery-hold').classList.add('hidden');
  $('discovery-skip').classList.add('hidden');
+ $('archive-decoder').classList.add('hidden');$('archive-final-scene').classList.add('hidden');
+ $('discovery-action').disabled=false;
  $('artifact-journal').classList.remove('hidden');
  $('discovery-emblem').innerHTML=bpIcon(state.exploration.artifactAwakened?item.icon:'archive',38);
  $('discovery-title').textContent='Mystère planétaire';
@@ -4570,7 +4702,7 @@ function openJournal(){
 }
 function claimDiscovery(){
  const i=discoveryIndex;
- if(discoveryMode!=='claim'||i<0){closeDiscovery();return}
+ if(discoveryMode!=='decode'||i<0||!archiveSolved()){return}
  if(nextSignal()!==i){closeDiscovery();return}
  // Gain proportionné à la production réelle, jamais de prix négatifs.
  const production=BIOMES.reduce((n,b,k)=>n+(state.levels[k]>0?revenue(k)*60/Math.max(.5,cycleTime(k)):0),0);
@@ -4581,41 +4713,32 @@ function claimDiscovery(){
  earnResearch(1,'Découverte cosmique');
  playSound('discovery');
  save();drawPlanet();renderUI();
- $('discovery-reward').textContent='+'+moneyFormat(reward)+' · Indice '+(i+1)+'/5 ajouté à '+currentArtifact().name+' · +2 % revenus';
+ $('discovery-reward').textContent='+'+moneyFormat(reward)+' · Indice '+(i+1)+'/5 enregistré · +2 % revenus';
+ $('discovery-description').textContent=COSMIC_ARCHIVES[i].description;
+ $('archive-decoder').classList.add('hidden');
  $('discovery-action').textContent='Continuer l’exploration';
  $('discovery-hold').classList.add('hidden');
  $('discovery-skip').classList.add('hidden');
- discoveryMode='journal';discoveryIndex=-1;
+ discoveryMode='decoded';discoveryIndex=-1;
+ state.exploration.archivePuzzle=null;save();
+ const finalArchive=state.discoveries.length===COSMIC_ARCHIVES.length;
+ if(finalArchive&&!state.exploration.archiveFinalRevealed){showArchiveFinalReveal();return}
  checkArtifactAwakening();
  maybeShowPlanetMilestone(before);
 }
 $('anomaly-signal').addEventListener('click',()=>{const i=nextSignal();if(i>=0)openDiscovery(i)});
 $('planet-log-btn').addEventListener('click',openJournal);
 $('discovery-close').addEventListener('click',closeDiscovery);
-// Geste tactile optionnel : appui long, ou révélation directe.
-let discoveryHoldTimer=null,discoveryHeld=false;
+// Nouveau déchiffrement : le maintien hérité des archives n'est plus utilisé.
 function cancelDiscoveryHold(){
- clearTimeout(discoveryHoldTimer);discoveryHoldTimer=null;
  $('discovery-hold-fill').style.width='0%';
  $('discovery-action').classList.remove('holding');
 }
-const revealButton=$('discovery-action');
-revealButton.addEventListener('pointerdown',e=>{
- if(discoveryMode!=='claim')return;
- if(e.pointerType==='mouse'&&e.button!==0)return;
- discoveryHeld=false;cancelDiscoveryHold();
- revealButton.classList.add('holding');$('discovery-hold-fill').style.width='100%';
- discoveryHoldTimer=setTimeout(()=>{
-  discoveryHeld=true;cancelDiscoveryHold();claimDiscovery();
- },950);
+$('discovery-action').addEventListener('click',()=>{
+ if(discoveryMode==='decode'){if(archiveSolved())claimDiscovery();return}
+ closeDiscovery();
 });
-['pointerup','pointercancel','pointerleave'].forEach(type=>revealButton.addEventListener(type,cancelDiscoveryHold));
-revealButton.addEventListener('click',()=>{
- if(discoveryHeld){discoveryHeld=false;return}
- if(discoveryMode!=='claim')claimDiscovery();
-});
-revealButton.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&discoveryMode==='claim'){e.preventDefault();cancelDiscoveryHold();claimDiscovery()}});
-$('discovery-skip').addEventListener('click',()=>{cancelDiscoveryHold();claimDiscovery()});
+$('discovery-skip').addEventListener('click',()=>{if(discoveryMode==='decode')assistArchiveDecoder()});
 $('discovery-overlay').addEventListener('click',e=>{if(e.target===$('discovery-overlay'))closeDiscovery()});
 
 // Petits défis propres à chaque planète, indépendants des archives cosmiques.
