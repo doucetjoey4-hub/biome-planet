@@ -3652,6 +3652,142 @@ body.cosmic-intro-playing{overflow:hidden}
 #anomaly-signal .signal-pulse{border-color:#96ffe1}
 #anomaly-signal:after{content:'ARCHIVE';position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);color:#c3ffea;background:#113d45eb;padding:2px 4px;border-radius:4px;font-size:.48rem;font-weight:900;letter-spacing:.06em;white-space:nowrap;pointer-events:none}
 @media(max-height:600px){#discovery-overlay .discovery-dialog{padding:9px 13px 12px}#discovery-overlay .discovery-emblem{min-height:29px;margin:0 auto}#discovery-overlay .discovery-dialog h2{margin:3px 0 5px}}
+
+/* V86 · Cartes de biomes à lecture horizontale inspirées des consoles idle sci-fi.
+   Les sélecteurs existants sont conservés : achat appui-long, anneau, bonus et paliers. */
+#biomes.biomes{gap:6px!important;align-content:start}
+#biomes>.biome{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) clamp(92px,29%,124px)!important;
+ grid-template-rows:auto auto!important;
+ column-gap:9px!important;row-gap:5px!important;
+ align-items:center!important;
+ min-height:0!important;
+ margin:0!important;padding:9px 10px 8px!important;
+ border:1px solid #4a9aab!important;
+ border-radius:10px!important;
+ background:linear-gradient(112deg,#162c3b,#111d2e 65%,#101b2b)!important;
+ box-shadow:inset 0 1px 0 #a7eeeb13,0 2px 7px #020a1459!important;
+ overflow:visible!important;
+}
+#biomes>.biome::after{display:none!important}
+#biomes>.biome .biome-head{
+ grid-column:1!important;grid-row:1!important;
+ display:flex!important;gap:8px!important;align-items:center!important;
+ min-width:0!important;margin:0!important;padding:0!important;
+}
+#biomes>.biome .biome-icon.biome-icon-art{
+ width:35px!important;height:35px!important;min-width:35px!important;min-height:35px!important;
+ border-radius:9px!important;flex:none!important;
+}
+#biomes>.biome .biome-icon .bp-biome-svg{max-width:100%!important;max-height:100%!important}
+#biomes>.biome .biome-info{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:1px 5px!important;min-width:0!important;flex:1!important}
+#biomes>.biome .biome-info>strong{
+ grid-column:1!important;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+ font-family:Rajdhani,sans-serif!important;font-size:.9rem!important;line-height:1.12!important;font-weight:850!important;
+ color:#e5fcfc!important;
+}
+#biomes>.biome .biome-level{
+ grid-column:2!important;align-self:center!important;
+ background:transparent!important;border:0!important;box-shadow:none!important;
+ color:#a6edec!important;padding:0!important;border-radius:0!important;
+ font-size:.66rem!important;font-weight:800!important;letter-spacing:0!important;white-space:nowrap!important;
+}
+#biomes>.biome .biome-info>.info{
+ grid-column:1/-1!important;margin:2px 0 0!important;min-width:0!important;
+ font-size:.68rem!important;line-height:1.1!important;color:#b5d7df!important;
+ white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+#biomes>.biome .biome-main{display:contents!important}
+#biomes>.biome .biome-left{
+ grid-column:1!important;grid-row:2!important;
+ display:flex!important;justify-content:space-between!important;align-items:center!important;
+ gap:7px!important;min-width:0!important;margin:0!important;padding:0!important;
+}
+#biomes>.biome .cycle-info{
+ display:flex!important;align-items:center!important;justify-content:flex-start!important;
+ gap:4px!important;flex:none!important;margin:0!important;min-width:0!important;
+}
+#biomes>.biome .cycle{
+ font-size:.65rem!important;line-height:1!important;color:#a1d4df!important;white-space:nowrap!important;
+}
+#biomes>.biome .cycle-wheel{width:19px!important;height:19px!important;flex:none!important;margin:0!important}
+#biomes>.biome .milestone-group{
+ display:flex!important;align-items:center!important;justify-content:flex-end!important;
+ gap:5px!important;min-width:0!important;flex:1!important;margin:0!important;
+}
+#biomes>.biome .milestone-box{
+ min-width:29px!important;width:auto!important;height:19px!important;padding:0 4px!important;
+ border:1px solid #468b99!important;border-radius:5px!important;
+ background:#163343!important;box-shadow:none!important;
+ font-size:.64rem!important;white-space:nowrap!important;
+}
+#biomes>.biome .milestone-bar{min-width:0!important;max-width:92px!important;flex:1!important}
+#biomes>.biome .milestone-caption{
+ display:flex!important;justify-content:flex-end!important;align-items:center!important;
+ font-size:.62rem!important;margin:0 0 3px!important;line-height:1!important;white-space:nowrap!important;
+}
+#biomes>.biome .milestone-caption span:first-child{display:none!important}
+#biomes>.biome .milestone-count{font-size:.64rem!important;font-weight:850!important;color:#9ce8eb!important}
+#biomes>.biome .milestone-group .progress{
+ margin:0!important;height:4px!important;min-height:4px!important;
+ background:#203747!important;border-radius:3px!important;overflow:hidden!important;
+}
+#biomes>.biome .milestone-group .progress>div{height:100%!important;border-radius:3px!important}
+#biomes>.biome .biome-main>.btn{
+ grid-column:2!important;grid-row:1/span 2!important;align-self:stretch!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ min-width:0!important;max-width:none!important;width:100%!important;
+ min-height:49px!important;padding:6px 5px!important;
+ font-family:Rajdhani,sans-serif!important;font-size:.82rem!important;line-height:1.08!important;
+ font-weight:900!important;font-variant-numeric:tabular-nums!important;
+ border-radius:9px!important;border:1px solid #558c9a!important;
+ background:linear-gradient(145deg,#18374b,#112739)!important;
+ box-shadow:inset 0 1px 0 #a5ffff16!important;
+ white-space:normal!important;overflow-wrap:anywhere!important;text-align:center!important;
+}
+#biomes>.biome.can-buy .biome-main>.btn:not(:disabled){
+ border-color:#81d7cb!important;background:linear-gradient(135deg,#235e62,#18445a)!important;
+ color:#efffff!important;
+}
+#biomes>.biome .bonus-strip{
+ grid-column:1/-1!important;grid-row:auto!important;
+ display:flex!important;justify-content:space-between!important;gap:8px!important;
+ margin:2px 0 0!important;padding:5px 0 0!important;min-height:0!important;
+ border-top:1px solid #36677b!important;
+}
+#biomes>.biome .bonus-strip.hidden{display:none!important}
+#biomes>.biome .bonus-status{font-size:.65rem!important}
+#biomes>.biome .bonus-claim{min-height:31px!important;padding:5px 10px!important;font-size:.69rem!important}
+#biomes>.biome .bonus-choices{
+ grid-column:1/-1!important;grid-row:auto!important;
+ margin:0!important;gap:5px!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+}
+#biomes>.biome .bonus-choice{
+ min-height:48px!important;padding:5px 4px!important;gap:4px!important;
+ border-radius:8px!important;font-size:.65rem!important;
+}
+#biomes>.biome .bonus-choice .bp-line-icon{width:17px!important;height:17px!important}
+#biomes>.biome .bonus-choice small{font-size:.57rem!important}
+#biomes>.biome.locked{opacity:.78}
+#biomes>.biome.has-bonus{border-color:#72c8ae!important}
+@media(max-width:380px){
+ #biomes>.biome{grid-template-columns:minmax(0,1fr) 88px!important;column-gap:6px!important;padding:7px 7px 6px!important}
+ #biomes>.biome .biome-icon.biome-icon-art{width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important}
+ #biomes>.biome .biome-info>strong{font-size:.81rem!important}
+ #biomes>.biome .biome-level{font-size:.6rem!important}
+ #biomes>.biome .biome-info>.info{font-size:.62rem!important}
+ #biomes>.biome .cycle{font-size:.61rem!important}
+ #biomes>.biome .milestone-box{min-width:25px!important;font-size:.59rem!important}
+ #biomes>.biome .milestone-bar{max-width:65px!important}
+ #biomes>.biome .biome-main>.btn{font-size:.73rem!important}
+}
+@media(max-height:570px){
+ #biomes>.biome{padding-top:6px!important;padding-bottom:5px!important;row-gap:3px!important}
+ #biomes>.biome .biome-icon.biome-icon-art{width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important}
+ #biomes>.biome .biome-main>.btn{min-height:42px!important}
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest?v=53">
 <link rel="icon" href="./icons/biome-planet-app.svg" type="image/svg+xml">
@@ -5047,7 +5183,7 @@ function refreshBiomeCards(){
  const container=$('biomes');container.replaceChildren();cards.length=0;
  BIOMES.forEach((b,i)=>{
   const el=document.createElement('div');el.className='biome';
-  el.innerHTML=`<div class="biome-head"><div class="biome-icon biome-icon-art" style="--biome-tone:${b.color}" role="img" aria-label="Icône de ${b.name}">${biomeVisualIcon(b.name,b.color)}</div><div class="biome-info"><strong>${b.name}</strong><small class="info"></small></div><span class="biome-level"></span></div><div class="biome-main"><div class="biome-left"><div class="cycle-info"><span class="cycle"></span><svg class="cycle-wheel" viewBox="0 0 40 40" aria-label="Cycle de revenus"><circle class="cycle-bg" cx="20" cy="20" r="16"></circle><circle class="cycle-fg" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"></circle></svg></div><div class="milestone-group"><div class="milestone-box" title="Nombre de paliers de 25 atteints">×0</div><div class="milestone-bar"><div class="milestone-caption"><span>Palier de 25</span><span class="milestone-count">0/25</span></div><div class="progress"><div></div></div></div></div></div><button type="button" class="btn"></button></div><div class="bonus-strip"><span class="bonus-status">🎁 Prochain bonus au niv. 25</span><button type="button" class="bonus-claim hidden">Débloquer bonus</button></div><div class="bonus-choices"><button type="button" class="bonus-choice" data-bonus="cash">${bpIcon('reward-income',21)}<span>+10 %<small>Revenus</small></span></button><button type="button" class="bonus-choice" data-bonus="speed">${bpIcon('reward-cycle',21)}<span>-5 %<small>Temps</small></span></button><button type="button" class="bonus-choice" data-bonus="discount">${bpIcon('reward-cost',21)}<span>-4 %<small>Coûts</small></span></button></div>`;
+  el.innerHTML=`<div class="biome-head"><div class="biome-icon biome-icon-art" style="--biome-tone:${b.color}" role="img" aria-label="Icône de ${b.name}">${biomeVisualIcon(b.name,b.color)}</div><div class="biome-info"><strong>${b.name}</strong><span class="biome-level"></span><small class="info"></small></div></div><div class="biome-main"><div class="biome-left"><div class="cycle-info"><span class="cycle"></span><svg class="cycle-wheel" viewBox="0 0 40 40" aria-label="Cycle de revenus"><circle class="cycle-bg" cx="20" cy="20" r="16"></circle><circle class="cycle-fg" cx="20" cy="20" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"></circle></svg></div><div class="milestone-group"><div class="milestone-box" title="Nombre de paliers de 25 atteints">×0</div><div class="milestone-bar"><div class="milestone-caption"><span>Palier de 25</span><span class="milestone-count">0/25</span></div><div class="progress"><div></div></div></div></div></div><button type="button" class="btn"></button></div><div class="bonus-strip"><span class="bonus-status">🎁 Prochain bonus au niv. 25</span><button type="button" class="bonus-claim hidden">Débloquer bonus</button></div><div class="bonus-choices"><button type="button" class="bonus-choice" data-bonus="cash">${bpIcon('reward-income',21)}<span>+10 %<small>Revenus</small></span></button><button type="button" class="bonus-choice" data-bonus="speed">${bpIcon('reward-cycle',21)}<span>-5 %<small>Temps</small></span></button><button type="button" class="bonus-choice" data-bonus="discount">${bpIcon('reward-cost',21)}<span>-4 %<small>Coûts</small></span></button></div>`;
   setupUpgradeButton(el.querySelector('.btn'),i);
   el.querySelector('.bonus-claim').addEventListener('click',()=>el.querySelector('.bonus-choices').classList.toggle('open'));
   el.querySelectorAll('.bonus-choice').forEach(btn=>btn.addEventListener('click',()=>claimBonus(i,btn.dataset.bonus)));
@@ -6814,8 +6950,8 @@ function renderUI(){
      const cash=revenue(i),periodMs=cycleTime(i)*1000,phase=Math.max(0,Math.min(.99999,(state.timers[i]%periodMs)/periodMs));
      minIncome+=60/cycleTime(i)*cash;
      const nextMilestone=(Math.floor(l/25)+1)*25;
-     info.textContent='+'+moneyFormat(cash)+' / cycle · x'+bonusPalier(l)+(nextMilestone<=b.max?' · x'+bonusPalier(nextMilestone)+' niv. '+nextMilestone:' · MAX');
-     cycle.textContent='↻ '+cycleTime(i).toLocaleString('fr-CA',{maximumFractionDigits:1})+' s · automatique';
+     info.textContent='DPS '+moneyFormat(cash/Math.max(.1,cycleTime(i)))+'/s · ×'+bonusPalier(l);info.title='+'+moneyFormat(cash)+' / cycle · prochain palier '+Math.min(nextMilestone,b.max);
+     cycle.textContent='↻ '+cycleTime(i).toLocaleString('fr-CA',{maximumFractionDigits:1})+' s';cycle.title='Cycle automatique';
      ring.style.strokeDashoffset=(100.53*(1-phase)).toFixed(2);
      const cost=upgradeCost(i);
      btn.textContent=l>=b.max?'✓ MAX':'↑ '+moneyFormat(cost);
@@ -7922,4 +8058,4 @@ document.addEventListener('dblclick',e=>{e.preventDefault()},{passive:false});
 state.last=Date.now();renderUI();drawPlanet();requestAnimationFrame(frame);
 if(!cosmicIntroAlreadySeen())requestAnimationFrame(()=>startCosmicIntro());
 })();
-</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=85').catch(console.warn));}</script></body></html>
+</script><script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=86').catch(console.warn));}</script></body></html>
